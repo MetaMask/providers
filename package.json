@@ -1,0 +1,32 @@
+{
+  "name": "metamask-inpage-provider",
+  "version": "1.0.0",
+  "description": "An ethereum provider that connects over a WebExtension port.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/MetaMask/metamask-inpage-provider.git"
+  },
+  "keywords": [
+    "MetaMask",
+    "Ethereum",
+    "Provider"
+  ],
+  "bugs": {
+    "url": "https://github.com/MetaMask/metamask-inpage-provider/issues"
+  },
+  "homepage": "https://github.com/MetaMask/metamask-inpage-provider#readme",
+  "dependencies": {
+    "json-rpc-engine": "^3.7.3",
+    "json-rpc-middleware-stream": "^1.0.1",
+    "loglevel": "^1.6.1",
+    "obj-multiplex": "^1.0.0",
+    "obs-store": "^3.0.0",
+    "pump": "^3.0.0"
+  }
+}
