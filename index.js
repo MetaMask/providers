@@ -6,8 +6,12 @@ const createStreamMiddleware = require('json-rpc-middleware-stream')
 const LocalStorageStore = require('obs-store')
 const asStream = require('obs-store/lib/asStream')
 const ObjectMultiplex = require('obj-multiplex')
+const util = require('util')
+const EventEmitter = require('events')
 
 module.exports = MetamaskInpageProvider
+
+util.inherits(MetamaskInpageProvider, EventEmitter)
 
 function MetamaskInpageProvider (connectionStream) {
   const self = this
@@ -18,7 +22,7 @@ function MetamaskInpageProvider (connectionStream) {
     connectionStream,
     mux,
     connectionStream,
-    (err) => logStreamDisconnectWarning('MetaMask', err)
+    logStreamDisconnectWarning.bind(this, 'MetaMask')
   )
 
   // subscribe to metamask public config (one-way)
@@ -27,7 +31,7 @@ function MetamaskInpageProvider (connectionStream) {
   pump(
     mux.createStream('publicConfig'),
     asStream(self.publicConfigStore),
-    (err) => logStreamDisconnectWarning('MetaMask PublicConfigStore', err)
+    logStreamDisconnectWarning.bind(this, 'MetaMask PublicConfigStore')
   )
 
   // ignore phishing warning message (handled elsewhere)
@@ -39,7 +43,7 @@ function MetamaskInpageProvider (connectionStream) {
     streamMiddleware.stream,
     mux.createStream('provider'),
     streamMiddleware.stream,
-    (err) => logStreamDisconnectWarning('MetaMask RpcProvider', err)
+    logStreamDisconnectWarning.bind(this, 'MetaMask RpcProvider')
   )
 
   // handle sendAsync requests via dapp-side rpc engine
@@ -120,6 +124,10 @@ function logStreamDisconnectWarning (remoteLabel, err) {
   let warningMsg = `MetamaskInpageProvider - lost connection to ${remoteLabel}`
   if (err) warningMsg += '\n' + err.stack
   console.warn(warningMsg)
+  const listeners = this.listenerCount('error')
+  if (listeners > 0) {
+    this.emit('error', warningMsg)
+  }
 }
 
 function noop () {}
