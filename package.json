@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/MetaMask/metamask-inpage-provider#readme",
   "dependencies": {
-    "json-rpc-engine": "^3.7.3",
+    "json-rpc-engine": "^3.7.4",
     "json-rpc-middleware-stream": "^1.0.1",
     "loglevel": "^1.6.1",
     "obj-multiplex": "^1.0.0",
