@@ -2,19 +2,22 @@ const pump = require('pump')
 const RpcEngine = require('json-rpc-engine')
 const createErrorMiddleware = require('./createErrorMiddleware')
 const createIdRemapMiddleware = require('json-rpc-engine/src/idRemapMiddleware')
-const createStreamMiddleware = require('json-rpc-middleware-stream')
+const createJsonRpcStream = require('json-rpc-middleware-stream')
 const LocalStorageStore = require('obs-store')
 const asStream = require('obs-store/lib/asStream')
 const ObjectMultiplex = require('obj-multiplex')
 const util = require('util')
-const EventEmitter = require('events')
+const SafeEventEmitter = require('safe-event-emitter')
 
 module.exports = MetamaskInpageProvider
 
-util.inherits(MetamaskInpageProvider, EventEmitter)
+util.inherits(MetamaskInpageProvider, SafeEventEmitter)
 
 function MetamaskInpageProvider (connectionStream) {
   const self = this
+
+  // super constructor
+  SafeEventEmitter.call(self)
 
   // setup connectionStream multiplexing
   const mux = self.mux = new ObjectMultiplex()
@@ -38,11 +41,11 @@ function MetamaskInpageProvider (connectionStream) {
   mux.ignoreStream('phishing')
 
   // connect to async provider
-  const streamMiddleware = createStreamMiddleware()
+  const jsonRpcConnection = createJsonRpcStream()
   pump(
-    streamMiddleware.stream,
+    jsonRpcConnection.stream,
     mux.createStream('provider'),
-    streamMiddleware.stream,
+    jsonRpcConnection.stream,
     logStreamDisconnectWarning.bind(this, 'MetaMask RpcProvider')
   )
 
@@ -50,8 +53,13 @@ function MetamaskInpageProvider (connectionStream) {
   const rpcEngine = new RpcEngine()
   rpcEngine.push(createIdRemapMiddleware())
   rpcEngine.push(createErrorMiddleware())
-  rpcEngine.push(streamMiddleware)
+  rpcEngine.push(jsonRpcConnection.middleware)
   self.rpcEngine = rpcEngine
+
+  // forward json rpc notifications
+  jsonRpcConnection.events.on('notification', function(payload) {
+    self.emit('data', null, payload)
+  })
 }
 
 // Web3 1.0 provider uses `send` with a callback for async queries
