@@ -54,6 +54,17 @@ function MetamaskInpageProvider (connectionStream) {
   self.rpcEngine = rpcEngine
 }
 
+// Web3 1.0 provider uses `send` with a callback for async queries
+MetamaskInpageProvider.prototype.send = function (payload, callback) {
+  const self = this
+
+  if (callback) {
+    self.sendAsync(payload, callback)
+  } else {
+    self._sendSync(payload)
+  }
+}
+
 // handle sendAsync requests via asyncProvider
 // also remap ids inbound and outbound
 MetamaskInpageProvider.prototype.sendAsync = function (payload, cb) {
@@ -66,8 +77,7 @@ MetamaskInpageProvider.prototype.sendAsync = function (payload, cb) {
   self.rpcEngine.handle(payload, cb)
 }
 
-
-MetamaskInpageProvider.prototype.send = function (payload) {
+MetamaskInpageProvider.prototype._sendSync = function (payload) {
   const self = this
 
   let selectedAddress
