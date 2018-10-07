@@ -1,5 +1,7 @@
 const pump = require('pump')
 const RpcEngine = require('json-rpc-engine')
+const ProviderEngine = require('web3-provider-engine')
+const SubscriptionSubprovider = require('web3-provider-engine/subproviders/subscriptions')
 const createErrorMiddleware = require('./createErrorMiddleware')
 const createIdRemapMiddleware = require('json-rpc-engine/src/idRemapMiddleware')
 const createJsonRpcStream = require('json-rpc-middleware-stream')
@@ -8,6 +10,10 @@ const asStream = require('obs-store/lib/asStream')
 const ObjectMultiplex = require('obj-multiplex')
 const util = require('util')
 const SafeEventEmitter = require('safe-event-emitter')
+const subscriptionMethods = [
+  'eth_subscribe',
+  'eth_unsubscribe',
+]
 
 module.exports = MetamaskInpageProvider
 
@@ -15,6 +21,8 @@ util.inherits(MetamaskInpageProvider, SafeEventEmitter)
 
 function MetamaskInpageProvider (connectionStream) {
   const self = this
+  this.engine = new ProviderEngine()
+  this.engine.addProvider(new SubscriptionSubprovider())
 
   // super constructor
   SafeEventEmitter.call(self)
@@ -80,6 +88,10 @@ MetamaskInpageProvider.prototype.sendAsync = function (payload, cb) {
 
   if (payload.method === 'eth_signTypedData') {
     console.warn('MetaMask: This experimental version of eth_signTypedData will be deprecated in the next release in favor of the standard as defined in EIP-712. See https://git.io/fNzPl for more information on the new standard.')
+  }
+
+  if (subscriptionMethods.includes(payload.method)) {
+    return this.engine.sendAsync(payload, cb)
   }
 
   self.rpcEngine.handle(payload, cb)
