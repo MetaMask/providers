@@ -21,8 +21,6 @@ util.inherits(MetamaskInpageProvider, SafeEventEmitter)
 
 function MetamaskInpageProvider (connectionStream) {
   const self = this
-  this.engine = new ProviderEngine()
-  this.engine.addProvider(new SubscriptionSubprovider())
 
   // super constructor
   SafeEventEmitter.call(self)
@@ -68,6 +66,16 @@ function MetamaskInpageProvider (connectionStream) {
   jsonRpcConnection.events.on('notification', function(payload) {
     self.emit('data', null, payload)
   })
+
+  // to support subscriptions, include old provider engine:
+  this.engine = new ProviderEngine()
+  this.engine.addProvider(new SubscriptionSubprovider())
+  this.engine.addProvider({
+    handleAsync: (payload, next, end) => {
+      this.rpcEngine.handle(payload, end)
+    }
+  })
+
 }
 
 // Web3 1.0 provider uses `send` with a callback for async queries
