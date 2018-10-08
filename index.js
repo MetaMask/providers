@@ -60,6 +60,11 @@ function MetamaskInpageProvider (connectionStream) {
   jsonRpcConnection.events.on('notification', function(payload) {
     self.emit('data', null, payload)
   })
+
+  // Work around for https://github.com/metamask/metamask-extension/issues/5459
+  // drizzle accidently breaking the `this` reference
+  self.send = self.send.bind(self)
+  self.sendAsync = self.sendAsync.bind(self)
 }
 
 // Web3 1.0 provider uses `send` with a callback for async queries
