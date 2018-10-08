@@ -69,11 +69,15 @@ function MetamaskInpageProvider (connectionStream) {
 
   // to support subscriptions, include old provider engine:
   this.engine = new ProviderEngine()
-  this.engine.addProvider(new SubscriptionSubprovider())
+  const subscriptionSubprovider = new SubscriptionSubprovider()
+  this.engine.addProvider(subscriptionSubprovider)
   this.engine.addProvider({
     handleAsync: (payload, next, end) => {
       this.rpcEngine.handle(payload, end)
     }
+  })
+  subscriptionSubprovider.on('data', (err, notification) => {
+    this.emit('data', err, notification)
   })
 
 }
