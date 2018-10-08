@@ -69,7 +69,7 @@ MetamaskInpageProvider.prototype.send = function (payload, callback) {
   if (callback) {
     self.sendAsync(payload, callback)
   } else {
-    self._sendSync(payload)
+    return self._sendSync(payload)
   }
 }
 
