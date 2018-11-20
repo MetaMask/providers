@@ -36,16 +36,16 @@ function MetamaskInpageProvider (connectionStream) {
   // Emit events for some state changes
   self.publicConfigStore.subscribe(function (state) {
 
-    // Emit account_changed event on account change
+    // Emit accountsChanged event on account change
     if ('selectedAddress' in state && state.selectedAddress !== self.selectedAddress) {
       self.selectedAddress = state.selectedAddress
-      self.emit('account_changed', self.selectedAddress)
+      self.emit('accountsChanged', [self.selectedAddress])
     }
 
-    // Emit network_changed event on network change
+    // Emit networkChanged event on network change
     if ('networkVersion' in state && state.networkVersion !== self.networkVersion) {
       self.networkVersion = state.networkVersion
-      self.emit('network_changed', self.networkVersion)
+      self.emit('networkChanged', state.networkVersion)
     }
   })
 
