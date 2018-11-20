@@ -15,6 +15,8 @@ util.inherits(MetamaskInpageProvider, SafeEventEmitter)
 
 function MetamaskInpageProvider (connectionStream) {
   const self = this
+  self.selectedAddress = undefined
+  self.networkVersion = undefined
 
   // super constructor
   SafeEventEmitter.call(self)
@@ -30,6 +32,22 @@ function MetamaskInpageProvider (connectionStream) {
 
   // subscribe to metamask public config (one-way)
   self.publicConfigStore = new LocalStorageStore({ storageKey: 'MetaMask-Config' })
+
+  // Emit events for some state changes
+  self.publicConfigStore.subscribe(function (state) {
+
+    // Emit accountsChanged event on account change
+    if ('selectedAddress' in state && state.selectedAddress !== self.selectedAddress) {
+      self.selectedAddress = state.selectedAddress
+      self.emit('accountsChanged', [self.selectedAddress])
+    }
+
+    // Emit networkChanged event on network change
+    if ('networkVersion' in state && state.networkVersion !== self.networkVersion) {
+      self.networkVersion = state.networkVersion
+      self.emit('networkChanged', state.networkVersion)
+    }
+  })
 
   pump(
     mux.createStream('publicConfig'),
