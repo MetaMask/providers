@@ -22,15 +22,15 @@
   },
   "homepage": "https://github.com/MetaMask/metamask-inpage-provider#readme",
   "dependencies": {
-    "json-rpc-engine": "^5.0.0",
+    "json-rpc-engine": "github:rekmarks/json-rpc-engine#errors",
     "json-rpc-middleware-stream": "^2.1.1",
     "loglevel": "^1.6.1",
     "obj-multiplex": "^1.0.0",
-    "obs-store": "^4.0.1",
+    "obs-store": "github:rekmarks/obs-store#babelify",
     "pump": "^3.0.0",
     "safe-event-emitter": "^1.0.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.3.4"
+    "@babel/core": "^7.5.5"
   }
 }
