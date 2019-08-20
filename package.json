@@ -1,6 +1,6 @@
 {
   "name": "metamask-inpage-provider",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "An ethereum provider that connects over a WebExtension port.",
   "main": "index.js",
   "scripts": {
