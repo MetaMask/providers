@@ -17,6 +17,7 @@ function MetamaskInpageProvider (connectionStream) {
   const self = this
   self.selectedAddress = undefined
   self.networkVersion = undefined
+  self.chainId = undefined
 
   // super constructor
   SafeEventEmitter.call(self)
@@ -46,6 +47,12 @@ function MetamaskInpageProvider (connectionStream) {
     if ('networkVersion' in state && state.networkVersion !== self.networkVersion) {
       self.networkVersion = state.networkVersion
       self.emit('networkChanged', state.networkVersion)
+    }
+
+    // Emit networkChanged event on network change
+    if ('chainId' in state && state.chainId !== self.chainId) {
+      self.chainId = state.chainId
+      self.emit('chainIdChanged', state.chainId)
     }
   })
 
