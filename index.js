@@ -40,7 +40,10 @@ function MetamaskInpageProvider (connectionStream) {
     // Emit accountsChanged event on account change
     if ('selectedAddress' in state && state.selectedAddress !== self.selectedAddress) {
       self.selectedAddress = state.selectedAddress
-      self.emit('accountsChanged', [self.selectedAddress])
+      const accounts = state.selectedAddress ?
+        [state.selectedAddress] :
+        []
+      self.emit('accountsChanged', accounts)
     }
 
     // Emit networkChanged event on network change
