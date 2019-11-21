@@ -78,6 +78,7 @@ function MetamaskInpageProvider (connectionStream) {
 
     if ('isUnlocked' in state && state.isUnlocked !== this._state.isUnlocked) {
       this._state.isUnlocked = state.isUnlocked
+      this.emit('wallet_isUnlocked', this._state.isUnlocked)
       if (!this._state.isUnlocked) {
         // accounts are never exposed when the extension is locked
         this._handleAccountsChanged([])
