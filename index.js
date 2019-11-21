@@ -32,28 +32,27 @@ module.exports = MetamaskInpageProvider
 
 inherits(MetamaskInpageProvider, SafeEventEmitter)
 
-// private state, kept here in part for use in the _metamask proxy
-const _state = {
-
-  sentWarnings: {
-    enable: false,
-    experimentalMethods: false,
-    isConnected: false,
-    sendAsync: false,
-    // TODO:deprecate:2020-01-13
-    autoReload: false, 
-    sendSync: false,
-  },
-  sentSiteMetadata: false,
-  isConnected: undefined,
-  accounts: [],
-  isUnlocked: false,
-}
-
 function MetamaskInpageProvider (connectionStream) {
 
   // super constructor
   SafeEventEmitter.call(this)
+
+  // private state, kept here in part for use in the _metamask proxy
+  this._state = {
+      sentWarnings: {
+      enable: false,
+      experimentalMethods: false,
+      isConnected: false,
+      sendAsync: false,
+      // TODO:deprecate:2020-01-13
+      autoReload: false, 
+      sendSync: false,
+    },
+    sentSiteMetadata: false,
+    isConnected: undefined,
+    accounts: undefined,
+    isUnlocked: undefined,
+  }
 
   this._metamask = getExperimentalApi(this)
 
@@ -77,8 +76,8 @@ function MetamaskInpageProvider (connectionStream) {
   // chainChanged and networkChanged events
   this._publicConfigStore.subscribe(state => {
 
-    if ('isUnlocked' in state && state.isUnlocked !== _state.isUnlocked) {
-      _state.isUnlocked = state.isUnlocked
+    if ('isUnlocked' in state && state.isUnlocked !== this._state.isUnlocked) {
+      this._state.isUnlocked = state.isUnlocked
     }
 
     // Emit chainChanged event on chain change
@@ -116,7 +115,7 @@ function MetamaskInpageProvider (connectionStream) {
 
   // EIP-1193 connect
   this.on('connect', () => {
-    _state.isConnected = true
+    this._state.isConnected = true
   })
 
   // connect to async provider
@@ -153,9 +152,9 @@ function MetamaskInpageProvider (connectionStream) {
   // moved this here because there's another warning in .enable() discouraging
   // the use thereof per EIP 1102
   setTimeout(() => {
-    if (this.autoRefreshOnNetworkChange && !_state.sentWarnings.autoReload) {
+    if (this.autoRefreshOnNetworkChange && !this._state.sentWarnings.autoReload) {
       log.warn(messages.warnings.autoReloadDeprecation)
-      _state.sentWarnings.autoReload = true
+      this._state.sentWarnings.autoReload = true
     }
   }, 1000)
 }
@@ -176,11 +175,11 @@ MetamaskInpageProvider.prototype.isMetaMask = true
  */
 MetamaskInpageProvider.prototype.isConnected = function () {
 
-  if (!_state.sentWarnings.isConnected) {
+  if (!this._state.sentWarnings.isConnected) {
     log.warn(messages.warnings.isConnectedDeprecation)
-    _state.sentWarnings.isConnected = true
+    this._state.sentWarnings.isConnected = true
   }
-  return _state.isConnected
+  return this._state.isConnected
 }
 
 /**
@@ -263,9 +262,9 @@ MetamaskInpageProvider.prototype.send = function (methodOrPayload, params) {
  */
 MetamaskInpageProvider.prototype.enable = function () {
 
-  if (!_state.sentWarnings.enable) {
+  if (!this._state.sentWarnings.enable) {
     log.warn(messages.warnings.enableDeprecation)
-    _state.sentWarnings.enable = true
+    this._state.sentWarnings.enable = true
   }
   return this.send('eth_requestAccounts')
 }
@@ -279,9 +278,9 @@ MetamaskInpageProvider.prototype.enable = function () {
  */
 MetamaskInpageProvider.prototype.sendAsync = function (payload, cb) {
 
-  if (!_state.sentWarnings.sendAsync) {
+  if (!this._state.sentWarnings.sendAsync) {
     log.warn(messages.warnings.sendAsyncDeprecation)
-    _state.sentWarnings.sendAsync = true
+    this._state.sentWarnings.sendAsync = true
   }
   this._sendAsync(payload, cb)
 }
@@ -292,9 +291,9 @@ MetamaskInpageProvider.prototype.sendAsync = function (payload, cb) {
  */
 MetamaskInpageProvider.prototype._sendSync = function (payload) {
 
-  if (!_state.sentWarnings.sendSync) {
+  if (!this._state.sentWarnings.sendSync) {
     log.warn(messages.warnings.sendSyncDeprecation)
-    _state.sentWarnings.sendSync = true
+    this._state.sentWarnings.sendSync = true
   }
 
   let result
@@ -337,9 +336,9 @@ MetamaskInpageProvider.prototype._sendAsync = function (payload, userCallback) {
 
   let cb = userCallback
 
-  if (!_state.sentSiteMetadata) {
+  if (!this._state.sentSiteMetadata) {
     sendSiteMetadata(this._rpcEngine)
-    _state.sentSiteMetadata = true
+    this._state.sentSiteMetadata = true
   }
 
   if (!Array.isArray(payload)) {
@@ -370,13 +369,13 @@ MetamaskInpageProvider.prototype._sendAsync = function (payload, userCallback) {
 MetamaskInpageProvider.prototype._handleDisconnect = function (streamName, err) {
 
   logStreamDisconnectWarning.bind(this)(streamName, err)
-  if (_state.isConnected) {
+  if (this._state.isConnected) {
     this.emit('close', {
       code: 1011,
       reason: 'MetaMask background communication error.',
     })
   }
-  _state.isConnected = false
+  this._state.isConnected = false
 }
 
 /**
@@ -394,9 +393,9 @@ MetamaskInpageProvider.prototype._handleAccountsChanged = function (accounts) {
   }
 
   // emit accountsChanged if anything about the accounts array has changed
-  if (!dequal(_state.accounts, accounts)) {
+  if (!dequal(this._state.accounts, accounts)) {
     this.emit('accountsChanged', accounts)
-    _state.accounts = accounts
+    this._state.accounts = accounts
   }
 
   // handle selectedAddress
@@ -427,7 +426,12 @@ function getExperimentalApi (instance) {
        * @returns {Promise<boolean>} - Promise resolving to true if MetaMask is currently unlocked
        */
       isUnlocked: async () => {
-        return _state.isUnlocked
+        if (this._state.isUnlocked === undefined) {
+          await new Promise(
+            (resolve) => this._publicConfigStore.once('update', () => resolve())
+          )
+        }
+        return this._state.isUnlocked
       },
 
       /**
@@ -463,7 +467,7 @@ function getExperimentalApi (instance) {
        * @returns {boolean} - returns true if this domain is currently enabled
        */
       isEnabled: () => {
-        return Array.isArray(_state.accounts) && _state.accounts.length > 0
+        return Array.isArray(this._state.accounts) && this._state.accounts.length > 0
       },
 
       /**
@@ -473,16 +477,21 @@ function getExperimentalApi (instance) {
        * @returns {Promise<boolean>} - Promise resolving to true if this domain is currently enabled
        */
       isApproved: async () => {
-        return Array.isArray(_state.accounts) && _state.accounts.length > 0
+        if (this._state.accounts === undefined) {
+          await new Promise(
+            (resolve) => this.once('accountsChanged', () => resolve())
+          )
+        }
+        return Array.isArray(this._state.accounts) && this._state.accounts.length > 0
       },
     },
     {
 
       get: (obj, prop) => {
 
-        if (!_state.sentWarnings.experimentalMethods) {
+        if (!this._state.sentWarnings.experimentalMethods) {
           log.warn(messages.warnings.experimentalMethods)
-          _state.sentWarnings.experimentalMethods = true
+          this._state.sentWarnings.experimentalMethods = true
         }
         return obj[prop]
       },
