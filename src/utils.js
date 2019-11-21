@@ -55,7 +55,7 @@ function logStreamDisconnectWarning (remoteLabel, err) {
 }
 
 /**
- * TODO:deprecate:2019-12-16
+ * TODO:deprecate:2020-01-13
  * Adds hidden "then" and "catch" properties to the given object. When returned
  * from a function, the given object will appear unchanged. If, however, the
  * caller expects a Promise, it will behave like a Promise that resolves to

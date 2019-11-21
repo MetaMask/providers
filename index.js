@@ -40,7 +40,7 @@ const _state = {
     experimentalMethods: false,
     isConnected: false,
     sendAsync: false,
-    // TODO:deprecate:2019-12-16
+    // TODO:deprecate:2020-01-13
     autoReload: false, 
     sendSync: false,
   },
@@ -85,7 +85,7 @@ function MetamaskInpageProvider (connectionStream) {
     if ('chainId' in state && state.chainId !== this.chainId) {
       this.chainId = state.chainId
       this.emit('chainChanged', this.chainId)
-      this.emit('chainIdChanged', this.chainId) // TODO:deprecate:2019-12-16
+      this.emit('chainIdChanged', this.chainId) // TODO:deprecate:2020-01-13
     }
 
     // Emit networkChanged event on network change
@@ -148,7 +148,7 @@ function MetamaskInpageProvider (connectionStream) {
   // indicate that we've connected, for EIP-1193 compliance
   setTimeout(() => this.emit('connect'))
 
-  // TODO:deprecate:2019-12-16
+  // TODO:deprecate:2020-01-13
   // wait a second to attempt to send this, so that the warning can be silenced
   // moved this here because there's another warning in .enable() discouraging
   // the use thereof per EIP 1102
@@ -160,10 +160,10 @@ function MetamaskInpageProvider (connectionStream) {
   }, 1000)
 }
 
-// TODO:deprecate:2019-12-16
+// TODO:deprecate:2020-01-13
 MetamaskInpageProvider.prototype._web3Ref = undefined
 
-// TODO:deprecate:2019-12-16
+// TODO:deprecate:2020-01-13
 // give the dapps control of a refresh they can toggle this off on the window.ethereum
 // this will be default true so it does not break any old apps.
 MetamaskInpageProvider.prototype.autoRefreshOnNetworkChange = true
@@ -219,7 +219,7 @@ MetamaskInpageProvider.prototype.send = function (methodOrPayload, params) {
 
       payload = methodOrPayload
 
-      // TODO:deprecate:2019-12-16
+      // TODO:deprecate:2020-01-13
       // backwards compatibility: "synchronous" methods
       if ([
         'eth_accounts',
@@ -287,7 +287,7 @@ MetamaskInpageProvider.prototype.sendAsync = function (payload, cb) {
 }
 
 /**
- * TODO:deprecate:2019-12-16
+ * TODO:deprecate:2020-01-13
  * Internal backwards compatibility method.
  */
 MetamaskInpageProvider.prototype._sendSync = function (payload) {
@@ -404,7 +404,7 @@ MetamaskInpageProvider.prototype._handleAccountsChanged = function (accounts) {
     this.selectedAddress = accounts[0] || null
   }
 
-  // TODO:deprecate:2019-12-16
+  // TODO:deprecate:2020-01-13
   // handle web3
   if (this._web3Ref) {
     this._web3Ref.defaultAccount = this.selectedAddress
@@ -455,9 +455,9 @@ function getExperimentalApi (instance) {
         })
       },
 
-      // TODO:deprecate:2019-12-16 isEnabled, isApproved
+      // TODO:deprecate:2020-01-13 isEnabled, isApproved
       /**
-       * Deprecated. Will be removed on 2019-12-16.
+       * Deprecated. Will be removed on 2020-01-13.
        * Synchronously determines if this domain is currently enabled, with a potential false negative if called to soon
        *
        * @returns {boolean} - returns true if this domain is currently enabled
@@ -467,7 +467,7 @@ function getExperimentalApi (instance) {
       },
 
       /**
-       * Deprecated. Will be removed on 2019-12-16.
+       * Deprecated. Will be removed on 2020-01-13.
        * Asynchronously determines if this domain is currently enabled
        *
        * @returns {Promise<boolean>} - Promise resolving to true if this domain is currently enabled
