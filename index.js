@@ -78,6 +78,13 @@ function MetamaskInpageProvider (connectionStream) {
 
     if ('isUnlocked' in state && state.isUnlocked !== this._state.isUnlocked) {
       this._state.isUnlocked = state.isUnlocked
+      if (!this._state.isUnlocked) {
+        // accounts are never exposed when the extension is locked
+        this._handleAccountsChanged([])
+      } else {
+        // this will get the exposed accounts, if any
+        this.send('eth_accounts')
+      }
     }
 
     // Emit chainChanged event on chain change
