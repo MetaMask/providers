@@ -18,7 +18,7 @@ test('makeThenable objects are Promise ducks', async t => {
   const customRes = await runThenableTests(customThenable)
   const promiseRes = await runThenableTests(promiseThenable)
 
-  Object.entries(customRes).forEach(async ([k, v1]) => {
+  await Promise.all(Object.entries(customRes).map(async ([k, v1]) => {
 
     const v2 = promiseRes[k]
 
@@ -34,12 +34,11 @@ test('makeThenable objects are Promise ducks', async t => {
         const r1 = await v1
         const r2 = await v2
         t.deepEqual(r1, r2, 'promises resolve to the same values')
-      // } else if (v1 === target) {
       } else {
         t.deepEqual(v1, v2, 'values are equal')
       }
     }
-  })
+  }))
 
   const response = customThenable({ ...responseObject })
   const stringResponse = JSON.stringify(response, null, 2)

@@ -22,12 +22,6 @@ function createErrorMiddleware () {
       const { error } = res
       if (!error) {
         return done()
-      // legacy eth_accounts behavior
-      } else if (req.method === 'eth_accounts' && error.code === 4100) {
-        log.warn(`MetaMask - Ignored RPC Error: ${error.message}`, error)
-        delete res.error
-        res.result = []
-        return done()
       }
       serializeError(error)
       log.error(`MetaMask - RPC Error: ${error.message}`, error)

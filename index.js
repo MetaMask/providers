@@ -216,7 +216,7 @@ MetamaskInpageProvider.prototype.send = function (methodOrPayload, params) {
 
     // TODO:deprecate:2020-01-13
     // backwards compatibility: "synchronous" methods
-    if ([
+    if (!params && [
       'eth_accounts',
       'eth_coinbase',
       'eth_uninstallFilter',
@@ -362,7 +362,10 @@ MetamaskInpageProvider.prototype._sendAsync = function (payload, userCallback) {
 
       // handle accounts changing
       cb = (err, res) => {
-        this._handleAccountsChanged(res.result || [])
+        this._handleAccountsChanged(
+          res.result || [],
+          payload.method === 'eth_accounts'
+        )
         userCallback(err, res)
       }
     }
@@ -389,7 +392,7 @@ MetamaskInpageProvider.prototype._handleDisconnect = function (streamName, err) 
 /**
  * Called when accounts may have changed.
  */
-MetamaskInpageProvider.prototype._handleAccountsChanged = function (accounts) {
+MetamaskInpageProvider.prototype._handleAccountsChanged = function (accounts, isEthAccounts = false) {
 
   // defensive programming
   if (!Array.isArray(accounts)) {
@@ -402,8 +405,16 @@ MetamaskInpageProvider.prototype._handleAccountsChanged = function (accounts) {
 
   // emit accountsChanged if anything about the accounts array has changed
   if (!dequal(this._state.accounts, accounts)) {
+
     this.emit('accountsChanged', accounts)
     this._state.accounts = accounts
+
+    if (isEthAccounts) {
+      log.error(
+        'MetaMask: Accounts may be out of sync. Please report this bug.',
+        accounts,
+      )
+    }
   }
 
   // handle selectedAddress
