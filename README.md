@@ -4,7 +4,7 @@ Used to initialize the inpage ethereum provider injected by MetaMask.
 
 ## Installation
 
-`npm install metamask-inpage-provider -S`
+`yarn add metamask-inpage-provider`
 
 ## Usage
 
