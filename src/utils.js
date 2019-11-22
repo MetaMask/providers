@@ -17,7 +17,7 @@ const SafeEventEmitter = require('safe-event-emitter')
  * @returns {Function} json-rpc-engine middleware function
  */
 function createErrorMiddleware () {
-  return (req, res, next) => {
+  return (_req, res, next) => {
     next(done => {
       const { error } = res
       if (!error) {
