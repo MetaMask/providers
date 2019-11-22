@@ -39,7 +39,7 @@ function MetamaskInpageProvider (connectionStream) {
 
   // private state, kept here in part for use in the _metamask proxy
   this._state = {
-      sentWarnings: {
+    sentWarnings: {
       enable: false,
       experimentalMethods: false,
       isConnected: false,
@@ -48,7 +48,6 @@ function MetamaskInpageProvider (connectionStream) {
       autoReload: false, 
       sendSync: false,
     },
-    sentSiteMetadata: false,
     isConnected: undefined,
     accounts: undefined,
     isUnlocked: undefined,
@@ -73,7 +72,7 @@ function MetamaskInpageProvider (connectionStream) {
   // subscribe to metamask public config (one-way)
   this._publicConfigStore = new ObservableStore({ storageKey: 'MetaMask-Config' })
 
-  // chainChanged and networkChanged events
+  // handle isUnlocked changes, and chainChanged and networkChanged events
   this._publicConfigStore.subscribe(state => {
 
     if ('isUnlocked' in state && state.isUnlocked !== this._state.isUnlocked) {
@@ -114,13 +113,6 @@ function MetamaskInpageProvider (connectionStream) {
 
   // setup own event listeners
 
-  // EIP-1193 subscriptions
-  this.on('data', (error, { method, params }) => {
-    if (!error && method === 'eth_subscription') {
-      this.emit('notification', params.result)
-    }
-  })
-
   // EIP-1193 connect
   this.on('connect', () => {
     this._state.isConnected = true
@@ -147,10 +139,14 @@ function MetamaskInpageProvider (connectionStream) {
   jsonRpcConnection.events.on('notification', payload => {
     if (payload.method === 'wallet_accountsChanged') {
       this._handleAccountsChanged(payload.result)
-    } else {
-      this.emit('data', null, payload)
+    } else if (payload.method === 'eth_subscription') {
+      // EIP 1193 subscriptions, per eth-json-rpc-filters/subscriptionManager
+      this.emit('notification', payload.params.result)
     }
   })
+
+  // send website metadata
+  sendSiteMetadata(this._rpcEngine)
 
   // indicate that we've connected, for EIP-1193 compliance
   setTimeout(() => this.emit('connect'))
@@ -200,53 +196,62 @@ MetamaskInpageProvider.prototype.isConnected = function () {
  */
 MetamaskInpageProvider.prototype.send = function (methodOrPayload, params) {
 
+  // preserve original params for later error if necessary
+  const _params = params
+
   // construct payload object
   let payload
-  if (params !== undefined) {
+  if (
+    typeof methodOrPayload === 'object' &&
+    !Array.isArray(methodOrPayload)
+  ) {
+
+    // TODO:deprecate:2020-01-13
+    // handle send(object, callback), an alias for sendAsync(object, callback)
+    if (typeof params === 'function') {
+      return this._sendAsync(methodOrPayload, params)
+    }
+
+    payload = methodOrPayload
+
+    // TODO:deprecate:2020-01-13
+    // backwards compatibility: "synchronous" methods
+    if ([
+      'eth_accounts',
+      'eth_coinbase',
+      'eth_uninstallFilter',
+      'net_version',
+    ].includes(payload.method)) {
+      return this._sendSync(payload)
+    }
+  } else if (
+    typeof methodOrPayload === 'string' &&
+    typeof params !== 'function'
+  ) {
 
     // wrap params in array out of kindness
-    if (!Array.isArray(params)) {
+    if (params === undefined) {
+      params = []
+    } else if (!Array.isArray(params)) {
       params = [params]
     }
 
-    // method must be a string if params were supplied
-    // we will throw further down if it isn't
     payload = {
       method: methodOrPayload,
       params,
-    }
-  } else {
-
-    if (typeof methodOrPayload === 'string') {
-      payload = {
-        method: methodOrPayload,
-        params,
-      }
-    } else {
-
-      payload = methodOrPayload
-
-      // TODO:deprecate:2020-01-13
-      // backwards compatibility: "synchronous" methods
-      if ([
-        'eth_accounts',
-        'eth_coinbase',
-        'eth_uninstallFilter',
-        'net_version',
-      ].includes(payload.method)) {
-        return this._sendSync(payload)
-      }
     }
   }
 
   // typecheck payload and payload.method
   if (
     Array.isArray(payload) ||
+    typeof params === 'function' ||
     typeof payload !== 'object' ||
     typeof payload.method !== 'string'
   ) {
     throw ethErrors.rpc.invalidRequest({
-      message: messages.errors.invalidParams(), data: payload,
+      message: messages.errors.invalidParams(),
+      data: [methodOrPayload, _params],
     })
   }
 
@@ -344,11 +349,6 @@ MetamaskInpageProvider.prototype._sendAsync = function (payload, userCallback) {
 
   let cb = userCallback
 
-  if (!this._state.sentSiteMetadata) {
-    sendSiteMetadata(this._rpcEngine)
-    this._state.sentSiteMetadata = true
-  }
-
   if (!Array.isArray(payload)) {
 
     if (!payload.jsonrpc) {
@@ -434,12 +434,12 @@ function getExperimentalApi (instance) {
        * @returns {Promise<boolean>} - Promise resolving to true if MetaMask is currently unlocked
        */
       isUnlocked: async () => {
-        if (this._state.isUnlocked === undefined) {
+        if (instance._state.isUnlocked === undefined) {
           await new Promise(
-            (resolve) => this._publicConfigStore.once('update', () => resolve())
+            (resolve) => instance._publicConfigStore.once('update', () => resolve())
           )
         }
-        return this._state.isUnlocked
+        return instance._state.isUnlocked
       },
 
       /**
@@ -475,7 +475,7 @@ function getExperimentalApi (instance) {
        * @returns {boolean} - returns true if this domain is currently enabled
        */
       isEnabled: () => {
-        return Array.isArray(this._state.accounts) && this._state.accounts.length > 0
+        return Array.isArray(instance._state.accounts) && instance._state.accounts.length > 0
       },
 
       /**
@@ -485,21 +485,21 @@ function getExperimentalApi (instance) {
        * @returns {Promise<boolean>} - Promise resolving to true if this domain is currently enabled
        */
       isApproved: async () => {
-        if (this._state.accounts === undefined) {
+        if (instance._state.accounts === undefined) {
           await new Promise(
-            (resolve) => this.once('accountsChanged', () => resolve())
+            (resolve) => instance.once('accountsChanged', () => resolve())
           )
         }
-        return Array.isArray(this._state.accounts) && this._state.accounts.length > 0
+        return Array.isArray(instance._state.accounts) && instance._state.accounts.length > 0
       },
     },
     {
 
       get: (obj, prop) => {
 
-        if (!this._state.sentWarnings.experimentalMethods) {
+        if (!instance._state.sentWarnings.experimentalMethods) {
           log.warn(messages.warnings.experimentalMethods)
-          this._state.sentWarnings.experimentalMethods = true
+          instance._state.sentWarnings.experimentalMethods = true
         }
         return obj[prop]
       },

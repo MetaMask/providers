@@ -84,7 +84,9 @@ function makeThenable (obj, prop) {
   Object.defineProperty(obj, 'then', { ...defineOpts, value: thenFunction })
 
   // the Promise will never fail in our usage, so just make a no-op "catch"
-  Object.defineProperty(obj, 'catch', { ...defineOpts, value: () => {} })
+  Object.defineProperty(obj, 'catch', { ...defineOpts, value: Promise.prototype.catch })
+
+  Object.defineProperty(obj, 'finally', { ...defineOpts, value: Promise.prototype.finally })
 
   return obj
 }
