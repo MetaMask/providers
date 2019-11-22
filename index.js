@@ -22,10 +22,10 @@ const {
 // resolve response.result, reject errors
 const rpcPromiseCallback = (resolve, reject) => (error, response) => {
   error || response.error
-  ? reject(error || response.error)
-  : Array.isArray(response)
-    ? resolve(response)
-    : resolve(response.result)
+    ? reject(error || response.error)
+    : Array.isArray(response)
+      ? resolve(response)
+      : resolve(response.result)
 }
 
 module.exports = MetamaskInpageProvider
@@ -45,7 +45,7 @@ function MetamaskInpageProvider (connectionStream) {
       isConnected: false,
       sendAsync: false,
       // TODO:deprecate:2020-01-13
-      autoReload: false, 
+      autoReload: false,
       sendSync: false,
     },
     isConnected: undefined,
@@ -364,7 +364,7 @@ MetamaskInpageProvider.prototype._sendAsync = function (payload, userCallback) {
       cb = (err, res) => {
         this._handleAccountsChanged(
           res.result || [],
-          payload.method === 'eth_accounts'
+          payload.method === 'eth_accounts',
         )
         userCallback(err, res)
       }
@@ -426,8 +426,7 @@ MetamaskInpageProvider.prototype._handleAccountsChanged = function (accounts, is
   // handle web3
   if (this._web3Ref) {
     this._web3Ref.defaultAccount = this.selectedAddress
-  }
-  else if (window.web3 && typeof window.web3.eth === 'object') {
+  } else if (window.web3 && typeof window.web3.eth === 'object') {
     window.web3.eth.defaultAccount = this.selectedAddress
   }
 }
@@ -447,7 +446,7 @@ function getExperimentalApi (instance) {
       isUnlocked: async () => {
         if (instance._state.isUnlocked === undefined) {
           await new Promise(
-            (resolve) => instance._publicConfigStore.once('update', () => resolve())
+            (resolve) => instance._publicConfigStore.once('update', () => resolve()),
           )
         }
         return instance._state.isUnlocked
@@ -498,7 +497,7 @@ function getExperimentalApi (instance) {
       isApproved: async () => {
         if (instance._state.accounts === undefined) {
           await new Promise(
-            (resolve) => instance.once('accountsChanged', () => resolve())
+            (resolve) => instance.once('accountsChanged', () => resolve()),
           )
         }
         return Array.isArray(instance._state.accounts) && instance._state.accounts.length > 0
