@@ -83,7 +83,12 @@ function MetamaskInpageProvider (connectionStream) {
         this._handleAccountsChanged([])
       } else {
         // this will get the exposed accounts, if any
-        this.send('eth_accounts')
+        try {
+          this._sendAsync(
+            { method: 'eth_accounts', params: [] },
+            () => {},
+          )
+        } catch (_) {}
       }
     }
 
@@ -279,7 +284,16 @@ MetamaskInpageProvider.prototype.enable = function () {
     log.warn(messages.warnings.enableDeprecation)
     this._state.sentWarnings.enable = true
   }
-  return this.send('eth_requestAccounts')
+  return new Promise((resolve, reject) => {
+    try {
+      this._sendAsync(
+        { method: 'eth_requestAccounts', params: [] },
+        rpcPromiseCallback(resolve, reject),
+      )
+    } catch (error) {
+      reject(error)
+    }
+  })
 }
 
 /**
@@ -321,7 +335,7 @@ MetamaskInpageProvider.prototype._sendSync = function (payload) {
       break
 
     case 'eth_uninstallFilter':
-      this.sendAsync(payload, () => {})
+      this._sendAsync(payload, () => {})
       result = true
       break
 
@@ -406,15 +420,17 @@ MetamaskInpageProvider.prototype._handleAccountsChanged = function (accounts, is
   // emit accountsChanged if anything about the accounts array has changed
   if (!dequal(this._state.accounts, accounts)) {
 
-    this.emit('accountsChanged', accounts)
-    this._state.accounts = accounts
-
-    if (isEthAccounts) {
+    // we should always have the correct accounts even before eth_accounts
+    // returns, except if the method is called before we're fully initialized
+    if (isEthAccounts && this._state.accounts !== undefined) {
       log.error(
         'MetaMask: Accounts may be out of sync. Please report this bug.',
         accounts,
       )
     }
+
+    this.emit('accountsChanged', accounts)
+    this._state.accounts = accounts
   }
 
   // handle selectedAddress
