@@ -151,7 +151,9 @@ function MetamaskInpageProvider (connectionStream) {
   })
 
   // send website metadata
-  sendSiteMetadata(this._rpcEngine)
+  window.addEventListener('DOMContentLoaded', () => {
+    sendSiteMetadata(this._rpcEngine)
+  })
 
   // indicate that we've connected, for EIP-1193 compliance
   setTimeout(() => this.emit('connect'))
