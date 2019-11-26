@@ -1,4 +1,6 @@
 
+const { errors } = require ('./messages')
+
 module.exports = {
   sendSiteMetadata,
 }
@@ -9,6 +11,7 @@ module.exports = {
 async function sendSiteMetadata (engine) {
   try {
     const domainMetadata = await getSiteMetadata()
+    // call engine.handle directly to avoid normal RPC request handling
     engine.handle(
       {
         method: 'wallet_sendDomainMetadata',
@@ -18,7 +21,7 @@ async function sendSiteMetadata (engine) {
     )
   } catch (error) {
     console.error({
-      message: 'Failed to send site metadata',
+      message: errors.sendSiteMetadata(),
       originalError: error,
     })
   }
