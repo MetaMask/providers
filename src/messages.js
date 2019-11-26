@@ -1,7 +1,8 @@
 module.exports = {
   errors: {
-    invalidParams: () => `Invalid request parameters. Please use ethereum.send(method: string, params: Array<any>). For more details, see: https://eips.ethereum.org/EIPS/eip-1193`,
-    unsupportedSync: (method) => `The MetaMask Web3 object does not support synchronous methods like ${method} without a callback parameter.`, // TODO:deprecate:2020-01-13
+    invalidParams: () => `MetaMask: Invalid request parameters. Please use ethereum.send(method: string, params: Array<any>). For more details, see: https://eips.ethereum.org/EIPS/eip-1193`,
+    sendSiteMetadata: () => `MetaMask: Failed to send site metadata. This is an internal error, please report this bug.`,
+    unsupportedSync: (method) => `MetaMask: The MetaMask Web3 object does not support synchronous methods like ${method} without a callback parameter.`, // TODO:deprecate:2020-01-13
   },
   warnings: {
     // TODO:deprecate:2020-01-13

@@ -20,7 +20,7 @@ const {
 } = require('./src/utils')
 
 // resolve response.result, reject errors
-const rpcPromiseCallback = (resolve, reject) => (error, response) => {
+const getRpcPromiseCallback = (resolve, reject) => (error, response) => {
   error || response.error
     ? reject(error || response.error)
     : Array.isArray(response)
@@ -151,9 +151,11 @@ function MetamaskInpageProvider (connectionStream) {
   })
 
   // send website metadata
-  window.addEventListener('DOMContentLoaded', () => {
+  const domContentLoadedHandler = () => {
     sendSiteMetadata(this._rpcEngine)
-  })
+    window.removeEventListener('DOMContentLoaded', domContentLoadedHandler)
+  }
+  window.addEventListener('DOMContentLoaded', domContentLoadedHandler)
 
   // indicate that we've connected, for EIP-1193 compliance
   setTimeout(() => this.emit('connect'))
@@ -266,7 +268,7 @@ MetamaskInpageProvider.prototype.send = function (methodOrPayload, params) {
     try {
       this._sendAsync(
         payload,
-        rpcPromiseCallback(resolve, reject),
+        getRpcPromiseCallback(resolve, reject),
       )
     } catch (error) {
       reject(error)
@@ -290,7 +292,7 @@ MetamaskInpageProvider.prototype.enable = function () {
     try {
       this._sendAsync(
         { method: 'eth_requestAccounts', params: [] },
-        rpcPromiseCallback(resolve, reject),
+        getRpcPromiseCallback(resolve, reject),
       )
     } catch (error) {
       reject(error)
@@ -487,7 +489,7 @@ function getExperimentalApi (instance) {
           try {
             instance._sendAsync(
               requests,
-              rpcPromiseCallback(resolve, reject),
+              getRpcPromiseCallback(resolve, reject),
             )
           } catch (error) {
             reject(error)
