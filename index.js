@@ -77,7 +77,6 @@ function MetamaskInpageProvider (connectionStream) {
 
     if ('isUnlocked' in state && state.isUnlocked !== this._state.isUnlocked) {
       this._state.isUnlocked = state.isUnlocked
-      this.emit('wallet_isUnlocked', this._state.isUnlocked)
       if (!this._state.isUnlocked) {
         // accounts are never exposed when the extension is locked
         this._handleAccountsChanged([])
@@ -87,6 +86,7 @@ function MetamaskInpageProvider (connectionStream) {
           this._sendAsync(
             { method: 'eth_accounts', params: [] },
             () => {},
+            true // indicating that eth_accounts _should_ update accounts
           )
         } catch (_) {}
       }
@@ -362,8 +362,12 @@ MetamaskInpageProvider.prototype._sendSync = function (payload) {
 /**
  * Internal RPC method. Forwards requests to background via the RPC engine.
  * Also remap ids inbound and outbound.
+ * 
+ * @param {Object} payload - The RPC request object.
+ * @param {Function} userCallback - The caller's callback.
+ * @param {boolean} isInternal - Whether the request was internal.
  */
-MetamaskInpageProvider.prototype._sendAsync = function (payload, userCallback) {
+MetamaskInpageProvider.prototype._sendAsync = function (payload, userCallback, isInternal = false) {
 
   let cb = userCallback
 
@@ -383,6 +387,7 @@ MetamaskInpageProvider.prototype._sendAsync = function (payload, userCallback) {
         this._handleAccountsChanged(
           res.result || [],
           payload.method === 'eth_accounts',
+          isInternal
         )
         userCallback(err, res)
       }
@@ -410,7 +415,7 @@ MetamaskInpageProvider.prototype._handleDisconnect = function (streamName, err) 
 /**
  * Called when accounts may have changed.
  */
-MetamaskInpageProvider.prototype._handleAccountsChanged = function (accounts, isEthAccounts = false) {
+MetamaskInpageProvider.prototype._handleAccountsChanged = function (accounts, isEthAccounts = false, isInternal = false) {
 
   // defensive programming
   if (!Array.isArray(accounts)) {
@@ -426,9 +431,9 @@ MetamaskInpageProvider.prototype._handleAccountsChanged = function (accounts, is
 
     // we should always have the correct accounts even before eth_accounts
     // returns, except if the method is called before we're fully initialized
-    if (isEthAccounts && this._state.accounts !== undefined) {
+    if (isEthAccounts && !isInternal && this._state.accounts !== undefined) {
       log.warn(
-        `MetaMask: 'eth_accounts' updated accounts. Please report this bug.`,
+        `MetaMask: 'eth_accounts' unexpectedly updated accounts. Please report this bug.`,
         accounts,
       )
     }
