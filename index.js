@@ -365,7 +365,7 @@ MetamaskInpageProvider.prototype._sendSync = function (payload) {
  * 
  * @param {Object} payload - The RPC request object.
  * @param {Function} userCallback - The caller's callback.
- * @param {boolean} isInternal - Whether the request was internal.
+ * @param {boolean} isInternal - Whether the request is internal.
  */
 MetamaskInpageProvider.prototype._sendAsync = function (payload, userCallback, isInternal = false) {
 
@@ -430,8 +430,8 @@ MetamaskInpageProvider.prototype._handleAccountsChanged = function (accounts, is
   if (!dequal(this._state.accounts, accounts)) {
 
     // we should always have the correct accounts even before eth_accounts
-    // returns, except if the method is called before we're fully initialized
-    if (isEthAccounts && !isInternal && this._state.accounts !== undefined) {
+    // returns, except in cases where isInternal is true
+    if (isEthAccounts && !isInternal) {
       log.warn(
         `MetaMask: 'eth_accounts' unexpectedly updated accounts. Please report this bug.`,
         accounts,
