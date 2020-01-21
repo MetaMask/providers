@@ -432,7 +432,7 @@ MetamaskInpageProvider.prototype._handleAccountsChanged = function (accounts, is
     // we should always have the correct accounts even before eth_accounts
     // returns, except in cases where isInternal is true
     if (isEthAccounts && !isInternal) {
-      log.warn(
+      log.error(
         `MetaMask: 'eth_accounts' unexpectedly updated accounts. Please report this bug.`,
         accounts,
       )
