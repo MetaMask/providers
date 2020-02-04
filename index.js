@@ -32,7 +32,7 @@ module.exports = MetamaskInpageProvider
 
 inherits(MetamaskInpageProvider, SafeEventEmitter)
 
-function MetamaskInpageProvider (connectionStream) {
+function MetamaskInpageProvider (connectionStream, shouldSendMetadata = true) {
 
   // super constructor
   SafeEventEmitter.call(this)
@@ -151,11 +151,13 @@ function MetamaskInpageProvider (connectionStream) {
   })
 
   // send website metadata
-  const domContentLoadedHandler = () => {
-    sendSiteMetadata(this._rpcEngine)
-    window.removeEventListener('DOMContentLoaded', domContentLoadedHandler)
+  if (shouldSendMetadata) {
+    const domContentLoadedHandler = () => {
+      sendSiteMetadata(this._rpcEngine)
+      window.removeEventListener('DOMContentLoaded', domContentLoadedHandler)
+    }
+    window.addEventListener('DOMContentLoaded', domContentLoadedHandler)
   }
-  window.addEventListener('DOMContentLoaded', domContentLoadedHandler)
 
   // indicate that we've connected, for EIP-1193 compliance
   setTimeout(() => this.emit('connect'))
@@ -373,8 +375,24 @@ MetamaskInpageProvider.prototype._sendAsync = function (payload, userCallback, i
 
   if (!Array.isArray(payload)) {
 
+    if (!payload.method || typeof payload.method !== 'string') {
+      throw ethErrors.rpc.invalidRequest({
+        message: `The request 'method' must be a non-empty string.`,
+        data: payload,
+      })
+    }
+
     if (!payload.jsonrpc) {
       payload.jsonrpc = '2.0'
+    }
+
+    if (!payload.params) {
+      payload.params = []
+    } else if (!Array.isArray(payload.params)) {
+      throw ethErrors.rpc.invalidRequest({
+        message: `The request 'params' must be an array.`,
+        data: payload,
+      })
     }
 
     if (
@@ -529,7 +547,6 @@ function getExperimentalApi (instance) {
       },
     },
     {
-
       get: (obj, prop) => {
 
         if (!instance._state.sentWarnings.experimentalMethods) {
