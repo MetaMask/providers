@@ -241,6 +241,8 @@ MetamaskInpageProvider.prototype.send = function (methodOrPayload, params) {
   ) {
 
     // wrap params in array out of kindness
+    // params have to be an array per EIP 1193, even though JSON RPC
+    // allows objects
     if (params === undefined) {
       params = []
     } else if (!Array.isArray(params)) {
@@ -253,12 +255,12 @@ MetamaskInpageProvider.prototype.send = function (methodOrPayload, params) {
     }
   }
 
-  // typecheck payload and payload.method
+  // typecheck payload, payload.method, and payload.params
   if (
-    Array.isArray(payload) ||
-    typeof params === 'function' ||
     typeof payload !== 'object' ||
-    typeof payload.method !== 'string'
+    Array.isArray(payload) ||
+    !Array.isArray(params) ||
+    !payload.method || typeof payload.method !== 'string'
   ) {
     throw ethErrors.rpc.invalidRequest({
       message: messages.errors.invalidParams(),
@@ -375,24 +377,8 @@ MetamaskInpageProvider.prototype._sendAsync = function (payload, userCallback, i
 
   if (!Array.isArray(payload)) {
 
-    if (!payload.method || typeof payload.method !== 'string') {
-      throw ethErrors.rpc.invalidRequest({
-        message: `The request 'method' must be a non-empty string.`,
-        data: payload,
-      })
-    }
-
     if (!payload.jsonrpc) {
       payload.jsonrpc = '2.0'
-    }
-
-    if (!payload.params) {
-      payload.params = []
-    } else if (!Array.isArray(payload.params)) {
-      throw ethErrors.rpc.invalidRequest({
-        message: `The request 'params' must be an array.`,
-        data: payload,
-      })
     }
 
     if (
