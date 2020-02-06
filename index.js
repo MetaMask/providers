@@ -32,7 +32,7 @@ module.exports = MetamaskInpageProvider
 
 inherits(MetamaskInpageProvider, SafeEventEmitter)
 
-function MetamaskInpageProvider (connectionStream) {
+function MetamaskInpageProvider (connectionStream, shouldSendMetadata = true) {
 
   // super constructor
   SafeEventEmitter.call(this)
@@ -151,11 +151,13 @@ function MetamaskInpageProvider (connectionStream) {
   })
 
   // send website metadata
-  const domContentLoadedHandler = () => {
-    sendSiteMetadata(this._rpcEngine)
-    window.removeEventListener('DOMContentLoaded', domContentLoadedHandler)
+  if (shouldSendMetadata) {
+    const domContentLoadedHandler = () => {
+      sendSiteMetadata(this._rpcEngine)
+      window.removeEventListener('DOMContentLoaded', domContentLoadedHandler)
+    }
+    window.addEventListener('DOMContentLoaded', domContentLoadedHandler)
   }
-  window.addEventListener('DOMContentLoaded', domContentLoadedHandler)
 
   // indicate that we've connected, for EIP-1193 compliance
   setTimeout(() => this.emit('connect'))
@@ -239,6 +241,8 @@ MetamaskInpageProvider.prototype.send = function (methodOrPayload, params) {
   ) {
 
     // wrap params in array out of kindness
+    // params have to be an array per EIP 1193, even though JSON RPC
+    // allows objects
     if (params === undefined) {
       params = []
     } else if (!Array.isArray(params)) {
@@ -251,12 +255,11 @@ MetamaskInpageProvider.prototype.send = function (methodOrPayload, params) {
     }
   }
 
-  // typecheck payload and payload.method
+  // typecheck payload and payload.params
   if (
-    Array.isArray(payload) ||
-    typeof params === 'function' ||
     typeof payload !== 'object' ||
-    typeof payload.method !== 'string'
+    Array.isArray(payload) ||
+    !Array.isArray(params)
   ) {
     throw ethErrors.rpc.invalidRequest({
       message: messages.errors.invalidParams(),
@@ -529,7 +532,6 @@ function getExperimentalApi (instance) {
       },
     },
     {
-
       get: (obj, prop) => {
 
         if (!instance._state.sentWarnings.experimentalMethods) {
