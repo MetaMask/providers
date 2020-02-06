@@ -255,12 +255,11 @@ MetamaskInpageProvider.prototype.send = function (methodOrPayload, params) {
     }
   }
 
-  // typecheck payload, payload.method, and payload.params
+  // typecheck payload and payload.params
   if (
     typeof payload !== 'object' ||
     Array.isArray(payload) ||
-    !Array.isArray(params) ||
-    !payload.method || typeof payload.method !== 'string'
+    !Array.isArray(params)
   ) {
     throw ethErrors.rpc.invalidRequest({
       message: messages.errors.invalidParams(),
