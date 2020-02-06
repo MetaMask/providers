@@ -86,7 +86,7 @@ function MetamaskInpageProvider (connectionStream, shouldSendMetadata = true) {
           this._sendAsync(
             { method: 'eth_accounts', params: [] },
             () => {},
-            true // indicating that eth_accounts _should_ update accounts
+            true, // indicating that eth_accounts _should_ update accounts
           )
         } catch (_) {}
       }
@@ -365,7 +365,7 @@ MetamaskInpageProvider.prototype._sendSync = function (payload) {
 /**
  * Internal RPC method. Forwards requests to background via the RPC engine.
  * Also remap ids inbound and outbound.
- * 
+ *
  * @param {Object} payload - The RPC request object.
  * @param {Function} userCallback - The caller's callback.
  * @param {boolean} isInternal - Whether the request is internal.
@@ -390,7 +390,7 @@ MetamaskInpageProvider.prototype._sendAsync = function (payload, userCallback, i
         this._handleAccountsChanged(
           res.result || [],
           payload.method === 'eth_accounts',
-          isInternal
+          isInternal,
         )
         userCallback(err, res)
       }

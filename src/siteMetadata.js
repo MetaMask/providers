@@ -1,5 +1,5 @@
 
-const { errors } = require ('./messages')
+const { errors } = require('./messages')
 
 module.exports = {
   sendSiteMetadata,
