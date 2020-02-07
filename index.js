@@ -58,7 +58,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     this.networkVersion = undefined
     this.chainId = undefined
 
-    // bind functions
+    // bind functions (to prevent e.g. web3@1.x from making unbound calls)
     this._handleAccountsChanged = this._handleAccountsChanged.bind(this)
     this._handleDisconnect = this._handleDisconnect.bind(this)
     this._sendAsync = this._sendAsync.bind(this)
