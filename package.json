@@ -24,7 +24,6 @@
   },
   "homepage": "https://github.com/MetaMask/metamask-inpage-provider#readme",
   "dependencies": {
-    "@metamask/eslint-config": "^1.0.0",
     "eth-json-rpc-errors": "^2.0.1",
     "fast-deep-equal": "^2.0.1",
     "json-rpc-engine": "^5.1.5",
@@ -36,6 +35,7 @@
     "safe-event-emitter": "^1.0.1"
   },
   "devDependencies": {
+    "@metamask/eslint-config": "^1.0.0",
     "eslint": "^6.8.0",
     "eslint-plugin-json": "^2.0.1",
     "tape": "^4.11.0"
