@@ -75,7 +75,7 @@ async function getSiteIcon (window) {
 
   // Search through available icons in no particular order
   icon = Array.from(document.querySelectorAll('head > link[rel="icon"]'))
-  .find((icon) => Boolean(icon.href))
+    .find((icon) => Boolean(icon.href))
   if (icon && await resourceExists(icon.href)) {
     return icon.href
   }
@@ -89,6 +89,6 @@ async function getSiteIcon (window) {
  */
 function resourceExists (url) {
   return fetch(url, { method: 'HEAD', mode: 'same-origin' })
-  .then(res => res.status === 200)
-  .catch(_ => false)
+    .then(res => res.status === 200)
+    .catch(_ => false)
 }

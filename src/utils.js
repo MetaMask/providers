@@ -1,4 +1,3 @@
-
 const log = require('loglevel')
 const { ethErrors, serializeError } = require('eth-json-rpc-errors')
 const EventEmitter = require('events')
@@ -48,7 +47,9 @@ function createErrorMiddleware () {
  */
 function logStreamDisconnectWarning (remoteLabel, err) {
   let warningMsg = `MetamaskInpageProvider - lost connection to ${remoteLabel}`
-  if (err) warningMsg += '\n' + err.stack
+  if (err) {
+    warningMsg += '\n' + err.stack
+  }
   log.warn(warningMsg)
   if (this instanceof EventEmitter || this instanceof SafeEventEmitter) {
     if (this.listenerCount('error') > 0) {
@@ -71,7 +72,9 @@ function logStreamDisconnectWarning (remoteLabel, err) {
 function makeThenable (obj, prop) {
 
   // don't do anything to Promises
-  if (obj instanceof Promise) return obj
+  if (obj instanceof Promise) {
+    return obj
+  }
 
   const defineOpts = {
     configurable: true, writable: true, enumerable: false,
