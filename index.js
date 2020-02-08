@@ -439,7 +439,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
       // we should always have the correct accounts even before eth_accounts
       // returns, except in cases where isInternal is true
-      if (isEthAccounts && !isInternal) {
+      if (isEthAccounts && this._state.accounts !== undefined && !isInternal) {
         log.error(
           `MetaMask: 'eth_accounts' unexpectedly updated accounts. Please report this bug.`,
           accounts,
