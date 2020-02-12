@@ -1,6 +1,6 @@
 {
   "name": "metamask-inpage-provider",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "description": "An ethereum provider that connects over a WebExtension port.",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/MetaMask/metamask-inpage-provider#readme",
   "dependencies": {
-    "eth-json-rpc-errors": "^2.0.1",
+    "eth-json-rpc-errors": "^2.0.2",
     "fast-deep-equal": "^2.0.1",
     "json-rpc-engine": "^5.1.5",
     "json-rpc-middleware-stream": "^2.1.1",
