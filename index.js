@@ -218,6 +218,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     // construct payload object
     let payload
     if (
+      methodOrPayload &&
       typeof methodOrPayload === 'object' &&
       !Array.isArray(methodOrPayload)
     ) {
@@ -262,6 +263,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
     // typecheck payload and payload.params
     if (
+      !payload ||
       typeof payload !== 'object' ||
       Array.isArray(payload) ||
       !Array.isArray(params)
@@ -459,7 +461,11 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     // handle web3
     if (this._web3Ref) {
       this._web3Ref.defaultAccount = this.selectedAddress
-    } else if (window.web3 && typeof window.web3.eth === 'object') {
+    } else if (
+      window.web3 &&
+      window.web3.eth &&
+      typeof window.web3.eth === 'object'
+    ) {
       window.web3.eth.defaultAccount = this.selectedAddress
     }
   }
