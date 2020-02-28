@@ -106,6 +106,11 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         this.emit('chainIdChanged', this.chainId) // TODO:deprecate:2020-Q1
       }
 
+      // Emit accountsChanged event on account change
+      if ('selectedAddress' in state && state.selectedAddress !== this.selectedAddress) {
+        this._handleAccountsChanged([state.selectedAddress])
+      }
+
       // Emit networkChanged event on network change
       if ('networkVersion' in state && state.networkVersion !== this.networkVersion) {
         this.networkVersion = state.networkVersion
