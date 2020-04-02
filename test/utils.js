@@ -3,7 +3,7 @@ const test = require('tape')
 
 const { makeThenable } = require('../src/utils')
 
-test('makeThenable objects are Promise ducks', async t => {
+test('makeThenable objects are Promise ducks', async (t) => {
 
   const target = 'foo'
   const responseObject = {
@@ -12,8 +12,8 @@ test('makeThenable objects are Promise ducks', async t => {
     id: 2512950,
   }
 
-  const customThenable = obj => makeThenable(obj, 'result')
-  const promiseThenable = async obj => obj.result
+  const customThenable = (obj) => makeThenable(obj, 'result')
+  const promiseThenable = (obj) => Promise.resolve(obj.result)
 
   const customRes = await runThenableTests(customThenable)
   const promiseRes = await runThenableTests(promiseThenable)
@@ -28,21 +28,19 @@ test('makeThenable objects are Promise ducks', async t => {
       t.ok(v2 instanceof Promise, 'promiseThenable direct return is a Promise')
       const v2res = await v2
       t.ok(v2res === target, 'promiseThenable direct return resolves to target value')
+    } else if (v1 instanceof Promise) {
+      t.ok(v2 instanceof Promise, 'value1 instanceof Promise -> value2 instanceof Promise')
+      const r1 = await v1
+      const r2 = await v2
+      t.deepEqual(r1, r2, 'promises resolve to the same values')
     } else {
-      if (v1 instanceof Promise) {
-        t.ok(v2 instanceof Promise, 'value1 instanceof Promise -> value2 instanceof Promise')
-        const r1 = await v1
-        const r2 = await v2
-        t.deepEqual(r1, r2, 'promises resolve to the same values')
-      } else {
-        t.deepEqual(v1, v2, 'values are equal')
-      }
+      t.deepEqual(v1, v2, 'values are equal')
     }
   }))
 
   const response = customThenable({ ...responseObject })
   const stringResponse = JSON.stringify(response, null, 2)
-  t.comment('serialized thenable response:\n' + stringResponse)
+  t.comment(`serialized thenable response:\n${stringResponse}`)
   t.deepEqual(JSON.parse(stringResponse), response, 'serializing and deserializing preserves response without "then"')
 
   t.end()
@@ -53,15 +51,15 @@ test('makeThenable objects are Promise ducks', async t => {
 
     results.funcRes = func({ ...responseObject })
 
-    await func({ ...responseObject }).then(res => {
+    await func({ ...responseObject }).then((res) => {
       results.res1then1 = res
     })
 
-    const chainRes = await func({ ...responseObject }).then(res => {
+    const chainRes = await func({ ...responseObject }).then((res) => {
       results.res2then1 = res
       return res
     })
-      .then(res => {
+      .then((res) => {
         results.res2then2 = res
         return res
       })

@@ -1,6 +1,6 @@
+const EventEmitter = require('events')
 const log = require('loglevel')
 const { ethErrors, serializeError } = require('eth-json-rpc-errors')
-const EventEmitter = require('events')
 const SafeEventEmitter = require('safe-event-emitter')
 
 /**
@@ -26,14 +26,14 @@ function createErrorMiddleware () {
       })
     }
 
-    next(done => {
+    next((done) => {
       const { error } = res
       if (!error) {
         return done()
       }
       serializeError(error)
       log.error(`MetaMask - RPC Error: ${error.message}`, error)
-      done()
+      return done()
     })
   }
 }
@@ -48,7 +48,7 @@ function createErrorMiddleware () {
 function logStreamDisconnectWarning (remoteLabel, err) {
   let warningMsg = `MetamaskInpageProvider - lost connection to ${remoteLabel}`
   if (err) {
-    warningMsg += '\n' + err.stack
+    warningMsg += `\n${err.stack}`
   }
   log.warn(warningMsg)
   if (this instanceof EventEmitter || this instanceof SafeEventEmitter) {
@@ -97,8 +97,17 @@ function makeThenable (obj, prop) {
   return obj
 }
 
+const EMITTED_NOTIFICATIONS = [
+  'eth_subscription', // per eth-json-rpc-filters/subscriptionManager
+]
+
+// eslint-disable-next-line no-empty-function
+const NOOP = () => {}
+
 module.exports = {
   createErrorMiddleware,
+  EMITTED_NOTIFICATIONS,
   logStreamDisconnectWarning,
   makeThenable,
+  NOOP,
 }
