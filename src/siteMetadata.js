@@ -1,6 +1,6 @@
 
 const { errors } = require('./messages')
-const { noop } = require('./utils')
+const { NOOP } = require('./utils')
 
 module.exports = {
   sendSiteMetadata,
@@ -18,7 +18,7 @@ async function sendSiteMetadata (engine) {
         method: 'wallet_sendDomainMetadata',
         domainMetadata,
       },
-      noop,
+      NOOP,
     )
   } catch (error) {
     console.error({

@@ -17,17 +17,17 @@ const {
   EMITTED_NOTIFICATIONS,
   logStreamDisconnectWarning,
   makeThenable,
-  noop,
+  NOOP,
 } = require('./src/utils')
 
 // resolve response.result, reject errors
 const getRpcPromiseCallback = (resolve, reject) => (error, response) => {
   if (error || response.error) {
     reject(error || response.error)
-  } else if (Array.isArray(response)) {
-    resolve(response)
   } else {
-    resolve(response.result)
+    Array.isArray(response)
+      ? resolve(response)
+      : resolve(response.result)
   }
 }
 
@@ -93,7 +93,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
           try {
             this._sendAsync(
               { method: 'eth_accounts', params: [] },
-              noop,
+              NOOP,
               true, // indicating that eth_accounts _should_ update accounts
             )
           } catch (_) { /* no-op */ }
@@ -352,7 +352,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         break
 
       case 'eth_uninstallFilter':
-        this._sendAsync(payload, noop)
+        this._sendAsync(payload, NOOP)
         result = true
         break
 

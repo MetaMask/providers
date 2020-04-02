@@ -102,13 +102,12 @@ const EMITTED_NOTIFICATIONS = [
 ]
 
 // eslint-disable-next-line no-empty-function
-const noop = () => {}
+const NOOP = () => {}
 
 module.exports = {
   createErrorMiddleware,
   EMITTED_NOTIFICATIONS,
   logStreamDisconnectWarning,
-  noop,
   makeThenable,
-  noop,
+  NOOP,
 }
