@@ -17,6 +17,7 @@ const {
   EMITTED_NOTIFICATIONS,
   logStreamDisconnectWarning,
   makeThenable,
+  noop,
 } = require('./src/utils')
 
 // resolve response.result, reject errors
@@ -93,7 +94,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
           try {
             this._sendAsync(
               { method: 'eth_accounts', params: [] },
-              () => {},
+              noop,
               true, // indicating that eth_accounts _should_ update accounts
             )
           } catch (_) {}
@@ -349,7 +350,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         break
 
       case 'eth_uninstallFilter':
-        this._sendAsync(payload, () => {})
+        this._sendAsync(payload, noop)
         result = true
         break
 

@@ -101,9 +101,13 @@ const EMITTED_NOTIFICATIONS = [
   'eth_subscription', // per eth-json-rpc-filters/subscriptionManager
 ]
 
+// eslint-disable-next-line no-empty-function
+const noop = () => {}
+
 module.exports = {
   createErrorMiddleware,
   EMITTED_NOTIFICATIONS,
   logStreamDisconnectWarning,
   makeThenable,
+  noop,
 }
