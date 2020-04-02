@@ -43,7 +43,7 @@ async function getSiteMetadata () {
  * Extracts a name for the site from the DOM
  */
 function getSiteName (window) {
-  const document = window.document
+  const { document } = window
 
   const siteName = document.querySelector('head > meta[property="og:site_name"]')
   if (siteName) {
@@ -66,7 +66,7 @@ function getSiteName (window) {
  * Extracts an icon for the site from the DOM
  */
 async function getSiteIcon (window) {
-  const document = window.document
+  const { document } = window
 
   // Use the site's favicon if it exists
   let icon = document.querySelector('head > link[rel="shortcut icon"]')
@@ -76,7 +76,7 @@ async function getSiteIcon (window) {
 
   // Search through available icons in no particular order
   icon = Array.from(document.querySelectorAll('head > link[rel="icon"]'))
-    .find((icon) => Boolean(icon.href))
+    .find((_icon) => Boolean(_icon.href))
   if (icon && await resourceExists(icon.href)) {
     return icon.href
   }
@@ -90,6 +90,6 @@ async function getSiteIcon (window) {
  */
 function resourceExists (url) {
   return fetch(url, { method: 'HEAD', mode: 'same-origin' })
-    .then(res => res.status === 200)
-    .catch(_ => false)
+    .then((res) => res.status === 200)
+    .catch((_) => false)
 }

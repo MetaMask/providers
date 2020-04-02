@@ -22,11 +22,13 @@ const {
 
 // resolve response.result, reject errors
 const getRpcPromiseCallback = (resolve, reject) => (error, response) => {
-  error || response.error
-    ? reject(error || response.error)
-    : Array.isArray(response)
-      ? resolve(response)
-      : resolve(response.result)
+  if (error || response.error) {
+    reject(error || response.error)
+  } else if (Array.isArray(response)) {
+    resolve(response)
+  } else {
+    resolve(response.result)
+  }
 }
 
 module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
@@ -70,7 +72,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     this.sendAsync = this.sendAsync.bind(this)
 
     // setup connectionStream multiplexing
-    const mux = this.mux = new ObjectMultiplex()
+    const mux = new ObjectMultiplex()
     pump(
       connectionStream,
       mux,
@@ -82,14 +84,11 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     this._publicConfigStore = new ObservableStore({ storageKey: 'MetaMask-Config' })
 
     // handle isUnlocked changes, and chainChanged and networkChanged events
-    this._publicConfigStore.subscribe(state => {
+    this._publicConfigStore.subscribe((state) => {
 
       if ('isUnlocked' in state && state.isUnlocked !== this._state.isUnlocked) {
         this._state.isUnlocked = state.isUnlocked
-        if (!this._state.isUnlocked) {
-          // accounts are never exposed when the extension is locked
-          this._handleAccountsChanged([])
-        } else {
+        if (this._state.isUnlocked) {
           // this will get the exposed accounts, if any
           try {
             this._sendAsync(
@@ -97,7 +96,10 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
               noop,
               true, // indicating that eth_accounts _should_ update accounts
             )
-          } catch (_) {}
+          } catch (_) { /* no-op */ }
+        } else {
+          // accounts are never exposed when the extension is locked
+          this._handleAccountsChanged([])
         }
       }
 
@@ -150,7 +152,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     this._rpcEngine = rpcEngine
 
     // json rpc notification listener
-    jsonRpcConnection.events.on('notification', payload => {
+    jsonRpcConnection.events.on('notification', (payload) => {
       if (payload.method === 'wallet_accountsChanged') {
         this._handleAccountsChanged(payload.result)
       } else if (EMITTED_NOTIFICATIONS.includes(payload.method)) {
@@ -214,7 +216,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   send (methodOrPayload, params) {
 
     // preserve original params for later error if necessary
-    const _params = params
+    let _params = params
 
     // construct payload object
     let payload
@@ -226,15 +228,15 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
       // TODO:deprecate:2020-Q1
       // handle send(object, callback), an alias for sendAsync(object, callback)
-      if (typeof params === 'function') {
-        return this._sendAsync(methodOrPayload, params)
+      if (typeof _params === 'function') {
+        return this._sendAsync(methodOrPayload, _params)
       }
 
       payload = methodOrPayload
 
       // TODO:deprecate:2020-Q1
       // backwards compatibility: "synchronous" methods
-      if (!params && [
+      if (!_params && [
         'eth_accounts',
         'eth_coinbase',
         'eth_uninstallFilter',
@@ -244,21 +246,21 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       }
     } else if (
       typeof methodOrPayload === 'string' &&
-      typeof params !== 'function'
+      typeof _params !== 'function'
     ) {
 
       // wrap params in array out of kindness
       // params have to be an array per EIP 1193, even though JSON RPC
       // allows objects
-      if (params === undefined) {
-        params = []
-      } else if (!Array.isArray(params)) {
-        params = [params]
+      if (_params === undefined) {
+        _params = []
+      } else if (!Array.isArray(_params)) {
+        _params = [_params]
       }
 
       payload = {
         method: methodOrPayload,
-        params,
+        params: _params,
       }
     }
 
@@ -267,11 +269,11 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       !payload ||
       typeof payload !== 'object' ||
       Array.isArray(payload) ||
-      !Array.isArray(params)
+      !Array.isArray(_params)
     ) {
       throw ethErrors.rpc.invalidRequest({
         message: messages.errors.invalidParams(),
-        data: [methodOrPayload, _params],
+        data: [methodOrPayload, params],
       })
     }
 
@@ -428,34 +430,36 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    */
   _handleAccountsChanged (accounts, isEthAccounts = false, isInternal = false) {
 
+    let _accounts = accounts
+
     // defensive programming
     if (!Array.isArray(accounts)) {
       log.error(
         'MetaMask: Received non-array accounts parameter. Please report this bug.',
         accounts,
       )
-      accounts = []
+      _accounts = []
     }
 
     // emit accountsChanged if anything about the accounts array has changed
-    if (!dequal(this._state.accounts, accounts)) {
+    if (!dequal(this._state.accounts, _accounts)) {
 
       // we should always have the correct accounts even before eth_accounts
       // returns, except in cases where isInternal is true
       if (isEthAccounts && this._state.accounts !== undefined && !isInternal) {
         log.error(
           `MetaMask: 'eth_accounts' unexpectedly updated accounts. Please report this bug.`,
-          accounts,
+          _accounts,
         )
       }
 
-      this.emit('accountsChanged', accounts)
-      this._state.accounts = accounts
+      this.emit('accountsChanged', _accounts)
+      this._state.accounts = _accounts
     }
 
     // handle selectedAddress
-    if (this.selectedAddress !== accounts[0]) {
-      this.selectedAddress = accounts[0] || null
+    if (this.selectedAddress !== _accounts[0]) {
+      this.selectedAddress = _accounts[0] || null
     }
 
     // TODO:deprecate:2020-Q1
@@ -496,6 +500,7 @@ function getExperimentalApi (instance) {
       /**
        * Make a batch request.
        */
+      // eslint-disable-next-line require-await
       sendBatch: async (requests) => {
 
         // basic input validation
