@@ -14,6 +14,7 @@ const messages = require('./src/messages')
 const { sendSiteMetadata } = require('./src/siteMetadata')
 const {
   createErrorMiddleware,
+  EMITTED_NOTIFICATIONS,
   logStreamDisconnectWarning,
   makeThenable,
 } = require('./src/utils')
@@ -151,9 +152,8 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     jsonRpcConnection.events.on('notification', payload => {
       if (payload.method === 'wallet_accountsChanged') {
         this._handleAccountsChanged(payload.result)
-      } else if (payload.method === 'eth_subscription') {
-        // EIP 1193 subscriptions, per eth-json-rpc-filters/subscriptionManager
-        this.emit('notification', payload.params.result)
+      } else if (EMITTED_NOTIFICATIONS.includes(payload.method)) {
+        this.emit('notification', payload)
       }
     })
 

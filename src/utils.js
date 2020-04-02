@@ -97,8 +97,13 @@ function makeThenable (obj, prop) {
   return obj
 }
 
+const EMITTED_NOTIFICATIONS = [
+  'eth_subscription', // per eth-json-rpc-filters/subscriptionManager
+]
+
 module.exports = {
   createErrorMiddleware,
+  EMITTED_NOTIFICATIONS,
   logStreamDisconnectWarning,
   makeThenable,
 }
