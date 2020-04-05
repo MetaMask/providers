@@ -15,21 +15,10 @@ const { sendSiteMetadata } = require('./src/siteMetadata')
 const {
   createErrorMiddleware,
   EMITTED_NOTIFICATIONS,
+  getRpcPromiseCallback,
   logStreamDisconnectWarning,
-  makeThenable,
   NOOP,
 } = require('./src/utils')
-
-// resolve response.result, reject errors
-const getRpcPromiseCallback = (resolve, reject) => (error, response) => {
-  if (error || response.error) {
-    reject(error || response.error)
-  } else {
-    Array.isArray(response)
-      ? resolve(response)
-      : resolve(response.result)
-  }
-}
 
 module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
@@ -45,8 +34,9 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         enable: false,
         experimentalMethods: false,
         isConnected: false,
+        send: false,
         sendAsync: false,
-        // TODO:deprecate:2020-Q1
+        // TODO:deprecation:remove
         autoReload: false,
         sendSync: false,
       },
@@ -65,9 +55,10 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     // bind functions (to prevent e.g. web3@1.x from making unbound calls)
     this._handleAccountsChanged = this._handleAccountsChanged.bind(this)
     this._handleDisconnect = this._handleDisconnect.bind(this)
-    this._sendAsync = this._sendAsync.bind(this)
-    this._sendSync = this._sendSync.bind(this)
+    this._rpcRequest = this._rpcRequest.bind(this)
+    this._legacySend = this._legacySend.bind(this)
     this.enable = this.enable.bind(this)
+    this.request = this.request.bind(this)
     this.send = this.send.bind(this)
     this.sendAsync = this.sendAsync.bind(this)
 
@@ -91,7 +82,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         if (this._state.isUnlocked) {
           // this will get the exposed accounts, if any
           try {
-            this._sendAsync(
+            this._rpcRequest(
               { method: 'eth_accounts', params: [] },
               NOOP,
               true, // indicating that eth_accounts _should_ update accounts
@@ -107,7 +98,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       if ('chainId' in state && state.chainId !== this.chainId) {
         this.chainId = state.chainId
         this.emit('chainChanged', this.chainId)
-        this.emit('chainIdChanged', this.chainId) // TODO:deprecate:2020-Q1
+        this.emit('chainIdChanged', this.chainId) // TODO:deprecation:remove
       }
 
       // Emit networkChanged event on network change
@@ -172,15 +163,15 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     // indicate that we've connected, for EIP-1193 compliance
     setTimeout(() => this.emit('connect'))
 
-    // TODO:deprecate:2020-Q1
+    // TODO:deprecation:remove
     this._web3Ref = undefined
 
-    // TODO:deprecate:2020-Q1
+    // TODO:deprecation:remove
     // give the dapps control of a refresh they can toggle this off on the window.ethereum
     // this will be default true so it does not break any old apps.
     this.autoRefreshOnNetworkChange = true
 
-    // TODO:deprecate:2020-Q1
+    // TODO:deprecation:remove
     // wait a second to attempt to send this, so that the warning can be silenced
     // moved this here because there's another warning in .enable() discouraging
     // the use thereof per EIP 1102
@@ -193,7 +184,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
-   * Deprecated.
+   * DEPRECATED.
    * Returns whether the inpage provider is connected to MetaMask.
    */
   isConnected () {
@@ -206,81 +197,35 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
-   * Sends an RPC request to MetaMask. Resolves to the result of the method call.
-   * May reject with an error that must be caught by the caller.
+   * Submits an RPC request to MetaMask for the given method, with the given params.
+   * Resolves with the result of the method call, or rejects on error.
    *
-   * @param {(string|Object)} methodOrPayload - The method name, or the RPC request object.
-   * @param {Array<any>} [params] - If given a method name, the method's parameters.
-   * @returns {Promise<any>} - A promise resolving to the result of the method call.
+   * @param {string} method - The RPC method to call.
+   * @param {Array<any> | Object} params - The parameters for the method.
+   * @returns {Promise<unknown>} A Promise that resolves with the result of the method call,
+   * or rejects if an error is encountered.
    */
-  send (methodOrPayload, params) {
+  async request (method, params) {
 
-    // preserve original params for later error if necessary
-    let _params = params
-
-    // construct payload object
-    let payload
-    if (
-      methodOrPayload &&
-      typeof methodOrPayload === 'object' &&
-      !Array.isArray(methodOrPayload)
-    ) {
-
-      // TODO:deprecate:2020-Q1
-      // handle send(object, callback), an alias for sendAsync(object, callback)
-      if (typeof _params === 'function') {
-        return this._sendAsync(methodOrPayload, _params)
-      }
-
-      payload = methodOrPayload
-
-      // TODO:deprecate:2020-Q1
-      // backwards compatibility: "synchronous" methods
-      if (!_params && [
-        'eth_accounts',
-        'eth_coinbase',
-        'eth_uninstallFilter',
-        'net_version',
-      ].includes(payload.method)) {
-        return this._sendSync(payload)
-      }
-    } else if (
-      typeof methodOrPayload === 'string' &&
-      typeof _params !== 'function'
-    ) {
-
-      // wrap params in array out of kindness
-      // params have to be an array per EIP 1193, even though JSON RPC
-      // allows objects
-      if (_params === undefined) {
-        _params = []
-      } else if (!Array.isArray(_params)) {
-        _params = [_params]
-      }
-
-      payload = {
-        method: methodOrPayload,
-        params: _params,
-      }
+    if (typeof method !== 'string' || !method) {
+      ethErrors.rpc.invalidRequest({
+        message: `'method' must be a string`,
+        data: method,
+      })
     }
 
-    // typecheck payload and payload.params
-    if (
-      !payload ||
-      typeof payload !== 'object' ||
-      Array.isArray(payload) ||
-      !Array.isArray(_params)
-    ) {
+    // params must be Array or plain Object
+    if (params !== undefined && typeof params !== 'object') {
       throw ethErrors.rpc.invalidRequest({
-        message: messages.errors.invalidParams(),
-        data: [methodOrPayload, params],
+        message: `'params' must be an Array or plain Object`,
+        data: params,
       })
     }
 
     return new Promise((resolve, reject) => {
       try {
-        this._sendAsync(
-          payload,
+        this._rpcRequest(
+          { method, params },
           getRpcPromiseCallback(resolve, reject),
         )
       } catch (error) {
@@ -290,8 +235,47 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
-   * Deprecated.
-   * Equivalent to: ethereum.send('eth_requestAccounts')
+   * DEPRECATED
+   * Sends an RPC request to MetaMask.
+   * Many different return types, which is why this method should not be used.
+   *
+   * @param {(string | Object)} methodOrPayload - The method name, or the RPC request object.
+   * @param {Array<any> | Function} [callbackOrArgs] - If given a method name, the method's parameters.
+   * @returns {unknown} - The method result, or a JSON RPC response object.
+   */
+  send (methodOrPayload, callbackOrArgs) {
+
+    if (!this._state.sentWarnings.send) {
+      log.warn(messages.warnings.sendDeprecation)
+      this._state.sentWarnings.send = true
+    }
+
+    if (
+      typeof methodOrPayload === 'string' &&
+      (!callbackOrArgs || Array.isArray(callbackOrArgs))
+    ) {
+      return new Promise((resolve, reject) => {
+        try {
+          this._rpcRequest(
+            { method: methodOrPayload, params: callbackOrArgs },
+            getRpcPromiseCallback(resolve, reject),
+          )
+        } catch (error) {
+          reject(error)
+        }
+      })
+    } else if (
+      typeof methodOrPayload === 'object' &&
+      typeof callbackOrArgs === 'function'
+    ) {
+      return this._rpcRequest(methodOrPayload, callbackOrArgs)
+    }
+    return this._legacySend(methodOrPayload)
+  }
+
+  /**
+   * DEPRECATED.
+   * Equivalent to: ethereum.request('eth_requestAccounts')
    *
    * @returns {Promise<Array<string>>} - A promise that resolves to an array of addresses.
    */
@@ -301,9 +285,10 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       log.warn(messages.warnings.enableDeprecation)
       this._state.sentWarnings.enable = true
     }
+
     return new Promise((resolve, reject) => {
       try {
-        this._sendAsync(
+        this._rpcRequest(
           { method: 'eth_requestAccounts', params: [] },
           getRpcPromiseCallback(resolve, reject),
         )
@@ -314,8 +299,9 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
-   * Deprecated.
-   * Backwards compatibility. ethereum.send() with callback.
+   * DEPRECATED
+   * Backwards compatibility; ethereum.request() with JSON-RPC request object
+   * and a callback.
    *
    * @param {Object} payload - The RPC request object.
    * @param {Function} callback - The callback function.
@@ -326,14 +312,14 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       log.warn(messages.warnings.sendAsyncDeprecation)
       this._state.sentWarnings.sendAsync = true
     }
-    this._sendAsync(payload, cb)
+    this._rpcRequest(payload, cb)
   }
 
   /**
-   * TODO:deprecate:2020-Q1
+   * TODO:deprecation:remove
    * Internal backwards compatibility method.
    */
-  _sendSync (payload) {
+  _legacySend (payload) {
 
     if (!this._state.sentWarnings.sendSync) {
       log.warn(messages.warnings.sendSyncDeprecation)
@@ -352,7 +338,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         break
 
       case 'eth_uninstallFilter':
-        this._sendAsync(payload, NOOP)
+        this._rpcRequest(payload, NOOP)
         result = true
         break
 
@@ -364,12 +350,11 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         throw new Error(messages.errors.unsupportedSync(payload.method))
     }
 
-    // looks like a plain object, but behaves like a Promise if someone calls .then on it :evil_laugh:
-    return makeThenable({
+    return {
       id: payload.id,
       jsonrpc: payload.jsonrpc,
       result,
-    }, 'result')
+    }
   }
 
   /**
@@ -377,12 +362,12 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    * Also remap ids inbound and outbound.
    *
    * @param {Object} payload - The RPC request object.
-   * @param {Function} userCallback - The caller's callback.
+   * @param {Function} callback - The consumer's callback.
    * @param {boolean} isInternal - Whether the request is internal.
    */
-  _sendAsync (payload, userCallback, isInternal = false) {
+  _rpcRequest (payload, callback, isInternal = false) {
 
-    let cb = userCallback
+    let cb = callback
 
     if (!Array.isArray(payload)) {
 
@@ -402,7 +387,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
             payload.method === 'eth_accounts',
             isInternal,
           )
-          userCallback(err, res)
+          callback(err, res)
         }
       }
     }
@@ -462,7 +447,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       this.selectedAddress = _accounts[0] || null
     }
 
-    // TODO:deprecate:2020-Q1
+    // TODO:deprecation:remove
     // handle web3
     if (this._web3Ref) {
       this._web3Ref.defaultAccount = this.selectedAddress
@@ -513,7 +498,7 @@ function getExperimentalApi (instance) {
 
         return new Promise((resolve, reject) => {
           try {
-            instance._sendAsync(
+            instance._rpcRequest(
               requests,
               getRpcPromiseCallback(resolve, reject),
             )
@@ -523,9 +508,9 @@ function getExperimentalApi (instance) {
         })
       },
 
-      // TODO:deprecate:2020-Q1 isEnabled, isApproved
+      // TODO:deprecation:remove isEnabled, isApproved
       /**
-       * Deprecated. Will be removed in Q1 2020.
+       * DEPRECATED. Will be removed in Q2 2020.
        * Synchronously determines if this domain is currently enabled, with a potential false negative if called to soon
        *
        * @returns {boolean} - returns true if this domain is currently enabled
@@ -535,7 +520,7 @@ function getExperimentalApi (instance) {
       },
 
       /**
-       * Deprecated. Will be removed in Q1 2020.
+       * DEPRECATED. Will be removed in Q2 2020.
        * Asynchronously determines if this domain is currently enabled
        *
        * @returns {Promise<boolean>} - Promise resolving to true if this domain is currently enabled
