@@ -35,7 +35,6 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         experimentalMethods: false,
         isConnected: false,
         send: false,
-        sendAsync: false,
         // TODO:deprecation:remove
         autoReload: false,
         sendSync: false,
@@ -58,7 +57,6 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     this._rpcRequest = this._rpcRequest.bind(this)
     this._legacySend = this._legacySend.bind(this)
     this.enable = this.enable.bind(this)
-    this.request = this.request.bind(this)
     this.send = this.send.bind(this)
     this.sendAsync = this.sendAsync.bind(this)
 
@@ -197,44 +195,6 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
-   * Submits an RPC request to MetaMask for the given method, with the given params.
-   * Resolves with the result of the method call, or rejects on error.
-   *
-   * @param {string} method - The RPC method to call.
-   * @param {Array<any> | Object} params - The parameters for the method.
-   * @returns {Promise<unknown>} A Promise that resolves with the result of the method call,
-   * or rejects if an error is encountered.
-   */
-  async request (method, params) {
-
-    if (typeof method !== 'string' || !method) {
-      ethErrors.rpc.invalidRequest({
-        message: `'method' must be a string`,
-        data: method,
-      })
-    }
-
-    // params must be Array or plain Object
-    if (params !== undefined && typeof params !== 'object') {
-      throw ethErrors.rpc.invalidRequest({
-        message: `'params' must be an Array or plain Object`,
-        data: params,
-      })
-    }
-
-    return new Promise((resolve, reject) => {
-      try {
-        this._rpcRequest(
-          { method, params },
-          getRpcPromiseCallback(resolve, reject),
-        )
-      } catch (error) {
-        reject(error)
-      }
-    })
-  }
-
-  /**
    * DEPRECATED
    * Sends an RPC request to MetaMask.
    * Many different return types, which is why this method should not be used.
@@ -298,8 +258,8 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     })
   }
 
+  // TODO:deprecation deprecate this method in favor of 'request'
   /**
-   * DEPRECATED
    * Backwards compatibility; ethereum.request() with JSON-RPC request object
    * and a callback.
    *
@@ -307,11 +267,6 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    * @param {Function} callback - The callback function.
    */
   sendAsync (payload, cb) {
-
-    if (!this._state.sentWarnings.sendAsync) {
-      log.warn(messages.warnings.sendAsyncDeprecation)
-      this._state.sentWarnings.sendAsync = true
-    }
     this._rpcRequest(payload, cb)
   }
 
@@ -391,7 +346,6 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         }
       }
     }
-
     this._rpcEngine.handle(payload, cb)
   }
 
@@ -510,7 +464,7 @@ function getExperimentalApi (instance) {
 
       // TODO:deprecation:remove isEnabled, isApproved
       /**
-       * DEPRECATED. Will be removed in Q2 2020.
+       * DEPRECATED. Scheduled for removal.
        * Synchronously determines if this domain is currently enabled, with a potential false negative if called to soon
        *
        * @returns {boolean} - returns true if this domain is currently enabled
@@ -520,7 +474,7 @@ function getExperimentalApi (instance) {
       },
 
       /**
-       * DEPRECATED. Will be removed in Q2 2020.
+       * DEPRECATED. Scheduled for removal.
        * Asynchronously determines if this domain is currently enabled
        *
        * @returns {Promise<boolean>} - Promise resolving to true if this domain is currently enabled
