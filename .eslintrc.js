@@ -22,9 +22,6 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2018,
   },
-  rules: {
-    'require-await': 'off',
-  },
   ignorePatterns: [
     '!.eslintrc.js',
     'node_modules/',
