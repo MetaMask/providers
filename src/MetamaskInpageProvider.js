@@ -43,7 +43,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
     this.isMetaMask = true
 
-    this.setMaxEventListeners(maxEventListeners)
+    this.setMaxListeners(maxEventListeners)
 
     // private state, kept here in part for use in the _metamask proxy
     this._state = {
