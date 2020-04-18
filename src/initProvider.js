@@ -1,5 +1,13 @@
 const MetamaskInpageProvider = require('./MetamaskInpageProvider')
 
+// Work around for web3@1.0 deleting the bound `sendAsync` but not the unbound
+// `sendAsync` method on the prototype, causing `this` reference issues
+const defaultProxyHandler = {
+  // straight up lie that we deleted the property so that it doesnt
+  // throw an error in strict mode
+  deleteProperty: () => true,
+}
+
 /**
    * Initializes a MetamaskInpageProvider and (optionally) sets it on window.ethereum.
    *
@@ -15,7 +23,7 @@ function initProvider ({
   connectionStream,
   shouldSendMetadata = true,
   maxEventListeners = 100,
-  proxyHandler,
+  proxyHandler = defaultProxyHandler,
   shouldSet = true,
 }) {
 
