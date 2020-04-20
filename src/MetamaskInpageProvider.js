@@ -30,7 +30,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    */
   constructor (
     connectionStream,
-    { shouldSendMetadata = true, maxEventListeners = 100 },
+    { shouldSendMetadata = true, maxEventListeners = 100 } = {},
   ) {
 
     if (
