@@ -22,11 +22,28 @@ const {
 
 module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
-  constructor (connectionStream, shouldSendMetadata = true) {
+  /**
+   * @param {Object} connectionStream - A Node.js stream
+   * @param {Object} opts - An options bag
+   * @param {number} opts.maxEventListeners - The maximum number of event listeners
+   * @param {boolean} opts.shouldSendMetadata - Whether the provider should send page metadata
+   */
+  constructor (
+    connectionStream,
+    { shouldSendMetadata = true, maxEventListeners = 100 },
+  ) {
+
+    if (
+      typeof shouldSendMetadata !== 'boolean' || typeof maxEventListeners !== 'number'
+    ) {
+      throw new Error('Invalid options.')
+    }
 
     super()
 
     this.isMetaMask = true
+
+    this.setMaxListeners(maxEventListeners)
 
     // private state, kept here in part for use in the _metamask proxy
     this._state = {
