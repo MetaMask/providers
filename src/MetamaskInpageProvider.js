@@ -61,7 +61,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       isUnlocked: undefined,
     }
 
-    this._metamask = getExperimentalApi(this)
+    this._metamask = this._getExperimentalApi()
 
     // public state
     this.selectedAddress = null
@@ -198,82 +198,9 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     }, 1000)
   }
 
-  /**
-   * DEPRECATED.
-   * Returns whether the inpage provider is connected to MetaMask.
-   */
-  isConnected () {
-
-    if (!this._state.sentWarnings.isConnected) {
-      log.warn(messages.warnings.isConnectedDeprecation)
-      this._state.sentWarnings.isConnected = true
-    }
-    return this._state.isConnected
-  }
-
-  /**
-   * DEPRECATED
-   * Sends an RPC request to MetaMask.
-   * Many different return types, which is why this method should not be used.
-   *
-   * @param {(string | Object)} methodOrPayload - The method name, or the RPC request object.
-   * @param {Array<any> | Function} [callbackOrArgs] - If given a method name, the method's parameters.
-   * @returns {unknown} - The method result, or a JSON RPC response object.
-   */
-  send (methodOrPayload, callbackOrArgs) {
-
-    if (!this._state.sentWarnings.send) {
-      log.warn(messages.warnings.sendDeprecation)
-      this._state.sentWarnings.send = true
-    }
-
-    if (
-      typeof methodOrPayload === 'string' &&
-      (!callbackOrArgs || Array.isArray(callbackOrArgs))
-    ) {
-      return new Promise((resolve, reject) => {
-        try {
-          this._rpcRequest(
-            { method: methodOrPayload, params: callbackOrArgs },
-            getRpcPromiseCallback(resolve, reject),
-          )
-        } catch (error) {
-          reject(error)
-        }
-      })
-    } else if (
-      typeof methodOrPayload === 'object' &&
-      typeof callbackOrArgs === 'function'
-    ) {
-      return this._rpcRequest(methodOrPayload, callbackOrArgs)
-    }
-    return this._legacySend(methodOrPayload)
-  }
-
-  /**
-   * DEPRECATED.
-   * Equivalent to: ethereum.request('eth_requestAccounts')
-   *
-   * @returns {Promise<Array<string>>} - A promise that resolves to an array of addresses.
-   */
-  enable () {
-
-    if (!this._state.sentWarnings.enable) {
-      log.warn(messages.warnings.enableDeprecation)
-      this._state.sentWarnings.enable = true
-    }
-
-    return new Promise((resolve, reject) => {
-      try {
-        this._rpcRequest(
-          { method: 'eth_requestAccounts', params: [] },
-          getRpcPromiseCallback(resolve, reject),
-        )
-      } catch (error) {
-        reject(error)
-      }
-    })
-  }
+  //====================
+  // Public Methods
+  //====================
 
   // TODO:deprecation deprecate this method in favor of 'request'
   /**
@@ -287,47 +214,9 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     this._rpcRequest(payload, cb)
   }
 
-  /**
-   * TODO:deprecation:remove
-   * Internal backwards compatibility method.
-   */
-  _legacySend (payload) {
-
-    if (!this._state.sentWarnings.sendSync) {
-      log.warn(messages.warnings.sendSyncDeprecation)
-      this._state.sentWarnings.sendSync = true
-    }
-
-    let result
-    switch (payload.method) {
-
-      case 'eth_accounts':
-        result = this.selectedAddress ? [this.selectedAddress] : []
-        break
-
-      case 'eth_coinbase':
-        result = this.selectedAddress || null
-        break
-
-      case 'eth_uninstallFilter':
-        this._rpcRequest(payload, NOOP)
-        result = true
-        break
-
-      case 'net_version':
-        result = this.networkVersion || null
-        break
-
-      default:
-        throw new Error(messages.errors.unsupportedSync(payload.method))
-    }
-
-    return {
-      id: payload.id,
-      jsonrpc: payload.jsonrpc,
-      result,
-    }
-  }
+  //====================
+  // Private Methods
+  //====================
 
   /**
    * Internal RPC method. Forwards requests to background via the RPC engine.
@@ -430,90 +319,213 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       window.web3.eth.defaultAccount = this.selectedAddress
     }
   }
-}
 
-/**
- * Gets experimental _metamask API as Proxy.
- */
-function getExperimentalApi (instance) {
-  return new Proxy(
-    {
+  /**
+   * Gets experimental _metamask API as Proxy.
+   */
+  _getExperimentalApi () {
+    return new Proxy(
+      {
 
-      /**
-       * Determines if MetaMask is unlocked by the user.
-       *
-       * @returns {Promise<boolean>} - Promise resolving to true if MetaMask is currently unlocked
-       */
-      isUnlocked: async () => {
-        if (instance._state.isUnlocked === undefined) {
-          await new Promise(
-            (resolve) => instance._publicConfigStore.once('update', () => resolve()),
-          )
-        }
-        return instance._state.isUnlocked
-      },
-
-      /**
-       * Make a batch request.
-       */
-      // eslint-disable-next-line require-await
-      sendBatch: async (requests) => {
-
-        // basic input validation
-        if (!Array.isArray(requests)) {
-          throw ethErrors.rpc.invalidRequest({
-            message: 'Batch requests must be made with an array of request objects.',
-            data: requests,
-          })
-        }
-
-        return new Promise((resolve, reject) => {
-          try {
-            instance._rpcRequest(
-              requests,
-              getRpcPromiseCallback(resolve, reject),
+        /**
+         * Determines if MetaMask is unlocked by the user.
+         *
+         * @returns {Promise<boolean>} - Promise resolving to true if MetaMask is currently unlocked
+         */
+        isUnlocked: async () => {
+          if (this._state.isUnlocked === undefined) {
+            await new Promise(
+              (resolve) => this._publicConfigStore.once('update', () => resolve()),
             )
-          } catch (error) {
-            reject(error)
           }
-        })
-      },
+          return this._state.isUnlocked
+        },
 
-      // TODO:deprecation:remove isEnabled, isApproved
-      /**
-       * DEPRECATED. Scheduled for removal.
-       * Synchronously determines if this domain is currently enabled, with a potential false negative if called to soon
-       *
-       * @returns {boolean} - returns true if this domain is currently enabled
-       */
-      isEnabled: () => {
-        return Array.isArray(instance._state.accounts) && instance._state.accounts.length > 0
-      },
+        /**
+         * Make a batch request.
+         */
+        // eslint-disable-next-line require-await
+        sendBatch: async (requests) => {
 
-      /**
-       * DEPRECATED. Scheduled for removal.
-       * Asynchronously determines if this domain is currently enabled
-       *
-       * @returns {Promise<boolean>} - Promise resolving to true if this domain is currently enabled
-       */
-      isApproved: async () => {
-        if (instance._state.accounts === undefined) {
-          await new Promise(
-            (resolve) => instance.once('accountsChanged', () => resolve()),
+          // basic input validation
+          if (!Array.isArray(requests)) {
+            throw ethErrors.rpc.invalidRequest({
+              message: 'Batch requests must be made with an array of request objects.',
+              data: requests,
+            })
+          }
+
+          return new Promise((resolve, reject) => {
+            try {
+              this._rpcRequest(
+                requests,
+                getRpcPromiseCallback(resolve, reject),
+              )
+            } catch (error) {
+              reject(error)
+            }
+          })
+        },
+
+        // TODO:deprecation:remove isEnabled, isApproved
+        /**
+         * DEPRECATED. Scheduled for removal.
+         * Synchronously determines if this domain is currently enabled, with a potential false negative if called to soon
+         *
+         * @returns {boolean} - returns true if this domain is currently enabled
+         */
+        isEnabled: () => {
+          return Array.isArray(this._state.accounts) && this._state.accounts.length > 0
+        },
+
+        /**
+         * DEPRECATED. Scheduled for removal.
+         * Asynchronously determines if this domain is currently enabled
+         *
+         * @returns {Promise<boolean>} - Promise resolving to true if this domain is currently enabled
+         */
+        isApproved: async () => {
+          if (this._state.accounts === undefined) {
+            await new Promise(
+              (resolve) => this.once('accountsChanged', () => resolve()),
+            )
+          }
+          return Array.isArray(this._state.accounts) && this._state.accounts.length > 0
+        },
+      },
+      {
+        get: (obj, prop) => {
+
+          if (!this._state.sentWarnings.experimentalMethods) {
+            log.warn(messages.warnings.experimentalMethods)
+            this._state.sentWarnings.experimentalMethods = true
+          }
+          return obj[prop]
+        },
+      },
+    )
+  }
+
+  //====================
+  // Deprecated Methods
+  //====================
+
+  /**
+   * DEPRECATED.
+   * Returns whether the inpage provider is connected to MetaMask.
+   */
+  isConnected () {
+
+    if (!this._state.sentWarnings.isConnected) {
+      log.warn(messages.warnings.isConnectedDeprecation)
+      this._state.sentWarnings.isConnected = true
+    }
+    return this._state.isConnected
+  }
+
+  /**
+   * DEPRECATED.
+   * Equivalent to: ethereum.request('eth_requestAccounts')
+   *
+   * @returns {Promise<Array<string>>} - A promise that resolves to an array of addresses.
+   */
+  enable () {
+
+    if (!this._state.sentWarnings.enable) {
+      log.warn(messages.warnings.enableDeprecation)
+      this._state.sentWarnings.enable = true
+    }
+
+    return new Promise((resolve, reject) => {
+      try {
+        this._rpcRequest(
+          { method: 'eth_requestAccounts', params: [] },
+          getRpcPromiseCallback(resolve, reject),
+        )
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  /**
+   * DEPRECATED
+   * Sends an RPC request to MetaMask.
+   * Many different return types, which is why this method should not be used.
+   *
+   * @param {(string | Object)} methodOrPayload - The method name, or the RPC request object.
+   * @param {Array<any> | Function} [callbackOrArgs] - If given a method name, the method's parameters.
+   * @returns {unknown} - The method result, or a JSON RPC response object.
+   */
+  send (methodOrPayload, callbackOrArgs) {
+
+    if (!this._state.sentWarnings.send) {
+      log.warn(messages.warnings.sendDeprecation)
+      this._state.sentWarnings.send = true
+    }
+
+    if (
+      typeof methodOrPayload === 'string' &&
+      (!callbackOrArgs || Array.isArray(callbackOrArgs))
+    ) {
+      return new Promise((resolve, reject) => {
+        try {
+          this._rpcRequest(
+            { method: methodOrPayload, params: callbackOrArgs },
+            getRpcPromiseCallback(resolve, reject),
           )
+        } catch (error) {
+          reject(error)
         }
-        return Array.isArray(instance._state.accounts) && instance._state.accounts.length > 0
-      },
-    },
-    {
-      get: (obj, prop) => {
+      })
+    } else if (
+      typeof methodOrPayload === 'object' &&
+      typeof callbackOrArgs === 'function'
+    ) {
+      return this._rpcRequest(methodOrPayload, callbackOrArgs)
+    }
+    return this._legacySend(methodOrPayload)
+  }
 
-        if (!instance._state.sentWarnings.experimentalMethods) {
-          log.warn(messages.warnings.experimentalMethods)
-          instance._state.sentWarnings.experimentalMethods = true
-        }
-        return obj[prop]
-      },
-    },
-  )
+  /**
+   * TODO:deprecation:remove
+   * Internal backwards compatibility method.
+   */
+  _legacySend (payload) {
+
+    if (!this._state.sentWarnings.sendSync) {
+      log.warn(messages.warnings.sendSyncDeprecation)
+      this._state.sentWarnings.sendSync = true
+    }
+
+    let result
+    switch (payload.method) {
+
+      case 'eth_accounts':
+        result = this.selectedAddress ? [this.selectedAddress] : []
+        break
+
+      case 'eth_coinbase':
+        result = this.selectedAddress || null
+        break
+
+      case 'eth_uninstallFilter':
+        this._rpcRequest(payload, NOOP)
+        result = true
+        break
+
+      case 'net_version':
+        result = this.networkVersion || null
+        break
+
+      default:
+        throw new Error(messages.errors.unsupportedSync(payload.method))
+    }
+
+    return {
+      id: payload.id,
+      jsonrpc: payload.jsonrpc,
+      result,
+    }
+  }
 }
