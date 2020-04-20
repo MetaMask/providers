@@ -424,8 +424,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         /**
          * Make a batch RPC request.
          */
-        // eslint-disable-next-line require-await
-        batchRequest: async (requests) => {
+        requestBatch: async (requests) => {
 
           if (!Array.isArray(requests)) {
             throw ethErrors.rpc.invalidRequest({
