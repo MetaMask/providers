@@ -558,7 +558,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
-   * DEPRECATED
+   * DEPRECATED.
    * Sends an RPC request to MetaMask.
    * Many different return types, which is why this method should not be used.
    *
@@ -597,7 +597,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
-   * DEPRECATED
+   * DEPRECATED.
    * Internal backwards compatibility method, used in send.
    */
   _sendSync (payload) {
