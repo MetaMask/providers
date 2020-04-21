@@ -80,7 +80,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     // bind functions (to prevent e.g. web3@1.x from making unbound calls)
     this._handleAccountsChanged = this._handleAccountsChanged.bind(this)
     this._handleDisconnect = this._handleDisconnect.bind(this)
-    this._legacySend = this._legacySend.bind(this)
+    this._sendSync = this._sendSync.bind(this)
     this._rpcRequest = this._rpcRequest.bind(this)
     this._warnOfDeprecation = this._warnOfDeprecation.bind(this)
     this.enable = this.enable.bind(this)
@@ -560,7 +560,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     ) {
       return this._rpcRequest(methodOrPayload, callbackOrArgs)
     }
-    return this._legacySend(methodOrPayload)
+    return this._sendSync(methodOrPayload)
   }
 
   /**
@@ -580,9 +580,9 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
   /**
    * DEPRECATED
-   * Internal backwards compatibility method.
+   * Internal backwards compatibility method, used in send.
    */
-  _legacySend (payload) {
+  _sendSync (payload) {
 
     let result
     switch (payload.method) {
