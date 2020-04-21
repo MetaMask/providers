@@ -269,8 +269,16 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   /**
    * We override the following event methods so that we can warn consumers
    * about deprecated events:
-   *   on, once
+   *   addListener, on, once, prependListener, prependOnceListener
    */
+
+  /**
+   * @inheritdoc
+   */
+  addListener (eventName, listener) {
+    this._warnOfDeprecation(eventName)
+    return super.addListener(eventName, listener)
+  }
 
   /**
    * @inheritdoc
@@ -286,6 +294,22 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   once (eventName, listener) {
     this._warnOfDeprecation(eventName)
     return super.once(eventName, listener)
+  }
+
+  /**
+   * @inheritdoc
+   */
+  prependListener (eventName, listener) {
+    this._warnOfDeprecation(eventName)
+    return super.prependListener(eventName, listener)
+  }
+
+  /**
+   * @inheritdoc
+   */
+  prependOnceListener (eventName, listener) {
+    this._warnOfDeprecation(eventName)
+    return super.prependOnceListener(eventName, listener)
   }
 
   //====================

@@ -8,9 +8,9 @@ module.exports = {
     // TODO:deprecation:remove
     autoReloadDeprecation: `MetaMask: MetaMask will soon stop reloading pages on network change.\nFor more information, see: https://medium.com/metamask/no-longer-reloading-pages-on-network-change-fbf041942b44 \nSet 'ethereum.autoRefreshOnNetworkChange' to 'false' to silence this warning: https://metamask.github.io/metamask-docs/API_Reference/Ethereum_Provider#ethereum.autorefreshonnetworkchange`,
     // deprecated methods
-    enableDeprecation: `MetaMask: 'ethereum.enable()' is deprecated and will be removed in the future. Please use "ethereum.request({ method: 'eth_requestAccounts' })" instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1102`,
+    enableDeprecation: `MetaMask: 'ethereum.enable()' is deprecated and will be removed in the future. Please use the 'eth_requestAccounts' RPC method instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1102`,
     isConnectedDeprecation: `MetaMask: 'ethereum.isConnected()' is deprecated and will be removed in the future. Please listen for the relevant events instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193`,
-    sendDeprecation: `MetaMask: 'ethereum.send(...)' is deprecated and will be removed in the future. Please use 'ethereum.request(method: string, params: Array<any> | Object)' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193`,
+    sendDeprecation: `MetaMask: 'ethereum.send(...)' is deprecated and will be removed in the future. Please use 'ethereum.sendAsync(...)' or 'ethereum.request(...)' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193`,
     // deprecated events
     events: {
       chainIdChanged: `MetaMask: The event 'chainIdChanged' is deprecated and will be removed in the future. Please use 'chainChanged' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193`,
