@@ -11,7 +11,6 @@ module.exports = {
     enableDeprecation: `MetaMask: 'ethereum.enable()' is deprecated and will be removed in the future. Please use "ethereum.request({ method: 'eth_requestAccounts' })" instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1102`,
     isConnectedDeprecation: `MetaMask: 'ethereum.isConnected()' is deprecated and will be removed in the future. Please listen for the relevant events instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193`,
     sendDeprecation: `MetaMask: 'ethereum.send(...)' is deprecated and will be removed in the future. Please use 'ethereum.request(method: string, params: Array<any> | Object)' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193`,
-    sendAsyncDeprecation: `MetaMask: 'ethereum.sendAsync(...)' is deprecated and will be removed in the future. Please use 'ethereum.request(method: string, params: Array<any> | Object)' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193`,
     // deprecated events
     events: {
       chainIdChanged: `MetaMask: The event 'chainIdChanged' is deprecated and will be removed in the future. Please use 'chainChanged' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193`,
