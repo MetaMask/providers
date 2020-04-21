@@ -53,7 +53,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         experimentalMethods: false,
         isConnected: false,
         send: false,
-        sendAsync: false,
+        // sendAsync: false,
         // events
         events: {
           chainIdChanged: false,
@@ -562,19 +562,17 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
-   * DEPRECATED
-   * Backwards compatibility; ethereum.request() with JSON-RPC request object
-   * and a callback.
+   * Submit a JSON-RPC request object and a callback to make an RPC method call.
    *
    * @param {Object} payload - The RPC request object.
    * @param {Function} callback - The callback function.
    */
   sendAsync (payload, cb) {
 
-    if (!this._state.sentWarnings.sendAsync) {
-      log.warn(messages.warnings.sendAsyncDeprecation)
-      this._state.sentWarnings.sendAsync = true
-    }
+    // if (!this._state.sentWarnings.sendAsync) {
+    //   log.warn(messages.warnings.sendAsyncDeprecation)
+    //   this._state.sentWarnings.sendAsync = true
+    // }
     this._rpcRequest(payload, cb)
   }
 
