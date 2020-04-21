@@ -220,6 +220,8 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   //====================
 
   /**
+   * Experimental. The signature of this method may change without warning, pending EIP 1193.
+   *
    * Submits an RPC request to MetaMask for the given method, with the given params.
    * Resolves with the result of the method call, or rejects on error.
    *
