@@ -21,11 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **BREAKING:** Use named instead of default exports ([#31](https://github.com/MetaMask/metamask-inpage-provider/pull/31))
-- **BREAKING:** `MetaMaskInpage` constructor now takes a `connectionStream` and an ([#31](https://github.com/MetaMask/metamask-inpage-provider/pull/31))
-  options object
+- **BREAKING:** `MetaMaskInpage` constructor now takes a `connectionStream` and an
+  options object ([#31](https://github.com/MetaMask/metamask-inpage-provider/pull/31))
 - **BREAKING:** `_metamask.sendBatch` -> `_metamask.requestBatch` ([#30](https://github.com/MetaMask/metamask-inpage-provider/pull/30))
 - The `connect` event now emits with a `ProviderConnectInfo` object per EIP 1193 ([#30](https://github.com/MetaMask/metamask-inpage-provider/pull/30))
 - Deprecated the `send` method ([#30](https://github.com/MetaMask/metamask-inpage-provider/pull/30))
-- Deprecated the events `close`, `networkChanged`, and `notification`, and ([#30](https://github.com/MetaMask/metamask-inpage-provider/pull/30))
-  added deprecation warnings for them
+- Deprecated the events `close`, `networkChanged`, and `notification`, and
+  added deprecation warnings for them ([#30](https://github.com/MetaMask/metamask-inpage-provider/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/metamask-inpage-provider/pull/29))
