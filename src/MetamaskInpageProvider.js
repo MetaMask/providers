@@ -30,7 +30,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    */
   constructor (
     connectionStream,
-    { shouldSendMetadata = true, maxEventListeners = 100 },
+    { shouldSendMetadata = true, maxEventListeners = 100 } = {},
   ) {
 
     if (
@@ -45,16 +45,24 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
     this.setMaxListeners(maxEventListeners)
 
-    // private state, kept here in part for use in the _metamask proxy
+    // private state
     this._state = {
       sentWarnings: {
+        // methods
         enable: false,
         experimentalMethods: false,
         isConnected: false,
         send: false,
+        // events
+        events: {
+          chainIdChanged: false,
+          close: false,
+          networkChanged: false,
+          notification: false,
+        },
+        // misc
         // TODO:deprecation:remove
         autoReload: false,
-        sendSync: false,
       },
       isConnected: undefined,
       accounts: undefined,
@@ -71,9 +79,11 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     // bind functions (to prevent e.g. web3@1.x from making unbound calls)
     this._handleAccountsChanged = this._handleAccountsChanged.bind(this)
     this._handleDisconnect = this._handleDisconnect.bind(this)
+    this._sendSync = this._sendSync.bind(this)
     this._rpcRequest = this._rpcRequest.bind(this)
-    this._legacySend = this._legacySend.bind(this)
+    this._warnOfDeprecation = this._warnOfDeprecation.bind(this)
     this.enable = this.enable.bind(this)
+    this.request = this.request.bind(this)
     this.send = this.send.bind(this)
     this.sendAsync = this.sendAsync.bind(this)
 
@@ -140,7 +150,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       this._state.isConnected = true
     })
 
-    // connect to async provider
+    // setup RPC connection
 
     const jsonRpcConnection = createJsonRpcStream()
     pump(
@@ -162,9 +172,15 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       if (payload.method === 'wallet_accountsChanged') {
         this._handleAccountsChanged(payload.result)
       } else if (EMITTED_NOTIFICATIONS.includes(payload.method)) {
-        this.emit('notification', payload)
+        this.emit('notification', payload) // deprecated
+        this.emit('message', {
+          type: payload.method,
+          data: payload.params,
+        })
       }
     })
+
+    // miscellanea
 
     // send website metadata
     if (shouldSendMetadata) {
@@ -176,7 +192,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     }
 
     // indicate that we've connected, for EIP-1193 compliance
-    setTimeout(() => this.emit('connect'))
+    setTimeout(() => this.emit('connect', { chainId: this.chainId }))
 
     // TODO:deprecation:remove
     this._web3Ref = undefined
@@ -202,16 +218,98 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   // Public Methods
   //====================
 
-  // TODO:deprecation deprecate this method in favor of 'request'
   /**
-   * Backwards compatibility; ethereum.request() with JSON-RPC request object
-   * and a callback.
+   * Experimental. The signature of this method may change without warning, pending EIP 1193.
+   *
+   * Submits an RPC request to MetaMask for the given method, with the given params.
+   * Resolves with the result of the method call, or rejects on error.
+   *
+   * @param {Object} args - The RPC request arguments.
+   * @param {string} args.method - The RPC method name.
+   * @param {unknown} [args.params] - The parameters for the RPC method.
+   * @returns {Promise<unknown>} A Promise that resolves with the result of the RPC method,
+   * or rejects if an error is encountered.
+   */
+  async request (args) {
+
+    if (typeof args !== 'object' || Array.isArray(args)) {
+      throw ethErrors.rpc.invalidRequest({
+        message: `Expected a single, non-array, object argument.`,
+        data: args,
+      })
+    }
+
+    const { method, params } = args
+
+    if (typeof method !== 'string' || !method) {
+      throw ethErrors.rpc.invalidRequest({
+        message: `'args.method' must be a non-empty string`,
+        data: args,
+      })
+    }
+
+    return new Promise((resolve, reject) => {
+      this._rpcRequest(
+        { method, params },
+        getRpcPromiseCallback(resolve, reject),
+      )
+    })
+  }
+
+  /**
+   * Submit a JSON-RPC request object and a callback to make an RPC method call.
    *
    * @param {Object} payload - The RPC request object.
    * @param {Function} callback - The callback function.
    */
   sendAsync (payload, cb) {
     this._rpcRequest(payload, cb)
+  }
+
+  /**
+   * We override the following event methods so that we can warn consumers
+   * about deprecated events:
+   *   addListener, on, once, prependListener, prependOnceListener
+   */
+
+  /**
+   * @inheritdoc
+   */
+  addListener (eventName, listener) {
+    this._warnOfDeprecation(eventName)
+    return super.addListener(eventName, listener)
+  }
+
+  /**
+   * @inheritdoc
+   */
+  on (eventName, listener) {
+    this._warnOfDeprecation(eventName)
+    return super.on(eventName, listener)
+  }
+
+  /**
+   * @inheritdoc
+   */
+  once (eventName, listener) {
+    this._warnOfDeprecation(eventName)
+    return super.once(eventName, listener)
+  }
+
+  /**
+   * @inheritdoc
+   */
+  prependListener (eventName, listener) {
+    this._warnOfDeprecation(eventName)
+    return super.prependListener(eventName, listener)
+  }
+
+  /**
+   * @inheritdoc
+   */
+  prependOnceListener (eventName, listener) {
+    this._warnOfDeprecation(eventName)
+    return super.prependOnceListener(eventName, listener)
   }
 
   //====================
@@ -261,11 +359,15 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   _handleDisconnect (streamName, err) {
 
     logStreamDisconnectWarning.bind(this)(streamName, err)
+
+    const disconnectError = {
+      code: 1011,
+      reason: messages.errors.disconnected(),
+    }
+
     if (this._state.isConnected) {
-      this.emit('close', {
-        code: 1011,
-        reason: 'MetaMask background communication error.',
-      })
+      this.emit('disconnect', disconnectError)
+      this.emit('close', disconnectError) // deprecated
     }
     this._state.isConnected = false
   }
@@ -321,9 +423,22 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
-   * Gets experimental _metamask API as Proxy.
+   * Warns of deprecation for the given event, if applicable.
+   */
+  _warnOfDeprecation (eventName) {
+    if (this._state.sentWarnings.events[eventName] === false) {
+      console.warn(messages.warnings.events[eventName])
+      this._state.sentWarnings.events[eventName] = true
+    }
+  }
+
+  /**
+   * Constructor helper.
+   * Gets experimental _metamask API as Proxy, so that we can warn consumers
+   * about its experiment nature.
    */
   _getExperimentalApi () {
+
     return new Proxy(
       {
 
@@ -342,12 +457,10 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         },
 
         /**
-         * Make a batch request.
+         * Make a batch RPC request.
          */
-        // eslint-disable-next-line require-await
-        sendBatch: async (requests) => {
+        requestBatch: async (requests) => {
 
-          // basic input validation
           if (!Array.isArray(requests)) {
             throw ethErrors.rpc.invalidRequest({
               message: 'Batch requests must be made with an array of request objects.',
@@ -356,20 +469,16 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
           }
 
           return new Promise((resolve, reject) => {
-            try {
-              this._rpcRequest(
-                requests,
-                getRpcPromiseCallback(resolve, reject),
-              )
-            } catch (error) {
-              reject(error)
-            }
+            this._rpcRequest(
+              requests,
+              getRpcPromiseCallback(resolve, reject),
+            )
           })
         },
 
         // TODO:deprecation:remove isEnabled, isApproved
         /**
-         * DEPRECATED. Scheduled for removal.
+         * DEPRECATED. To be removed.
          * Synchronously determines if this domain is currently enabled, with a potential false negative if called to soon
          *
          * @returns {boolean} - returns true if this domain is currently enabled
@@ -379,7 +488,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         },
 
         /**
-         * DEPRECATED. Scheduled for removal.
+         * DEPRECATED. To be removed.
          * Asynchronously determines if this domain is currently enabled
          *
          * @returns {Promise<boolean>} - Promise resolving to true if this domain is currently enabled
@@ -449,7 +558,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
-   * DEPRECATED
+   * DEPRECATED.
    * Sends an RPC request to MetaMask.
    * Many different return types, which is why this method should not be used.
    *
@@ -484,19 +593,14 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     ) {
       return this._rpcRequest(methodOrPayload, callbackOrArgs)
     }
-    return this._legacySend(methodOrPayload)
+    return this._sendSync(methodOrPayload)
   }
 
   /**
-   * TODO:deprecation:remove
-   * Internal backwards compatibility method.
+   * DEPRECATED.
+   * Internal backwards compatibility method, used in send.
    */
-  _legacySend (payload) {
-
-    if (!this._state.sentWarnings.sendSync) {
-      log.warn(messages.warnings.sendSyncDeprecation)
-      this._state.sentWarnings.sendSync = true
-    }
+  _sendSync (payload) {
 
     let result
     switch (payload.method) {
