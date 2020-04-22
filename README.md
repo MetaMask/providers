@@ -6,12 +6,12 @@ not suitable for out-of-the-box use with other wallets.
 
 ## Installation
 
-`yarn add metamask-inpage-provider`
+`yarn add @metamask/inpage-provider`
 
 ## Usage
 
 ```javascript
-import { initProvider } from 'metamask-inpage-provider'
+import { initProvider } from '@metamask/inpage-provider'
 
 // Create a stream to a remote provider:
 const metamaskStream = new LocalMessageDuplexStream({

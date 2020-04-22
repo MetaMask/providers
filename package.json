@@ -1,7 +1,7 @@
 {
-  "name": "metamask-inpage-provider",
+  "name": "@metamask/inpage-provider",
   "version": "5.0.0",
-  "description": "An ethereum provider that connects over a WebExtension port.",
+  "description": "A JavaScript Ethereum provider that connects over a WebExtension port.",
   "main": "index.js",
   "scripts": {
     "test": "node test/*",
@@ -12,7 +12,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/MetaMask/metamask-inpage-provider.git"
+    "url": "git+ssh://git@github.com/MetaMask/inpage-provider.git"
   },
   "keywords": [
     "MetaMask",
@@ -20,9 +20,9 @@
     "Provider"
   ],
   "bugs": {
-    "url": "https://github.com/MetaMask/metamask-inpage-provider/issues"
+    "url": "https://github.com/MetaMask/inpage-provider/issues"
   },
-  "homepage": "https://github.com/MetaMask/metamask-inpage-provider#readme",
+  "homepage": "https://github.com/MetaMask/inpage-provider#readme",
   "files": [
     "src/"
   ],
