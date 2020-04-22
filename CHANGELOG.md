@@ -17,8 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A global initialization event, `ethereum#initialized`, for
   asynchronous injection ([#31](https://github.com/MetaMask/metamask-inpage-provider/pull/31))
 - Helper methods for initializing the provider ([#31](https://github.com/MetaMask/metamask-inpage-provider/pull/31))
-- This CHANGELOG file to hopefully serve as an evolving example of a
-  standardized open source project CHANGELOG
 
 ### Changed
 
