@@ -23,6 +23,9 @@
     "url": "https://github.com/MetaMask/metamask-inpage-provider/issues"
   },
   "homepage": "https://github.com/MetaMask/metamask-inpage-provider#readme",
+  "files": [
+    "src/"
+  ],
   "dependencies": {
     "eth-json-rpc-errors": "^2.0.2",
     "fast-deep-equal": "^2.0.1",
