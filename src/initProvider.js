@@ -31,7 +31,6 @@ function initProvider ({
     '_state',
     'isMetaMask',
     'request',
-    'sendAsync',
   ])
 
   if (!connectionStream) {
