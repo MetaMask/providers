@@ -46,13 +46,13 @@ function initProvider ({
     // Some libraries, e.g. web3@1.x, mess with our API.
     provider = new Proxy(provider, {
       deleteProperty: () => true,
-      set: (_provider, prop, _value) => {
+      set: (target, prop, value, receiver) => {
         if (PROTECTED_PROPERTIES.has(prop)) {
           throw new Error(`MetaMask: Overwriting 'ethereum.${prop}' is forbidden.`)
         } else {
-          return Reflect.set(...arguments)
+          return Reflect.set(target, prop, value, receiver)
         }
-      }
+      },
     })
   }
 
