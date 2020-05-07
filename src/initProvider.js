@@ -6,7 +6,8 @@ const MetamaskInpageProvider = require('./MetamaskInpageProvider')
    * @param {Object} opts - An options bag.
    * @param {Object} opts.connectionStream - A Node.js stream.
    * @param {number} opts.maxEventListeners - The maximum number of event listeners.
-   * @param {boolean} opts.preventPropertyDeletion - Whether to wrap the provider in a proxy that prevents property deletion.
+   * @param {boolean} opts.protectProperties - Whether to wrap the provider
+   * in a proxy that prevents property deletion and some property overwrites.
    * @param {boolean} opts.shouldSendMetadata - Whether the provider should send page metadata.
    * @param {boolean} opts.shouldSetOnWindow - Whether the provider should be set as window.ethereum
    * @returns {MetamaskInpageProvider | Proxy} The initialized provider (whether set or not).
@@ -14,10 +15,24 @@ const MetamaskInpageProvider = require('./MetamaskInpageProvider')
 function initProvider ({
   connectionStream,
   maxEventListeners = 100,
-  preventPropertyDeletion = true,
+  protectProperties = true,
   shouldSendMetadata = true,
   shouldSetOnWindow = true,
 }) {
+
+  const PROTECTED_PROPERTIES = new Set([
+    '_handleAccountsChanged',
+    '_handleDisconnect',
+    '_metamask',
+    '_publicConfigStore',
+    '_rpcEngine',
+    '_rpcRequest',
+    '_sendSync',
+    '_state',
+    'isMetaMask',
+    'request',
+    'sendAsync',
+  ])
 
   if (!connectionStream) {
     throw new Error('Must provide a connection stream.')
@@ -27,11 +42,17 @@ function initProvider ({
     connectionStream, { shouldSendMetadata, maxEventListeners },
   )
 
-  if (preventPropertyDeletion) {
-    // Workaround for web3@1.0 deleting the bound `sendAsync` but not the unbound
-    // `sendAsync` method on the prototype, causing `this` reference issues
+  if (protectProperties) {
+    // Some libraries, e.g. web3@1.x, mess with our API.
     provider = new Proxy(provider, {
       deleteProperty: () => true,
+      set: (_provider, prop, _value) => {
+        if (PROTECTED_PROPERTIES.has(prop)) {
+          throw new Error(`MetaMask: Overwriting 'ethereum.${prop}' is forbidden.`)
+        } else {
+          return Reflect.set(...arguments)
+        }
+      }
     })
   }
 
