@@ -18,7 +18,7 @@ function initProvider ({
   protectProperties = true,
   shouldSendMetadata = true,
   shouldSetOnWindow = true,
-}) {
+} = {}) {
 
   const PROTECTED_PROPERTIES = new Set([
     '_handleAccountsChanged',
