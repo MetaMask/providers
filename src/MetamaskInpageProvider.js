@@ -632,12 +632,4 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       result,
     }
   }
-
-  /**
-   * DEPRECATED.
-   * For MetaMask injected web3.
-   */
-  _setWeb3Ref (web3Ref) {
-    this._web3Ref = web3Ref
-  }
 }
