@@ -26,3 +26,8 @@ initProvider({
 
 const { ethereum } = window
 ```
+
+### Do Not Modify the Provider
+
+The Provider object should not be mutated by consumers under any circumstances.
+The maintainers of this package will neither fix nor take responsbility for bugs caused by third parties mutating the provider object.
