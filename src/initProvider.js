@@ -20,15 +20,9 @@ function initProvider ({
   shouldSetOnWindow = true,
 } = {}) {
 
+  // public, non-deprecated properties
   const PROTECTED_PROPERTIES = new Set([
-    '_handleAccountsChanged',
-    '_handleDisconnect',
     '_metamask',
-    '_publicConfigStore',
-    '_rpcEngine',
-    '_rpcRequest',
-    '_sendSync',
-    '_state',
     'isMetaMask',
     'request',
   ])
