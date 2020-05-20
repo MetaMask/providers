@@ -34,12 +34,12 @@ function createErrorMiddleware () {
   }
 }
 
-// resolve response.result, reject errors
-const getRpcPromiseCallback = (resolve, reject) => (error, response) => {
+// resolve response.result or response, reject errors
+const getRpcPromiseCallback = (resolve, reject, resolveResponse = false) => (error, response) => {
   if (error || response.error) {
     reject(error || response.error)
   } else {
-    Array.isArray(response)
+    resolveResponse || Array.isArray(response)
       ? resolve(response)
       : resolve(response.result)
   }

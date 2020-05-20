@@ -581,7 +581,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         try {
           this._rpcRequest(
             { method: methodOrPayload, params: callbackOrArgs },
-            getRpcPromiseCallback(resolve, reject),
+            getRpcPromiseCallback(resolve, reject, true),
           )
         } catch (error) {
           reject(error)
