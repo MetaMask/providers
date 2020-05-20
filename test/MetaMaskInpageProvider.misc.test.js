@@ -152,7 +152,7 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
 
       expect(
         provider.isConnected(),
-      ).toBeUndefined()
+      ).toBe(false)
 
       provider._state.isConnected = true
 
