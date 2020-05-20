@@ -4,7 +4,7 @@
   "description": "A JavaScript Ethereum provider that connects over a WebExtension port.",
   "main": "index.js",
   "scripts": {
-    "test": "node test/*",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext js,json",
     "lint:fix": "eslint . --ext js,json --fix"
   },
@@ -34,6 +34,7 @@
     "loglevel": "^1.6.1",
     "obj-multiplex": "^1.0.0",
     "obs-store": "^4.0.3",
+    "post-message-stream": "^3.0.0",
     "pump": "^3.0.0",
     "safe-event-emitter": "^1.0.1"
   },

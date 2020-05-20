@@ -1,18 +1,32 @@
+const PostMessageDuplexStream = require('post-message-stream')
 const MetamaskInpageProvider = require('./MetamaskInpageProvider')
+
+module.exports = {
+  initializeProvider,
+  setGlobalProvider,
+}
+
+const getDefaultConnectionStream = () => {
+  return new PostMessageDuplexStream({
+    name: 'metamask-inpage',
+    target: 'metamask-contentscript',
+  })
+}
 
 /**
    * Initializes a MetamaskInpageProvider and (optionally) sets it on window.ethereum.
    *
-   * @param {Object} opts - An options bag.
-   * @param {Object} opts.connectionStream - A Node.js stream.
-   * @param {number} opts.maxEventListeners - The maximum number of event listeners.
-   * @param {boolean} opts.protectProperties - Whether to wrap the provider
+   * @param {Object} [options] - An options bag.
+   * @param {Object} [options.connectionStream] - A Node.js stream. Will be assigned a MetaMask
+   * default if not provided.
+   * @param {number} [options.maxEventListeners=100] - The maximum number of event listeners.
+   * @param {boolean} [options.protectProperties=true] - Whether to wrap the provider
    * in a proxy that prevents property deletion and some property overwrites.
-   * @param {boolean} opts.shouldSendMetadata - Whether the provider should send page metadata.
-   * @param {boolean} opts.shouldSetOnWindow - Whether the provider should be set as window.ethereum
-   * @returns {MetamaskInpageProvider | Proxy} The initialized provider (whether set or not).
+   * @param {boolean} [options.shouldSendMetadata=true] - Whether the provider should send page metadata.
+   * @param {boolean} [options.shouldSetOnWindow=true] - Whether the provider should be set as window.ethereum
+   * @returns {MetamaskInpageProvider|Proxy} The initialized provider (whether set on window or not).
    */
-function initProvider ({
+function initializeProvider ({
   connectionStream,
   maxEventListeners = 100,
   protectProperties = true,
@@ -27,12 +41,10 @@ function initProvider ({
     '_rpcEngine',
   ])
 
-  if (!connectionStream) {
-    throw new Error('Must provide a connection stream.')
-  }
+  const _connectionStream = connectionStream || getDefaultConnectionStream()
 
   let provider = new MetamaskInpageProvider(
-    connectionStream, { shouldSendMetadata, maxEventListeners },
+    _connectionStream, { shouldSendMetadata, maxEventListeners },
   )
 
   if (protectProperties) {
@@ -65,9 +77,4 @@ function initProvider ({
 function setGlobalProvider (providerInstance) {
   window.ethereum = providerInstance
   window.dispatchEvent(new Event('ethereum#initialized'))
-}
-
-module.exports = {
-  initProvider,
-  setGlobalProvider,
 }

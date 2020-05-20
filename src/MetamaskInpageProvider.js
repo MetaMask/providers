@@ -24,17 +24,19 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
   /**
    * @param {Object} connectionStream - A Node.js stream
-   * @param {Object} opts - An options bag
-   * @param {number} opts.maxEventListeners - The maximum number of event listeners
-   * @param {boolean} opts.shouldSendMetadata - Whether the provider should send page metadata
+   * @param {Object} options - An options bag
+   * @param {number} [options.maxEventListeners=100] - The maximum number of event listeners
+   * @param {boolean} [options.shouldSendMetadata=true] - Whether the provider should send page metadata
    */
   constructor (
     connectionStream,
-    { shouldSendMetadata = true, maxEventListeners = 100 } = {},
+    { maxEventListeners = 100, shouldSendMetadata = true } = {},
   ) {
 
     if (
-      typeof shouldSendMetadata !== 'boolean' || typeof maxEventListeners !== 'number'
+      !connectionStream || typeof connectionStream !== 'object' ||
+      typeof shouldSendMetadata !== 'boolean' ||
+      typeof maxEventListeners !== 'number'
     ) {
       throw new Error('Invalid options.')
     }
