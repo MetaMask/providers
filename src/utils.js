@@ -35,11 +35,11 @@ function createErrorMiddleware () {
 }
 
 // resolve response.result or response, reject errors
-const getRpcPromiseCallback = (resolve, reject, resolveResponse = false) => (error, response) => {
+const getRpcPromiseCallback = (resolve, reject, unwrapResult = true) => (error, response) => {
   if (error || response.error) {
     reject(error || response.error)
   } else {
-    resolveResponse || Array.isArray(response)
+    !unwrapResult || Array.isArray(response)
       ? resolve(response)
       : resolve(response.result)
   }
