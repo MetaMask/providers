@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix `ethereum.send` return value for certain argument combination
   - Reverted to pre-`4.0.0` state
+- Stop protecting overwrites of the following properties, that existing pre-`4.0.0`:
+  - `ethereum.isMetaMask`
+  - `ethereum._metamask`
+- Protect the following new, private properties required for `ethereum.request` to work:
+  - `ethereum._rpcRequest`
+  - `ethereum._rpcEngine`
 
 ## [5.0.1] - 2020-05-11
 
