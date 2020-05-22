@@ -20,9 +20,11 @@ function initProvider ({
   shouldSetOnWindow = true,
 } = {}) {
 
-  // public properties new as of v5.0.0
+  // new properties as of v5.0.0
   const PROTECTED_PROPERTIES = new Set([
     'request',
+    '_rpcRequest',
+    '_rpcEngine',
   ])
 
   if (!connectionStream) {
