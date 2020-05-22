@@ -20,10 +20,8 @@ function initProvider ({
   shouldSetOnWindow = true,
 } = {}) {
 
-  // public, non-deprecated properties
+  // public properties new as of v5.0.0
   const PROTECTED_PROPERTIES = new Set([
-    '_metamask',
-    'isMetaMask',
     'request',
   ])
 
