@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.2] - 2020-05-22
+
+### Changed
+
+- Fix `ethereum.send` return value for certain argument combination
+  - Reverted to pre-`4.0.0` state
+
+## [5.0.1] - 2020-05-11
+
+### Changed
+
+- Rename package to [@metamask/inpage-provider](https://www.npmjs.com/package/@metamask/inpage-provider)
+- Prevent overwrite of certain properties on the Provider
+  - `ethereum.request`
+  - `ethereum.isMetaMask`
+  - `ethereum._metamask`
+
 ## [5.0.0] - 2020-04-22
 
 ### Added
