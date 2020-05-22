@@ -20,11 +20,11 @@ function initProvider ({
   shouldSetOnWindow = true,
 } = {}) {
 
-  // public, non-deprecated properties
+  // new properties as of v5.0.0
   const PROTECTED_PROPERTIES = new Set([
-    '_metamask',
-    'isMetaMask',
     'request',
+    '_rpcRequest',
+    '_rpcEngine',
   ])
 
   if (!connectionStream) {
