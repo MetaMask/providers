@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.1.0] - 2020-06-01
+
+### Changed
+
+- Update `request.params` type to `unknown[] | object`
+  - This is not breaking in practice, for no RPC methods with other `params` values exists.
+- Add `origin` to site metadata object, via `window.location.origin`
+
 ## [5.0.2] - 2020-05-22
 
 ### Changed
