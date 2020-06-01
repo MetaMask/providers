@@ -34,15 +34,16 @@ async function sendSiteMetadata (engine) {
  */
 async function getSiteMetadata () {
   return {
-    name: getSiteName(window),
-    icon: await getSiteIcon(window),
+    name: getSiteName(),
+    icon: await getSiteIcon(),
+    origin: window.location.origin,
   }
 }
 
 /**
  * Extracts a name for the site from the DOM
  */
-function getSiteName (window) {
+function getSiteName () {
   const { document } = window
 
   const siteName = document.querySelector('head > meta[property="og:site_name"]')
@@ -65,7 +66,7 @@ function getSiteName (window) {
 /**
  * Extracts an icon for the site from the DOM
  */
-async function getSiteIcon (window) {
+async function getSiteIcon () {
   const { document } = window
 
   // Use the site's favicon if it exists
