@@ -226,7 +226,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    *
    * @param {Object} args - The RPC request arguments.
    * @param {string} args.method - The RPC method name.
-   * @param {unknown} [args.params] - The parameters for the RPC method.
+   * @param {unknown[] | Object} [args.params] - The parameters for the RPC method.
    * @returns {Promise<unknown>} A Promise that resolves with the result of the RPC method,
    * or rejects if an error is encountered.
    */
@@ -243,7 +243,17 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
     if (typeof method !== 'string' || !method) {
       throw ethErrors.rpc.invalidRequest({
-        message: `'args.method' must be a non-empty string`,
+        message: `'args.method' must be a non-empty string.`,
+        data: args,
+      })
+    }
+
+    if (
+      params !== undefined &&
+      !Array.isArray(params) && typeof params !== 'object'
+    ) {
+      throw ethErrors.rpc.invalidRequest({
+        message: `'args.params' must be an ojbect or array if provided.`,
         data: args,
       })
     }
