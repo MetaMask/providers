@@ -249,10 +249,8 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     }
 
     if (
-      params === null || (
-        params !== undefined &&
-        !Array.isArray(params) && typeof params !== 'object'
-      )
+      params !== undefined && !Array.isArray(params) &&
+      (typeof params !== 'object' || params === null)
     ) {
       throw ethErrors.rpc.invalidRequest({
         message: `'args.params' must be an object or array if provided.`,
