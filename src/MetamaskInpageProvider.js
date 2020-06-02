@@ -241,7 +241,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
     const { method, params } = args
 
-    if (typeof method !== 'string' || !method) {
+    if (typeof method !== 'string' || method.length === 0) {
       throw ethErrors.rpc.invalidRequest({
         message: `'args.method' must be a non-empty string.`,
         data: args,
@@ -249,11 +249,13 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     }
 
     if (
-      params !== undefined &&
-      !Array.isArray(params) && typeof params !== 'object'
+      params === null || (
+        params !== undefined &&
+        !Array.isArray(params) && typeof params !== 'object'
+      )
     ) {
       throw ethErrors.rpc.invalidRequest({
-        message: `'args.params' must be an ojbect or array if provided.`,
+        message: `'args.params' must be an object or array if provided.`,
         data: args,
       })
     }
