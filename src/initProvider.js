@@ -6,7 +6,6 @@ const MetamaskInpageProvider = require('./MetamaskInpageProvider')
    * @param {Object} opts - An options bag.
    * @param {Object} opts.connectionStream - A Node.js stream.
    * @param {number} opts.maxEventListeners - The maximum number of event listeners.
-   * @param {boolean} opts.protectProperties - Whether to wrap the provider
    * in a proxy that prevents property deletion and some property overwrites.
    * @param {boolean} opts.shouldSendMetadata - Whether the provider should send page metadata.
    * @param {boolean} opts.shouldSetOnWindow - Whether the provider should be set as window.ethereum
@@ -15,17 +14,9 @@ const MetamaskInpageProvider = require('./MetamaskInpageProvider')
 function initProvider ({
   connectionStream,
   maxEventListeners = 100,
-  protectProperties = true,
   shouldSendMetadata = true,
   shouldSetOnWindow = true,
 } = {}) {
-
-  // new properties as of v5.0.0
-  const PROTECTED_PROPERTIES = new Set([
-    'request',
-    '_rpcRequest',
-    '_rpcEngine',
-  ])
 
   if (!connectionStream) {
     throw new Error('Must provide a connection stream.')
@@ -35,19 +26,9 @@ function initProvider ({
     connectionStream, { shouldSendMetadata, maxEventListeners },
   )
 
-  if (protectProperties) {
-    // Some libraries, e.g. web3@1.x, mess with our API.
-    provider = new Proxy(provider, {
-      deleteProperty: () => true,
-      set: (target, prop, value, receiver) => {
-        if (PROTECTED_PROPERTIES.has(prop)) {
-          throw new Error(`MetaMask: Overwriting 'ethereum.${prop}' is forbidden.`)
-        } else {
-          return Reflect.set(target, prop, value, receiver)
-        }
-      },
-    })
-  }
+  provider = new Proxy(provider, {
+    deleteProperty: () => true, // some libraries, e.g. web3@1.x, mess with our API
+  })
 
   if (shouldSetOnWindow) {
     setGlobalProvider(provider)
