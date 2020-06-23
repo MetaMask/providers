@@ -68,7 +68,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       isConnected: undefined,
       accounts: undefined,
       isUnlocked: undefined,
-      reloadOnChainChange: true,
+      reloadOnChainChange: false,
     }
 
     this._metamask = this._getExperimentalApi()
