@@ -18,6 +18,7 @@ function initProvider ({
 } = {}) {
 
   let wasAccessed = false
+  let lastTimeUsed
 
   if (!connectionStream) {
     throw new Error('Must provide a connection stream.')
@@ -27,24 +28,33 @@ function initProvider ({
     connectionStream, { shouldSendMetadata, maxEventListeners },
   )
 
+  // listener added here to not trigger proxy handlers
   provider.once('chainChanged', () => {
     if (wasAccessed && provider.reloadOnChainChange) {
-      window.location.reload()
+      const timeSinceUse = lastTimeUsed ? Date.now() - lastTimeUsed : 0
+      if (timeSinceUse > 500) {
+        window.location.reload()
+      } else {
+        setTimeout(() => window.location.reload(), 500)
+      }
     }
   })
+
+  const recordProviderAccess = () => {
+    if (!wasAccessed) {
+      wasAccessed = true
+    }
+    lastTimeUsed = Date.now()
+  }
 
   const providerProxy = new Proxy(provider, {
     deleteProperty: () => true, // Some libraries, e.g. web3@1.x, mess with our API.
     get: (target, prop, receiver) => {
-      if (!wasAccessed) {
-        wasAccessed = true
-      }
+      recordProviderAccess()
       return Reflect.get(target, prop, receiver)
     },
     set: (target, prop, value, receiver) => {
-      if (!wasAccessed) {
-        wasAccessed = true
-      }
+      recordProviderAccess()
       return Reflect.set(target, prop, value, receiver)
     },
   })
