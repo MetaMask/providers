@@ -5,7 +5,7 @@ module.exports = {
     unsupportedSync: (method) => `MetaMask: The MetaMask Web3 object does not support synchronous methods like ${method} without a callback parameter.`, // TODO:deprecation:remove
   },
   warnings: {
-    // TODO:deprecation:remove
+    // deprecated properties
     autoRefreshDeprecation: `MetaMask: 'ethereum.autoRefreshOnNetworkChange' is deprecated and may be removed in the future. Please use 'ethereum.reloadOnChainChange' instead.`,
     // deprecated methods
     enableDeprecation: `MetaMask: 'ethereum.enable()' is deprecated and may be removed in the future. Please use the 'eth_requestAccounts' RPC method instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1102`,
