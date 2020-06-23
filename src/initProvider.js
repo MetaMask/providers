@@ -18,7 +18,6 @@ function initProvider ({
 } = {}) {
 
   let wasAccessed = false
-  let isReloading = false
 
   if (!connectionStream) {
     throw new Error('Must provide a connection stream.')
@@ -30,10 +29,7 @@ function initProvider ({
 
   provider.once('chainChanged', () => {
     if (wasAccessed && provider.reloadOnChainChange) {
-      if (!isReloading) {
-        isReloading = true
-        setTimeout(() => window.location.reload(), 250)
-      }
+      window.location.reload()
     }
   })
 
