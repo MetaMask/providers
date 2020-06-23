@@ -14,6 +14,7 @@ const messages = require('./messages')
 const { sendSiteMetadata } = require('./siteMetadata')
 const {
   createErrorMiddleware,
+  defineAutoReloadProperties,
   EMITTED_NOTIFICATIONS,
   getRpcPromiseCallback,
   logStreamDisconnectWarning,
@@ -34,7 +35,8 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   ) {
 
     if (
-      typeof shouldSendMetadata !== 'boolean' || typeof maxEventListeners !== 'number'
+      typeof shouldSendMetadata !== 'boolean' ||
+      typeof maxEventListeners !== 'number'
     ) {
       throw new Error('Invalid options.')
     }
@@ -61,12 +63,12 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
           notification: false,
         },
         // misc
-        // TODO:deprecation:remove
-        autoReload: false,
+        autoRefresh: false,
       },
       isConnected: undefined,
       accounts: undefined,
       isUnlocked: undefined,
+      reloadOnChainChange: true,
     }
 
     this._metamask = this._getExperimentalApi()
@@ -86,6 +88,8 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     this.request = this.request.bind(this)
     this.send = this.send.bind(this)
     this.sendAsync = this.sendAsync.bind(this)
+
+    defineAutoReloadProperties(this)
 
     // setup connectionStream multiplexing
     const mux = new ObjectMultiplex()
@@ -196,22 +200,6 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
     // TODO:deprecation:remove
     this._web3Ref = undefined
-
-    // TODO:deprecation:remove
-    // give the dapps control of a refresh they can toggle this off on the window.ethereum
-    // this will be default true so it does not break any old apps.
-    this.autoRefreshOnNetworkChange = true
-
-    // TODO:deprecation:remove
-    // wait a second to attempt to send this, so that the warning can be silenced
-    // moved this here because there's another warning in .enable() discouraging
-    // the use thereof per EIP 1102
-    setTimeout(() => {
-      if (this.autoRefreshOnNetworkChange && !this._state.sentWarnings.autoReload) {
-        log.warn(messages.warnings.autoReloadDeprecation)
-        this._state.sentWarnings.autoReload = true
-      }
-    }, 1000)
   }
 
   //====================

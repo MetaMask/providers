@@ -17,23 +17,47 @@ function initProvider ({
   shouldSetOnWindow = true,
 } = {}) {
 
+  let wasAccessed = false
+  let isReloading = false
+
   if (!connectionStream) {
     throw new Error('Must provide a connection stream.')
   }
 
-  let provider = new MetamaskInpageProvider(
+  const provider = new MetamaskInpageProvider(
     connectionStream, { shouldSendMetadata, maxEventListeners },
   )
 
-  provider = new Proxy(provider, {
-    deleteProperty: () => true, // some libraries, e.g. web3@1.x, mess with our API
+  provider.once('chainChanged', () => {
+    if (wasAccessed && provider.reloadOnChainChange) {
+      if (!isReloading) {
+        isReloading = true
+        setTimeout(() => window.location.reload(), 250)
+      }
+    }
+  })
+
+  const providerProxy = new Proxy(provider, {
+    deleteProperty: () => true, // Some libraries, e.g. web3@1.x, mess with our API.
+    get: (target, prop, receiver) => {
+      if (!wasAccessed) {
+        wasAccessed = true
+      }
+      return Reflect.get(target, prop, receiver)
+    },
+    set: (target, prop, value, receiver) => {
+      if (!wasAccessed) {
+        wasAccessed = true
+      }
+      return Reflect.set(target, prop, value, receiver)
+    },
   })
 
   if (shouldSetOnWindow) {
-    setGlobalProvider(provider)
+    setGlobalProvider(providerProxy)
   }
 
-  return provider
+  return providerProxy
 }
 
 /**
