@@ -7,11 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.2.0] - 2020-06-24
+
+### Changed
+
+- Remove property protections
+  - Unless we lock down the entire provide object, which we can't do, a determined consumer can break our provider. Thus, protected properties are pointless.
+- Fix `requests` `params` type checks
+- Update deprecation warning messages per most recent deprecation plans
+
 ## [5.1.0] - 2020-06-01
 
 ### Changed
 
-- Update `request.params` type to `unknown[] | object`
+- Update `request` `params` type to `unknown[] | object`
   - This is not breaking in practice, since no RPC methods with other `params` values exist.
 
 ## [5.0.2] - 2020-05-22
