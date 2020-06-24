@@ -229,7 +229,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    */
   async request (args) {
 
-    if (typeof args !== 'object' || Array.isArray(args)) {
+    if (!args || typeof args !== 'object' || Array.isArray(args)) {
       throw ethErrors.rpc.invalidRequest({
         message: `Expected a single, non-array, object argument.`,
         data: args,
