@@ -1,6 +1,6 @@
 {
   "name": "@metamask/inpage-provider",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "description": "A JavaScript Ethereum provider that connects over a WebExtension port.",
   "main": "index.js",
   "scripts": {
