@@ -51,7 +51,6 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         // methods
         enable: false,
         experimentalMethods: false,
-        isConnected: false,
         send: false,
         // events
         events: {
@@ -216,8 +215,13 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   //====================
 
   /**
-   * Experimental. The signature of this method may change without warning, pending EIP 1193.
-   *
+   * Returns whether the inpage provider is connected to MetaMask.
+   */
+  isConnected () {
+    return this._state.isConnected
+  }
+
+  /**
    * Submits an RPC request to MetaMask for the given method, with the given params.
    * Resolves with the result of the method call, or rejects on error.
    *
@@ -525,19 +529,6 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   //====================
   // Deprecated Methods
   //====================
-
-  /**
-   * DEPRECATED.
-   * Returns whether the inpage provider is connected to MetaMask.
-   */
-  isConnected () {
-
-    if (!this._state.sentWarnings.isConnected) {
-      log.warn(messages.warnings.isConnectedDeprecation)
-      this._state.sentWarnings.isConnected = true
-    }
-    return this._state.isConnected
-  }
 
   /**
    * DEPRECATED.
