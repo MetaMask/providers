@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.2.2] - 2020-07-04
+
+### Added
+
+- The `data` event
+  - This event was removed in `4.0.0`, as it was thought to only be used internally.
+  This assumption was incorrect, and the event is now restored.
+
+### Changed
+
+- Restore the `notification` event value to its pre-`4.0.0` state
+  - Prior to `4.0.0` of this package, this event was emitted by code in the MetaMask extension.
+  Its value was inadvertently changed when it was moved to this package.
+
+## [5.2.1] - 2020-06-29
+
+### Changed
+
+- Un-deprecate `isConnected` method.
+
 ## [5.2.0] - 2020-06-24
 
 ### Changed
