@@ -169,15 +169,20 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
     // json rpc notification listener
     jsonRpcConnection.events.on('notification', (payload) => {
+
       this.emit('data', payload) // deprecated
-      if (payload.method === 'wallet_accountsChanged') {
-        this._handleAccountsChanged(payload.result)
-      } else if (EMITTED_NOTIFICATIONS.includes(payload.method)) {
-        this.emit('notification', payload) // deprecated
+
+      const { method, params, result } = payload
+
+      if (method === 'wallet_accountsChanged') {
+        this._handleAccountsChanged(result)
+      } else if (EMITTED_NOTIFICATIONS.includes(method)) {
         this.emit('message', {
-          type: payload.method,
-          data: payload.params,
+          type: method,
+          data: params,
         })
+        // deprecated
+        this.emit('notification', (params && params.result) || payload)
       }
     })
 
