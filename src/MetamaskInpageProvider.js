@@ -184,7 +184,9 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         })
 
         // deprecated
-        this.emit('notification', (params && params.result) || payload)
+        if (params) {
+          this.emit('notification', params.result)
+        }
       }
     })
 
