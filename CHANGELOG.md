@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Restore the `notification` event value to its pre-`4.0.0` state
-  - Prior to `4.0.0` of this package, this event was emitted by code in the MetaMask extension.
+  - Prior to `4.0.0` this event was emitted by code in the MetaMask extension.
   Its value was inadvertently changed when it was moved to this package.
 
 ## [5.2.1] - 2020-06-29
@@ -49,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix `ethereum.send` return value for certain argument combination
   - Reverted to pre-`4.0.0` state
-- Stop protecting overwrites of the following properties, that existing pre-`4.0.0`:
+- Stop protecting overwrites of the following properties, that existed prior to `4.0.0`:
   - `ethereum.isMetaMask`
   - `ethereum._metamask`
 - Protect the following new, private properties required for `ethereum.request` to work:
