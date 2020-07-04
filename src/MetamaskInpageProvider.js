@@ -177,10 +177,12 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       if (method === 'wallet_accountsChanged') {
         this._handleAccountsChanged(result)
       } else if (EMITTED_NOTIFICATIONS.includes(method)) {
+
         this.emit('message', {
           type: method,
           data: params,
         })
+
         // deprecated
         this.emit('notification', (params && params.result) || payload)
       }
