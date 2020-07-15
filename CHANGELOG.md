@@ -9,13 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [6.0.1] - 2020-07-15
 
-### Added
+### Fixed
 
 - Warning message for the `data` event
   - This deprecated event was added back in `6.0.0`, but the warning message was not defined.
-
-### Changed
-
 - Restore `publicConfigStore` property as alias for `_publicConfigStore`
   - The `_publicConfigStore` was named `publicConfigStore` before `4.0.0`.
   The original property turned out to be used by consumers.
