@@ -63,6 +63,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         // misc
         // TODO:deprecation:remove
         autoRefresh: false,
+        publicConfigStore: false,
       },
       isConnected: undefined,
       accounts: undefined,
@@ -219,6 +220,14 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         this._state.sentWarnings.autoRefresh = true
       }
     }, 1000)
+  }
+
+  get publicConfigStore () {
+    if (!this._state.sentWarnings.publicConfigStore) {
+      log.warn(messages.warnings.publicConfigStore)
+      this._state.sentWarnings.publicConfigStore = true
+    }
+    return this._publicConfigStore
   }
 
   //====================
