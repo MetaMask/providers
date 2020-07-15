@@ -19,5 +19,6 @@ module.exports = {
     },
     // misc
     experimentalMethods: `MetaMask: 'ethereum._metamask' exposes non-standard, experimental methods. They may be removed or changed without warning.`,
+    publicConfigStore: `MetaMask: The property 'publicConfigStore' is deprecated and WILL be removed in the future.`,
   },
 }
