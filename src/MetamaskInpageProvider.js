@@ -407,7 +407,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    * Called when accounts may have changed. Diffs the new accounts value with
    * the current one, updates all state as necessary, and emits the
    * accountsChanged event.
-   * 
+   *
    * @param {string[]} accounts - The new accounts value.
    * @param {boolean} isEthAccounts - Whether the accounts value was returned by
    * a call to eth_accounts.
@@ -457,7 +457,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         window.web3.eth.defaultAccount = this.selectedAddress
       }
 
-      // don't emit the event until all state has been updated
+      // only emit the event once all state has been updated
       this.emit('accountsChanged', _accounts)
     }
   }
