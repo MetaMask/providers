@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Emit `accountsChanged` event _after_ all related state has been updated
+([#72](https://github.com/MetaMask/inpage-provider/pull/72))
+  - For example, `ethereum.selectedAddress` will now have been updated by the time the event is emitted.
 - Enable retrieval of site icons _not_ hosted on the same origin
 ([#78](https://github.com/MetaMask/inpage-provider/pull/78))
   - For example, icons hosted on `assets.foo.com` that are used on `foo.com` will now be retrieved successfully.
