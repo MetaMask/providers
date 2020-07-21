@@ -64,7 +64,7 @@ function getSiteName (window) {
 
 /**
  * Extracts an icon for the site from the DOM
- * @returns {string|null} a icon URL
+ * @returns {string|null} an icon URL
  */
 async function getSiteIcon (window) {
   const { document } = window
