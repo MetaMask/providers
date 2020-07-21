@@ -404,13 +404,20 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
-   * Called when accounts may have changed.
+   * Called when accounts may have changed. Diffs the new accounts value with
+   * the current one, updates all state as necessary, and emits the
+   * accountsChanged event.
+   *
+   * @param {string[]} accounts - The new accounts value.
+   * @param {boolean} isEthAccounts - Whether the accounts value was returned by
+   * a call to eth_accounts.
+   * @param {boolean} isInternal - Whether the accounts value was returned by an
+   * internally initiated request.
    */
   _handleAccountsChanged (accounts, isEthAccounts = false, isInternal = false) {
 
     let _accounts = accounts
 
-    // defensive programming
     if (!Array.isArray(accounts)) {
       log.error(
         'MetaMask: Received non-array accounts parameter. Please report this bug.',
@@ -431,25 +438,27 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         )
       }
 
-      this.emit('accountsChanged', _accounts)
       this._state.accounts = _accounts
-    }
 
-    // handle selectedAddress
-    if (this.selectedAddress !== _accounts[0]) {
-      this.selectedAddress = _accounts[0] || null
-    }
+      // handle selectedAddress
+      if (this.selectedAddress !== _accounts[0]) {
+        this.selectedAddress = _accounts[0] || null
+      }
 
-    // TODO:deprecation:remove
-    // handle web3
-    if (this._web3Ref) {
-      this._web3Ref.defaultAccount = this.selectedAddress
-    } else if (
-      window.web3 &&
-      window.web3.eth &&
-      typeof window.web3.eth === 'object'
-    ) {
-      window.web3.eth.defaultAccount = this.selectedAddress
+      // TODO:deprecation:remove
+      // handle web3
+      if (this._web3Ref) {
+        this._web3Ref.defaultAccount = this.selectedAddress
+      } else if (
+        window.web3 &&
+        window.web3.eth &&
+        typeof window.web3.eth === 'object'
+      ) {
+        window.web3.eth.defaultAccount = this.selectedAddress
+      }
+
+      // only emit the event once all state has been updated
+      this.emit('accountsChanged', _accounts)
     }
   }
 
