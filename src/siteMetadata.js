@@ -64,6 +64,7 @@ function getSiteName (window) {
 
 /**
  * Extracts an icon for the site from the DOM
+ * @returns {string} a icon URL
  */
 async function getSiteIcon (window) {
   const { document } = window
@@ -71,7 +72,7 @@ async function getSiteIcon (window) {
   const icons = document.querySelectorAll('head > link[rel~="icon"]')
   for (const icon of icons) {
     if (icon && await imgExists(icon.href)) {
-      return true
+      return icon.href
     }
   }
 
