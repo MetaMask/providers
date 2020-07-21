@@ -89,7 +89,7 @@ async function getSiteIcon (window) {
  * @param {string} url the url of the resource
  */
 function resourceExists (url) {
-  return fetch(url, { method: 'HEAD', mode: 'same-origin' })
+  return fetch(url, { method: 'HEAD', mode: 'cors' })
     .then((res) => res.status === 200)
     .catch((_) => false)
 }
