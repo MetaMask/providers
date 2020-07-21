@@ -68,17 +68,11 @@ function getSiteName (window) {
 async function getSiteIcon (window) {
   const { document } = window
 
-  // Use the site's favicon if it exists
-  let icon = document.querySelector('head > link[rel="shortcut icon"]')
-  if (icon && await resourceExists(icon.href)) {
-    return icon.href
-  }
-
-  // Search through available icons in no particular order
-  icon = Array.from(document.querySelectorAll('head > link[rel="icon"]'))
-    .find((_icon) => Boolean(_icon.href))
-  if (icon && await resourceExists(icon.href)) {
-    return icon.href
+  const icons = document.querySelectorAll('head > link[rel~="icon"]')
+  for (const icon of icons) {
+    if (icon && await resourceExists(icon.href)) {
+      return true
+    }
   }
 
   return null
@@ -87,9 +81,17 @@ async function getSiteIcon (window) {
 /**
  * Returns whether the given resource exists
  * @param {string} url the url of the resource
+ * @return {Promise<boolean>} whether the resource exists
  */
 function resourceExists (url) {
-  return fetch(url, { method: 'HEAD', mode: 'same-origin' })
-    .then((res) => res.status === 200)
-    .catch((_) => false)
+  return new Promise((resolve, reject) => {
+    try {
+      const img = document.createElement('img')
+      img.onload = () => resolve(true)
+      img.onerror = () => resolve(false)
+      img.src = url
+    } catch (e) {
+      reject(e)
+    }
+  })
 }
