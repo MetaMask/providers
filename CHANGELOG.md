@@ -11,14 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Only emit `data` event for notifications present in `^4.0.0` ([#73](https://github.com/MetaMask/inpage-provider/pull/73))
-  - Some consumers make assumptions about the shape of the object emitted with the event that do not hold all notifications in `^6.0.0`.
-- Stop preferring `rel="shortcut icon"` when retrieving site metadata ([#76](https://github.com/MetaMask/inpage-provider/pull/76))
-  - Instead, we query using `rel~="icon"` and return the first existing image found.
+- Only emit `data` event for notifications present in `^4.0.0`
+([#73](https://github.com/MetaMask/inpage-provider/pull/73))
+  - Some consumers make assumptions about the shape of the object emitted with the event that do not hold for all notifications in `^6.0.0`.
+- Select icon using `rel~="icon"` when retrieving site metadata
+([#76](https://github.com/MetaMask/inpage-provider/pull/76))
+  - This is instead of defaulting to `rel="shortcut icon"`.
 
 ### Fixed
 
-- Enable retrieval of icons not hosted on the same origin ([#78](https://github.com/MetaMask/inpage-provider/pull/78))
+- Enable retrieval of site icons _not_ hosted on the same origin
+([#78](https://github.com/MetaMask/inpage-provider/pull/78))
   - For example, icons hosted on `assets.foo.com` that are used on `foo.com` will now be retrieved successfully.
 
 ## [6.0.1] - 2020-07-15
