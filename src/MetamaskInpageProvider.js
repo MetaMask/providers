@@ -171,13 +171,15 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     // json rpc notification listener
     jsonRpcConnection.events.on('notification', (payload) => {
 
-      this.emit('data', payload) // deprecated
-
       const { method, params, result } = payload
 
       if (method === 'wallet_accountsChanged') {
         this._handleAccountsChanged(result)
-      } else if (EMITTED_NOTIFICATIONS.includes(method)) {
+        return
+      }
+
+      if (EMITTED_NOTIFICATIONS.includes(method)) {
+        this.emit('data', payload) // deprecated
 
         this.emit('message', {
           type: method,
@@ -185,9 +187,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         })
 
         // deprecated
-        if (params) {
-          this.emit('notification', params.result)
-        }
+        this.emit('notification', params.result)
       }
     })
 
