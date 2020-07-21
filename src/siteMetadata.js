@@ -70,7 +70,7 @@ async function getSiteIcon (window) {
 
   const icons = document.querySelectorAll('head > link[rel~="icon"]')
   for (const icon of icons) {
-    if (icon && await resourceExists(icon.href)) {
+    if (icon && await imgExists(icon.href)) {
       return true
     }
   }
@@ -79,11 +79,19 @@ async function getSiteIcon (window) {
 }
 
 /**
- * Returns whether the given resource exists
- * @param {string} url the url of the resource
+ * Returns whether the given image URL exists
+ * @param {string} url - the url of the image
+ * @return {Promise<boolean>} whether the image exists
  */
-function resourceExists (url) {
-  return fetch(url, { method: 'HEAD', mode: 'same-origin' })
-    .then((res) => res.status === 200)
-    .catch((_) => false)
+function imgExists (url) {
+  return new Promise((resolve, reject) => {
+    try {
+      const img = document.createElement('img')
+      img.onload = () => resolve(true)
+      img.onerror = () => resolve(false)
+      img.src = url
+    } catch (e) {
+      reject(e)
+    }
+  })
 }
