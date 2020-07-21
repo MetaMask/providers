@@ -64,21 +64,16 @@ function getSiteName (window) {
 
 /**
  * Extracts an icon for the site from the DOM
+ * @returns {string|null} an icon URL
  */
 async function getSiteIcon (window) {
   const { document } = window
 
-  // Use the site's favicon if it exists
-  let icon = document.querySelector('head > link[rel="shortcut icon"]')
-  if (icon && await imgExists(icon.href)) {
-    return icon.href
-  }
-
-  // Search through available icons in no particular order
-  icon = Array.from(document.querySelectorAll('head > link[rel="icon"]'))
-    .find((_icon) => Boolean(_icon.href))
-  if (icon && await imgExists(icon.href)) {
-    return icon.href
+  const icons = document.querySelectorAll('head > link[rel~="icon"]')
+  for (const icon of icons) {
+    if (icon && await imgExists(icon.href)) {
+      return icon.href
+    }
   }
 
   return null
