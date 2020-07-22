@@ -3,8 +3,8 @@ module.exports = {
     disconnected: () => `MetaMask: Lost connection to MetaMask background process.`,
     sendSiteMetadata: () => `MetaMask: Failed to send site metadata. This is an internal error, please report this bug.`,
     unsupportedSync: (method) => `MetaMask: The MetaMask Web3 object does not support synchronous methods like ${method} without a callback parameter.`,
-    invalidDuplexStream: () => 'Must provide a duplex stream.',
-    invalidOptions: () => 'Invalid options.',
+    invalidDuplexStream: () => 'Must provide a Node.js-style duplex stream.',
+    invalidOptions: () => 'Invalid options.\nExpected { maxEventListeners: number, shouldSendMetadata: boolean }',
   },
   warnings: {
     // TODO:deprecation:remove

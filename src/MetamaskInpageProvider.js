@@ -35,16 +35,14 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   ) {
 
     if (!isDuplex(connectionStream)) {
-      throw new Error(messages.errors.invalidDuplexStream(), connectionStream)
+      throw new Error(messages.errors.invalidDuplexStream())
     }
 
     if (
-      typeof shouldSendMetadata !== 'boolean' ||
-      typeof maxEventListeners !== 'number'
+      typeof maxEventListeners !== 'number' ||
+      typeof shouldSendMetadata !== 'boolean'
     ) {
-      throw new Error(messages.errors.invalidOptions(), {
-        maxEventListeners, shouldSendMetadata,
-      })
+      throw new Error(messages.errors.invalidOptions())
     }
 
     super()
