@@ -9,6 +9,7 @@ const SafeEventEmitter = require('safe-event-emitter')
 const dequal = require('fast-deep-equal')
 const { ethErrors } = require('eth-json-rpc-errors')
 const log = require('loglevel')
+const { duplex: isDuplex } = require('is-stream')
 
 const messages = require('./messages')
 const { sendSiteMetadata } = require('./siteMetadata')
@@ -23,7 +24,7 @@ const {
 module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
   /**
-   * @param {Object} connectionStream - A Node.js stream
+   * @param {Object} connectionStream - A Node.js duplex stream
    * @param {Object} opts - An options bag
    * @param {number} opts.maxEventListeners - The maximum number of event listeners
    * @param {boolean} opts.shouldSendMetadata - Whether the provider should send page metadata
@@ -32,6 +33,10 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     connectionStream,
     { shouldSendMetadata = true, maxEventListeners = 100 } = {},
   ) {
+
+    if (!isDuplex(connectionStream)) {
+      throw new Error('Must provide a duplex stream.')
+    }
 
     if (
       typeof shouldSendMetadata !== 'boolean' || typeof maxEventListeners !== 'number'
