@@ -42,7 +42,9 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       typeof maxEventListeners !== 'number' ||
       typeof shouldSendMetadata !== 'boolean'
     ) {
-      throw new Error(messages.errors.invalidOptions())
+      throw new Error(messages.errors.invalidOptions(
+        maxEventListeners, shouldSendMetadata,
+      ))
     }
 
     super()

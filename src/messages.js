@@ -4,7 +4,7 @@ module.exports = {
     sendSiteMetadata: () => `MetaMask: Failed to send site metadata. This is an internal error, please report this bug.`,
     unsupportedSync: (method) => `MetaMask: The MetaMask Web3 object does not support synchronous methods like ${method} without a callback parameter.`,
     invalidDuplexStream: () => 'Must provide a Node.js-style duplex stream.',
-    invalidOptions: () => 'Invalid options. Expected: { maxEventListeners: number, shouldSendMetadata: boolean }',
+    invalidOptions: (maxEventListeners, shouldSendMetadata) => `Invalid options. Received: { maxEventListeners: ${maxEventListeners}, shouldSendMetadata: ${shouldSendMetadata} }`,
   },
   warnings: {
     // TODO:deprecation:remove
