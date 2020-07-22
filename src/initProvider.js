@@ -17,10 +17,6 @@ function initProvider ({
   shouldSetOnWindow = true,
 } = {}) {
 
-  if (!connectionStream) {
-    throw new Error('Must provide a connection stream.')
-  }
-
   let provider = new MetamaskInpageProvider(
     connectionStream, { shouldSendMetadata, maxEventListeners },
   )
