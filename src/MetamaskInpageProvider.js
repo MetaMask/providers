@@ -31,17 +31,20 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    */
   constructor (
     connectionStream,
-    { shouldSendMetadata = true, maxEventListeners = 100 } = {},
+    { maxEventListeners = 100, shouldSendMetadata = true } = {},
   ) {
 
     if (!isDuplex(connectionStream)) {
-      throw new Error('Must provide a duplex stream.')
+      throw new Error(messages.errors.invalidDuplexStream())
     }
 
     if (
-      typeof shouldSendMetadata !== 'boolean' || typeof maxEventListeners !== 'number'
+      typeof maxEventListeners !== 'number' ||
+      typeof shouldSendMetadata !== 'boolean'
     ) {
-      throw new Error('Invalid options.')
+      throw new Error(messages.errors.invalidOptions(
+        maxEventListeners, shouldSendMetadata,
+      ))
     }
 
     super()
