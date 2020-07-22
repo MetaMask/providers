@@ -24,7 +24,7 @@ const {
 module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
   /**
-   * @param {Object} connectionStream - A Node.js stream
+   * @param {Object} connectionStream - A Node.js duplex stream
    * @param {Object} opts - An options bag
    * @param {number} opts.maxEventListeners - The maximum number of event listeners
    * @param {boolean} opts.shouldSendMetadata - Whether the provider should send page metadata
