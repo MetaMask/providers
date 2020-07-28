@@ -1,13 +1,12 @@
 const EventEmitter = require('events')
 const log = require('loglevel')
-const { ethErrors, serializeError } = require('eth-json-rpc-errors')
+const { ethErrors } = require('eth-rpc-errors')
 const SafeEventEmitter = require('safe-event-emitter')
 
 // utility functions
 
 /**
- * json-rpc-engine middleware that both logs standard and non-standard error
- * messages and ends middleware stack traversal if an error is encountered
+ * json-rpc-engine middleware that logs RPC errors and and validates req.method.
  *
  * @returns {Function} json-rpc-engine middleware function
  */
@@ -15,7 +14,7 @@ function createErrorMiddleware () {
   return (req, res, next) => {
 
     // json-rpc-engine will terminate the request when it notices this error
-    if (!req.method || typeof req.method !== 'string') {
+    if (typeof req.method !== 'string' || !req.method) {
       res.error = ethErrors.rpc.invalidRequest({
         message: `The request 'method' must be a non-empty string.`,
         data: req,
@@ -27,7 +26,6 @@ function createErrorMiddleware () {
       if (!error) {
         return done()
       }
-      serializeError(error)
       log.error(`MetaMask - RPC Error: ${error.message}`, error)
       return done()
     })
