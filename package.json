@@ -29,7 +29,7 @@
     "eth-rpc-errors": "^2.1.1",
     "fast-deep-equal": "^2.0.1",
     "is-stream": "^2.0.0",
-    "json-rpc-engine": "^5.1.5",
+    "json-rpc-engine": "^5.2.0",
     "json-rpc-middleware-stream": "^2.1.1",
     "loglevel": "^1.6.1",
     "obj-multiplex": "^1.0.0",
