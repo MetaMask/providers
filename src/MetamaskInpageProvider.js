@@ -7,7 +7,7 @@ const asStream = require('obs-store/lib/asStream')
 const ObjectMultiplex = require('obj-multiplex')
 const SafeEventEmitter = require('safe-event-emitter')
 const dequal = require('fast-deep-equal')
-const { ethErrors } = require('eth-json-rpc-errors')
+const { ethErrors } = require('eth-rpc-errors')
 const log = require('loglevel')
 const { duplex: isDuplex } = require('is-stream')
 

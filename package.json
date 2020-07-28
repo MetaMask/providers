@@ -26,7 +26,7 @@
     "src/"
   ],
   "dependencies": {
-    "eth-json-rpc-errors": "^2.0.2",
+    "eth-rpc-errors": "^2.1.1",
     "fast-deep-equal": "^2.0.1",
     "is-stream": "^2.0.0",
     "json-rpc-engine": "^5.1.5",
