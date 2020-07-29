@@ -97,6 +97,38 @@ describe('MetamaskInpageProvider: RPC', () => {
       })
     })
 
+    it('.sendAsync batch request response on success', async () => {
+      setNextRpcEngineResponse(null, [
+        { result: 42 }, { result: 41 }, { result: 40 },
+      ])
+      await new Promise((done) => {
+        provider.sendAsync(
+          [
+            { method: 'foo', params: ['bar'] },
+            { method: 'bar', params: ['baz'] },
+            { method: 'baz', params: ['buzz'] },
+          ],
+          (err, res) => {
+
+            expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+              expect.arrayContaining([
+                { method: 'foo', params: ['bar'] },
+                { method: 'bar', params: ['baz'] },
+                { method: 'baz', params: ['buzz'] },
+              ]),
+              expect.any(Function),
+            )
+
+            expect(err).toBeNull()
+            expect(res).toStrictEqual([
+              { result: 42 }, { result: 41 }, { result: 40 },
+            ])
+            done()
+          },
+        )
+      })
+    })
+
     it('.sendAsync returns response object on error', async () => {
       setNextRpcEngineResponse(new Error('foo'), { error: 'foo' })
       await new Promise((done) => {
@@ -559,23 +591,23 @@ describe('MetamaskInpageProvider: RPC', () => {
       it('eth_accounts', () => {
         const result = provider.send({ method: 'eth_accounts' })
         expect(result).toMatchObject({
-          result: []
+          result: [],
         })
       })
 
       it('eth_coinbase', () => {
         const result = provider.send({ method: 'eth_coinbase' })
         expect(result).toMatchObject({
-          result: null
+          result: null,
         })
       })
 
       it('eth_uninstallFilter', () => {
         const result = provider.send(
-          { method: 'eth_uninstallFilter', params: ['bar'] }
+          { method: 'eth_uninstallFilter', params: ['bar'] },
         )
         expect(result).toMatchObject({
-          result: true
+          result: true,
         })
         expect(provider._rpcRequest).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -589,7 +621,7 @@ describe('MetamaskInpageProvider: RPC', () => {
       it('net_version', () => {
         const result = provider.send({ method: 'net_version' })
         expect(result).toMatchObject({
-          result: null
+          result: null,
         })
       })
     })
