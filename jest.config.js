@@ -1,7 +1,10 @@
 module.exports = {
-  // TODO: Collect coverage when we're closer to home.
-  // collectCoverage: true,
-  // coverageReporters: ['text', 'html'],
+  coverageReporters: ['text', 'html'],
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '/mocks/',
+  ],
+  // TODO: Require coverage when we're closer to home.
   // coverageThreshold: {
   //   global: {
   //     branches: 100,
@@ -10,10 +13,6 @@ module.exports = {
   //     statements: 100,
   //   },
   // },
-  coveragePathIgnorePatterns: [
-    '/node_modules/',
-    '/mocks/',
-  ],
   moduleFileExtensions: ['js'],
   silent: true,
   testEnvironment: 'jsdom',

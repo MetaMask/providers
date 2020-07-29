@@ -305,6 +305,7 @@ describe('MetamaskInpageProvider: RPC', () => {
     })
   })
 
+  // this also tests sendAsync, it being effectively an alias for this method
   describe('._rpcRequest', () => {
 
     let provider
@@ -422,5 +423,185 @@ describe('MetamaskInpageProvider: RPC', () => {
         })
       },
     )
+  })
+
+  describe('.send', () => {
+
+    let provider
+    const mockRpcRequestResponse = jest.fn()
+
+    const resetRpcRequestResponseMock = () => {
+      mockRpcRequestResponse.mockClear()
+        .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined])
+    }
+
+    const setNextRpcRequestResponse = (err = null, res = {}) => {
+      mockRpcRequestResponse.mockReturnValueOnce([err, res])
+    }
+
+    beforeEach(() => {
+      resetRpcRequestResponseMock()
+      provider = initProvider()
+      jest.spyOn(provider, '_rpcRequest').mockImplementation(
+        (_payload, cb, _isInternal) => cb(...mockRpcRequestResponse()),
+      )
+    })
+
+    it('promise signature returns response object on success', async () => {
+      setNextRpcRequestResponse(null, { result: 42 })
+      const result = await provider.send('foo', ['bar'])
+      expect(provider._rpcRequest).toHaveBeenCalledWith(
+        expect.objectContaining({
+          method: 'foo',
+          params: ['bar'],
+        }),
+        expect.any(Function),
+      )
+
+      expect(result).toStrictEqual({ result: 42 })
+    })
+
+    it('promise signature returns response object on success (no params)', async () => {
+      setNextRpcRequestResponse(null, { result: 42 })
+      const result = await provider.send('foo')
+      expect(provider._rpcRequest).toHaveBeenCalledWith(
+        expect.objectContaining({
+          method: 'foo',
+        }),
+        expect.any(Function),
+      )
+
+      expect(result).toStrictEqual({ result: 42 })
+    })
+
+    it('promise signature throws on RPC error', async () => {
+      setNextRpcRequestResponse(new Error('foo'))
+
+      await expect(
+        provider.send('foo', ['bar']),
+      ).rejects.toThrow('foo')
+
+      expect(provider._rpcRequest).toHaveBeenCalledWith(
+        expect.objectContaining({
+          method: 'foo',
+          params: ['bar'],
+        }),
+        expect.any(Function),
+      )
+    })
+
+    it('promise signature throws on error from ._rpcRequest', async () => {
+      provider._rpcRequest.mockImplementation(() => {
+        throw new Error('foo')
+      })
+
+      await expect(
+        provider.send('foo', ['bar']),
+      ).rejects.toThrow('foo')
+
+      expect(provider._rpcRequest).toHaveBeenCalledWith(
+        expect.objectContaining({
+          method: 'foo',
+          params: ['bar'],
+        }),
+        expect.any(Function),
+      )
+    })
+
+    it('callback signature returns response object on success', async () => {
+      setNextRpcRequestResponse(null, { result: 42 })
+      await new Promise((done) => {
+        provider.send(
+          { method: 'foo', params: ['bar'] },
+          (err, res) => {
+
+            expect(provider._rpcRequest).toHaveBeenCalledWith(
+              expect.objectContaining({
+                method: 'foo',
+                params: ['bar'],
+              }),
+              expect.any(Function),
+            )
+
+            expect(err).toBeNull()
+            expect(res).toStrictEqual({ result: 42 })
+            done()
+          },
+        )
+      })
+    })
+
+    it('callback signature returns response object on error', async () => {
+      setNextRpcRequestResponse(new Error('foo'), { error: 'foo' })
+      await new Promise((done) => {
+        provider.send(
+          { method: 'foo', params: ['bar'] },
+          (err, res) => {
+
+            expect(provider._rpcRequest).toHaveBeenCalledWith(
+              expect.objectContaining({
+                method: 'foo',
+                params: ['bar'],
+              }),
+              expect.any(Function),
+            )
+
+            expect(err).toStrictEqual(new Error('foo'))
+            expect(res).toStrictEqual({ error: 'foo' })
+            done()
+          },
+        )
+      })
+    })
+
+    describe('object-only signature handles "synchronous" RPC methods', () => {
+
+      it('eth_accounts', () => {
+        const result = provider.send({ method: 'eth_accounts' })
+        expect(result).toMatchObject({
+          result: []
+        })
+      })
+
+      it('eth_coinbase', () => {
+        const result = provider.send({ method: 'eth_coinbase' })
+        expect(result).toMatchObject({
+          result: null
+        })
+      })
+
+      it('eth_uninstallFilter', () => {
+        const result = provider.send(
+          { method: 'eth_uninstallFilter', params: ['bar'] }
+        )
+        expect(result).toMatchObject({
+          result: true
+        })
+        expect(provider._rpcRequest).toHaveBeenCalledWith(
+          expect.objectContaining({
+            method: 'eth_uninstallFilter',
+            params: ['bar'],
+          }),
+          expect.any(Function),
+        )
+      })
+
+      it('net_version', () => {
+        const result = provider.send({ method: 'net_version' })
+        expect(result).toMatchObject({
+          result: null
+        })
+      })
+    })
+
+    it('throws on unsupported sync method', () => {
+      expect(
+        () => provider.send({ method: 'foo', params: ['bar'] }),
+      ).toThrow(messages.errors.unsupportedSync('foo'))
+
+      expect(
+        () => provider.send({ method: 'foo' }),
+      ).toThrow(messages.errors.unsupportedSync('foo'))
+    })
   })
 })
