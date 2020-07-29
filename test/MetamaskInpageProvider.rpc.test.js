@@ -17,6 +17,186 @@ function initProvider () {
 
 describe('MetamaskInpageProvider: RPC', () => {
 
+  // mocking the underlying stream, and testing the basic functionality of
+  // .reqest, .sendAsync, and .send
+  describe('integration', () => {
+
+    let provider
+    const mockRpcEngineResponse = jest.fn()
+
+    const resetRpcEngineResponseMock = () => {
+      mockRpcEngineResponse.mockClear()
+        .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined])
+    }
+
+    const setNextRpcEngineResponse = (err = null, res = {}) => {
+      mockRpcEngineResponse.mockReturnValueOnce([err, res])
+    }
+
+    beforeEach(() => {
+      resetRpcEngineResponseMock()
+      provider = initProvider()
+      jest.spyOn(provider, '_handleAccountsChanged').mockImplementation()
+      jest.spyOn(provider._rpcEngine, 'handle').mockImplementation(
+        (_payload, cb) => cb(...mockRpcEngineResponse()),
+      )
+    })
+
+    it('.request returns result on success', async () => {
+      setNextRpcEngineResponse(null, { result: 42 })
+      const result = await provider.request(
+        { method: 'foo', params: ['bar'] },
+      )
+      expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+        expect.objectContaining({
+          method: 'foo',
+          params: ['bar'],
+        }),
+        expect.any(Function),
+      )
+
+      expect(result).toBe(42)
+    })
+
+    it('.request throws on error', async () => {
+      setNextRpcEngineResponse(new Error('foo'))
+
+      await expect(
+        provider.request({ method: 'foo', params: ['bar'] }),
+      ).rejects.toThrow('foo')
+
+      expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+        expect.objectContaining({
+          method: 'foo',
+          params: ['bar'],
+        }),
+        expect.any(Function),
+      )
+    })
+
+    it('.sendAsync returns response object on success', async () => {
+      setNextRpcEngineResponse(null, { result: 42 })
+      await new Promise((done) => {
+        provider.sendAsync(
+          { method: 'foo', params: ['bar'] },
+          (err, res) => {
+
+            expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+              expect.objectContaining({
+                method: 'foo',
+                params: ['bar'],
+              }),
+              expect.any(Function),
+            )
+
+            expect(err).toBeNull()
+            expect(res).toStrictEqual({ result: 42 })
+            done()
+          },
+        )
+      })
+    })
+
+    it('.sendAsync returns response object on error', async () => {
+      setNextRpcEngineResponse(new Error('foo'), { error: 'foo' })
+      await new Promise((done) => {
+        provider.sendAsync(
+          { method: 'foo', params: ['bar'] },
+          (err, res) => {
+
+            expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+              expect.objectContaining({
+                method: 'foo',
+                params: ['bar'],
+              }),
+              expect.any(Function),
+            )
+
+            expect(err).toStrictEqual(new Error('foo'))
+            expect(res).toStrictEqual({ error: 'foo' })
+            done()
+          },
+        )
+      })
+    })
+
+    it('.send promise signature returns response object on success', async () => {
+      setNextRpcEngineResponse(null, { result: 42 })
+      const result = await provider.send('foo', ['bar'])
+      expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+        expect.objectContaining({
+          method: 'foo',
+          params: ['bar'],
+        }),
+        expect.any(Function),
+      )
+
+      expect(result).toStrictEqual({ result: 42 })
+    })
+
+    it('.send promise signature throws on error', async () => {
+      setNextRpcEngineResponse(new Error('foo'))
+
+      await expect(
+        provider.send('foo', ['bar']),
+      ).rejects.toThrow('foo')
+
+      expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+        expect.objectContaining({
+          method: 'foo',
+          params: ['bar'],
+        }),
+        expect.any(Function),
+      )
+    })
+
+    it('.send callback signature returns response object on success', async () => {
+      setNextRpcEngineResponse(null, { result: 42 })
+      await new Promise((done) => {
+        provider.send(
+          { method: 'foo', params: ['bar'] },
+          (err, res) => {
+
+            expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+              expect.objectContaining({
+                method: 'foo',
+                params: ['bar'],
+              }),
+              expect.any(Function),
+            )
+
+            expect(err).toBeNull()
+            expect(res).toStrictEqual({ result: 42 })
+            done()
+          },
+        )
+      })
+    })
+
+    it('.send callback signature returns response object on error', async () => {
+      setNextRpcEngineResponse(new Error('foo'), { error: 'foo' })
+      await new Promise((done) => {
+        provider.send(
+          { method: 'foo', params: ['bar'] },
+          (err, res) => {
+
+            expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+              expect.objectContaining({
+                method: 'foo',
+                params: ['bar'],
+              }),
+              expect.any(Function),
+            )
+
+            expect(err).toStrictEqual(new Error('foo'))
+            expect(res).toStrictEqual({ error: 'foo' })
+            done()
+          },
+        )
+      })
+    })
+  })
+
   describe('.request', () => {
 
     let provider
@@ -39,7 +219,7 @@ describe('MetamaskInpageProvider: RPC', () => {
       )
     })
 
-    it('returns result', async () => {
+    it('returns result on success', async () => {
       setNextRpcRequestResponse(null, { result: 42 })
       const result = await provider.request({ method: 'foo', params: ['bar'] })
 
@@ -54,7 +234,7 @@ describe('MetamaskInpageProvider: RPC', () => {
       )
     })
 
-    it('throws on RPC error', async () => {
+    it('throws on error', async () => {
       setNextRpcRequestResponse(new Error('foo'))
 
       await expect(
@@ -148,7 +328,7 @@ describe('MetamaskInpageProvider: RPC', () => {
       )
     })
 
-    it('returns response object', async () => {
+    it('returns response object on success', async () => {
       setNextRpcEngineResponse(null, { result: 42 })
       await new Promise((done) => {
         provider._rpcRequest(
@@ -171,7 +351,7 @@ describe('MetamaskInpageProvider: RPC', () => {
       })
     })
 
-    it('returns response object with error', async () => {
+    it('returns response object on error', async () => {
       setNextRpcEngineResponse(new Error('foo'), { error: 'foo' })
       await new Promise((done) => {
         provider._rpcRequest(
