@@ -1,7 +1,7 @@
 module.exports = {
   env: {
-    es6: true,
     browser: true,
+    es6: true,
   },
   extends: [
     '@metamask/eslint-config',
