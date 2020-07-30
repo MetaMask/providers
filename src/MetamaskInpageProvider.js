@@ -156,7 +156,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       mux.createStream('publicConfig'),
       asStream(this._publicConfigStore),
       // RPC requests should still work if only this stream fails
-      logStreamDisconnectWarning.bind(this, 'MetaMask PublicConfigStore'),
+      logStreamDisconnectWarning.bind(this, log, 'MetaMask PublicConfigStore'),
     )
 
     // ignore phishing warning message (handled elsewhere)
@@ -407,7 +407,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    */
   _handleDisconnect (streamName, err) {
 
-    logStreamDisconnectWarning.bind(this, log)(streamName, err)
+    logStreamDisconnectWarning.bind(this)(log, streamName, err)
 
     const disconnectError = {
       code: 1011,
