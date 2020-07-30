@@ -8,7 +8,6 @@ const ObjectMultiplex = require('obj-multiplex')
 const SafeEventEmitter = require('safe-event-emitter')
 const dequal = require('fast-deep-equal')
 const { ethErrors } = require('eth-rpc-errors')
-const log = require('loglevel')
 const { duplex: isDuplex } = require('is-stream')
 
 const messages = require('./messages')
@@ -224,7 +223,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     // wait a second to attempt to send this, so that the warning can be silenced
     setTimeout(() => {
       if (this.autoRefreshOnNetworkChange && !this._state.sentWarnings.autoRefresh) {
-        log.warn(messages.warnings.autoRefreshDeprecation)
+        console.warn(messages.warnings.autoRefreshDeprecation)
         this._state.sentWarnings.autoRefresh = true
       }
     }, 1000)
@@ -232,7 +231,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
   get publicConfigStore () {
     if (!this._state.sentWarnings.publicConfigStore) {
-      log.warn(messages.warnings.publicConfigStore)
+      console.warn(messages.warnings.publicConfigStore)
       this._state.sentWarnings.publicConfigStore = true
     }
     return this._publicConfigStore
@@ -427,7 +426,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     let _accounts = accounts
 
     if (!Array.isArray(accounts)) {
-      log.error(
+      console.error(
         'MetaMask: Received non-array accounts parameter. Please report this bug.',
         accounts,
       )
@@ -440,7 +439,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       // we should always have the correct accounts even before eth_accounts
       // returns, except in cases where isInternal is true
       if (isEthAccounts && this._state.accounts !== undefined && !isInternal) {
-        log.error(
+        console.error(
           `MetaMask: 'eth_accounts' unexpectedly updated accounts. Please report this bug.`,
           _accounts,
         )
@@ -554,7 +553,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         get: (obj, prop) => {
 
           if (!this._state.sentWarnings.experimentalMethods) {
-            log.warn(messages.warnings.experimentalMethods)
+            console.warn(messages.warnings.experimentalMethods)
             this._state.sentWarnings.experimentalMethods = true
           }
           return obj[prop]
@@ -576,7 +575,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   enable () {
 
     if (!this._state.sentWarnings.enable) {
-      log.warn(messages.warnings.enableDeprecation)
+      console.warn(messages.warnings.enableDeprecation)
       this._state.sentWarnings.enable = true
     }
 
@@ -604,7 +603,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   send (methodOrPayload, callbackOrArgs) {
 
     if (!this._state.sentWarnings.send) {
-      log.warn(messages.warnings.sendDeprecation)
+      console.warn(messages.warnings.sendDeprecation)
       this._state.sentWarnings.send = true
     }
 

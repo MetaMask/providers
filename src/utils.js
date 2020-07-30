@@ -1,5 +1,4 @@
 const EventEmitter = require('events')
-const log = require('loglevel')
 const { ethErrors } = require('eth-rpc-errors')
 const SafeEventEmitter = require('safe-event-emitter')
 
@@ -26,7 +25,7 @@ function createErrorMiddleware () {
       if (!error) {
         return done()
       }
-      log.error(`MetaMask - RPC Error: ${error.message}`, error)
+      console.error(`MetaMask - RPC Error: ${error.message}`, error)
       return done()
     })
   }
@@ -48,14 +47,14 @@ const getRpcPromiseCallback = (resolve, reject, unwrapResult = true) => (error, 
  * EventEmitter that has listeners for the 'error' event.
  *
  * @param {string} remoteLabel - The label of the disconnected stream.
- * @param {Error} err - The associated error to log.
+ * @param {Error} err - The associated error to console.
  */
 function logStreamDisconnectWarning (remoteLabel, err) {
   let warningMsg = `MetamaskInpageProvider - lost connection to ${remoteLabel}`
   if (err) {
     warningMsg += `\n${err.stack}`
   }
-  log.warn(warningMsg)
+  console.warn(warningMsg)
   if (this instanceof EventEmitter || this instanceof SafeEventEmitter) {
     if (this.listenerCount('error') > 0) {
       this.emit('error', warningMsg)
