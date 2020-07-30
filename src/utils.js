@@ -7,9 +7,10 @@ const SafeEventEmitter = require('safe-event-emitter')
 /**
  * json-rpc-engine middleware that logs RPC errors and and validates req.method.
  *
+ * @param {Object} log - The logging API to use.
  * @returns {Function} json-rpc-engine middleware function
  */
-function createErrorMiddleware () {
+function createErrorMiddleware (log) {
   return (req, res, next) => {
 
     // json-rpc-engine will terminate the request when it notices this error
@@ -25,7 +26,7 @@ function createErrorMiddleware () {
       if (!error) {
         return done()
       }
-      console.error(`MetaMask - RPC Error: ${error.message}`, error)
+      log.error(`MetaMask - RPC Error: ${error.message}`, error)
       return done()
     })
   }
@@ -46,15 +47,16 @@ const getRpcPromiseCallback = (resolve, reject, unwrapResult = true) => (error, 
  * Logs a stream disconnection error. Emits an 'error' if bound to an
  * EventEmitter that has listeners for the 'error' event.
  *
+ * @param {Object} log - The logging API to use.
  * @param {string} remoteLabel - The label of the disconnected stream.
- * @param {Error} err - The associated error to console.
+ * @param {Error} err - The associated error to log.
  */
-function logStreamDisconnectWarning (remoteLabel, err) {
+function logStreamDisconnectWarning (log, remoteLabel, err) {
   let warningMsg = `MetamaskInpageProvider - lost connection to ${remoteLabel}`
   if (err) {
     warningMsg += `\n${err.stack}`
   }
-  console.warn(warningMsg)
+  log.warn(warningMsg)
   if (this instanceof EventEmitter || this instanceof SafeEventEmitter) {
     if (this.listenerCount('error') > 0) {
       this.emit('error', warningMsg)

@@ -8,8 +8,11 @@ module.exports = {
 
 /**
  * Sends site metadata over an RPC request.
+ *
+ * @param {JsonRpcEngine} engine - The JSON RPC Engine to send metadata over.
+ * @param {Object} log - The logging API to use.
  */
-async function sendSiteMetadata (engine) {
+async function sendSiteMetadata (engine, log) {
   try {
     const domainMetadata = await getSiteMetadata()
     // call engine.handle directly to avoid normal RPC request handling
@@ -21,7 +24,7 @@ async function sendSiteMetadata (engine) {
       NOOP,
     )
   } catch (error) {
-    console.error({
+    log.error({
       message: errors.sendSiteMetadata(),
       originalError: error,
     })
