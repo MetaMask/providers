@@ -262,7 +262,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
     if (!args || typeof args !== 'object' || Array.isArray(args)) {
       throw ethErrors.rpc.invalidRequest({
-        message: `Expected a single, non-array, object argument.`,
+        message: messages.errors.invalidRequestArgs(),
         data: args,
       })
     }
@@ -271,7 +271,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
     if (typeof method !== 'string' || method.length === 0) {
       throw ethErrors.rpc.invalidRequest({
-        message: `'args.method' must be a non-empty string.`,
+        message: messages.errors.invalidRequestMethod(),
         data: args,
       })
     }
@@ -281,7 +281,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       (typeof params !== 'object' || params === null)
     ) {
       throw ethErrors.rpc.invalidRequest({
-        message: `'args.params' must be an object or array if provided.`,
+        message: messages.errors.invalidRequestParams(),
         data: args,
       })
     }
