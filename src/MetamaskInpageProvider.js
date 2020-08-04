@@ -20,18 +20,40 @@ const {
   NOOP,
 } = require('./utils')
 
+let log
+
+/**
+ * @typedef {Object} ConsoleLike
+ * @property {function} debug - Like console.debug
+ * @property {function} error - Like console.error
+ * @property {function} info - Like console.info
+ * @property {function} log - Like console.log
+ * @property {function} trace - Like console.trace
+ * @property {function} warn - Like console.warn
+ */
+
 module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
   /**
    * @param {Object} connectionStream - A Node.js duplex stream
    * @param {Object} opts - An options bag
-   * @param {number} opts.maxEventListeners - The maximum number of event listeners
-   * @param {boolean} opts.shouldSendMetadata - Whether the provider should send page metadata
+   * @param {ConsoleLike} [opts.logger] - The logging API to use. Default: console
+   * @param {number} [opts.maxEventListeners] - The maximum number of event
+   * listeners. Default: 100
+   * @param {boolean} [opts.shouldSendMetadata] - Whether the provider should
+   * send page metadata. Default: true
    */
   constructor (
     connectionStream,
-    { maxEventListeners = 100, shouldSendMetadata = true } = {},
+    {
+      logger = console,
+      maxEventListeners = 100,
+      shouldSendMetadata = true,
+    } = {},
   ) {
+
+    validateLoggerObject(logger)
+    log = logger
 
     if (!isDuplex(connectionStream)) {
       throw new Error(messages.errors.invalidDuplexStream())
@@ -145,7 +167,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       mux.createStream('publicConfig'),
       asStream(this._publicConfigStore),
       // RPC requests should still work if only this stream fails
-      logStreamDisconnectWarning.bind(this, 'MetaMask PublicConfigStore'),
+      logStreamDisconnectWarning.bind(this, log, 'MetaMask PublicConfigStore'),
     )
 
     // ignore phishing warning message (handled elsewhere)
@@ -171,7 +193,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     // handle RPC requests via dapp-side rpc engine
     const rpcEngine = new RpcEngine()
     rpcEngine.push(createIdRemapMiddleware())
-    rpcEngine.push(createErrorMiddleware())
+    rpcEngine.push(createErrorMiddleware(log))
     rpcEngine.push(jsonRpcConnection.middleware)
     this._rpcEngine = rpcEngine
 
@@ -203,7 +225,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     // send website metadata
     if (shouldSendMetadata) {
       const domContentLoadedHandler = () => {
-        sendSiteMetadata(this._rpcEngine)
+        sendSiteMetadata(this._rpcEngine, log)
         window.removeEventListener('DOMContentLoaded', domContentLoadedHandler)
       }
       window.addEventListener('DOMContentLoaded', domContentLoadedHandler)
@@ -223,7 +245,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     // wait a second to attempt to send this, so that the warning can be silenced
     setTimeout(() => {
       if (this.autoRefreshOnNetworkChange && !this._state.sentWarnings.autoRefresh) {
-        console.warn(messages.warnings.autoRefreshDeprecation)
+        log.warn(messages.warnings.autoRefreshDeprecation)
         this._state.sentWarnings.autoRefresh = true
       }
     }, 1000)
@@ -231,7 +253,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
   get publicConfigStore () {
     if (!this._state.sentWarnings.publicConfigStore) {
-      console.warn(messages.warnings.publicConfigStore)
+      log.warn(messages.warnings.publicConfigStore)
       this._state.sentWarnings.publicConfigStore = true
     }
     return this._publicConfigStore
@@ -396,7 +418,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    */
   _handleDisconnect (streamName, err) {
 
-    logStreamDisconnectWarning.bind(this)(streamName, err)
+    logStreamDisconnectWarning.bind(this)(log, streamName, err)
 
     const disconnectError = {
       code: 1011,
@@ -426,7 +448,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     let _accounts = accounts
 
     if (!Array.isArray(accounts)) {
-      console.error(
+      log.error(
         'MetaMask: Received non-array accounts parameter. Please report this bug.',
         accounts,
       )
@@ -439,7 +461,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       // we should always have the correct accounts even before eth_accounts
       // returns, except in cases where isInternal is true
       if (isEthAccounts && this._state.accounts !== undefined && !isInternal) {
-        console.error(
+        log.error(
           `MetaMask: 'eth_accounts' unexpectedly updated accounts. Please report this bug.`,
           _accounts,
         )
@@ -474,7 +496,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    */
   _warnOfDeprecation (eventName) {
     if (this._state.sentWarnings.events[eventName] === false) {
-      console.warn(messages.warnings.events[eventName])
+      log.warn(messages.warnings.events[eventName])
       this._state.sentWarnings.events[eventName] = true
     }
   }
@@ -553,7 +575,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         get: (obj, prop) => {
 
           if (!this._state.sentWarnings.experimentalMethods) {
-            console.warn(messages.warnings.experimentalMethods)
+            log.warn(messages.warnings.experimentalMethods)
             this._state.sentWarnings.experimentalMethods = true
           }
           return obj[prop]
@@ -575,7 +597,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   enable () {
 
     if (!this._state.sentWarnings.enable) {
-      console.warn(messages.warnings.enableDeprecation)
+      log.warn(messages.warnings.enableDeprecation)
       this._state.sentWarnings.enable = true
     }
 
@@ -603,7 +625,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   send (methodOrPayload, callbackOrArgs) {
 
     if (!this._state.sentWarnings.send) {
-      console.warn(messages.warnings.sendDeprecation)
+      log.warn(messages.warnings.sendDeprecation)
       this._state.sentWarnings.send = true
     }
 
@@ -665,5 +687,20 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       jsonrpc: payload.jsonrpc,
       result,
     }
+  }
+}
+
+function validateLoggerObject (logger) {
+  if (logger !== console) {
+    if (typeof logger === 'object') {
+      const methodKeys = ['log', 'warn', 'error', 'debug', 'info', 'trace']
+      for (const key of methodKeys) {
+        if (typeof logger[key] !== 'function') {
+          throw new Error(messages.errors.invalidLoggerMethod(key))
+        }
+      }
+      return
+    }
+    throw new Error(messages.errors.invalidLoggerObject())
   }
 }

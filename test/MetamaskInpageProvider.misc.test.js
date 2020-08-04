@@ -61,7 +61,7 @@ describe('MetamaskInpageProvider: Miscellanea', () => {
 
       expect(
         () => new MetamaskInpageProvider(stream, null),
-      ).toThrow('Cannot destructure property `maxEventListeners` of \'undefined\' or \'null\'')
+      ).toThrow('Cannot destructure property `logger` of \'undefined\' or \'null\'')
 
       expect(
         () => new MetamaskInpageProvider(stream, {
@@ -76,6 +76,70 @@ describe('MetamaskInpageProvider: Miscellanea', () => {
           shouldSendMetadata: true,
         }),
       ).toThrow(messages.errors.invalidOptions('foo', true))
+    })
+
+    it('accepts valid custom logger', () => {
+      const stream = new MockDuplexStream()
+      const customLogger = {
+        debug: console.debug,
+        error: console.error,
+        info: console.info,
+        log: console.log,
+        trace: console.trace,
+        warn: console.warn,
+      }
+
+      expect(
+        () => new MetamaskInpageProvider(stream, {
+          logger: customLogger,
+        }),
+      ).not.toThrow()
+    })
+
+    it('throws if non-object logger provided', () => {
+      const stream = new MockDuplexStream()
+
+      expect(
+        () => new MetamaskInpageProvider(stream, {
+          logger: 'foo',
+        }),
+      ).toThrow(messages.errors.invalidLoggerObject())
+    })
+
+    it('throws if provided logger is missing method key', () => {
+      const stream = new MockDuplexStream()
+      const customLogger = {
+        debug: console.debug,
+        error: console.error,
+        info: console.info,
+        log: console.log,
+        trace: console.trace,
+        // warn: console.warn, // missing
+      }
+
+      expect(
+        () => new MetamaskInpageProvider(stream, {
+          logger: customLogger,
+        }),
+      ).toThrow(messages.errors.invalidLoggerMethod('warn'))
+    })
+
+    it('throws if provided logger has invalid method', () => {
+      const stream = new MockDuplexStream()
+      const customLogger = {
+        debug: console.debug,
+        error: console.error,
+        info: console.info,
+        log: console.log,
+        trace: console.trace,
+        warn: 'foo', // not a function
+      }
+
+      expect(
+        () => new MetamaskInpageProvider(stream, {
+          logger: customLogger,
+        }),
+      ).toThrow(messages.errors.invalidLoggerMethod('warn'))
     })
   })
 
