@@ -42,6 +42,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     } = {},
   ) {
 
+    validateLoggerObject(logger)
     log = logger
 
     if (!isDuplex(connectionStream)) {
@@ -676,5 +677,20 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       jsonrpc: payload.jsonrpc,
       result,
     }
+  }
+}
+
+function validateLoggerObject (logger) {
+  if (logger !== console) {
+    if (typeof logger === 'object') {
+      const methodKeys = ['log', 'warn', 'error', 'debug', 'info', 'trace']
+      for (const key of methodKeys) {
+        if (typeof logger[key] !== 'function') {
+          throw new Error(messages.errors.invalidLoggerMethod(key))
+        }
+      }
+      return
+    }
+    throw new Error(messages.errors.invalidLoggerObject())
   }
 }

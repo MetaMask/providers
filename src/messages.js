@@ -8,6 +8,8 @@ module.exports = {
     invalidRequestArgs: () => `Expected a single, non-array, object argument.`,
     invalidRequestMethod: () => `'args.method' must be a non-empty string.`,
     invalidRequestParams: () => `'args.params' must be an object or array if provided.`,
+    invalidLoggerObject: () => `'args.logger' must be an object if provided.`,
+    invalidLoggerMethod: (method) => `'args.logger' must include required method '${method}'.`,
   },
   warnings: {
     // TODO:deprecation:remove
