@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.2.0] - 2020-08-04
+
+### Added
+
+- Package consumers can now provide a `logger` object to the provider constructor, to override the default logger
+  - The default logger is the `console` global
+  - The following methods are required: `debug`, `error`, `info`, `log`, `trace`
+
 ## [6.1.1] - 2020-07-28
 
 ### Changed
