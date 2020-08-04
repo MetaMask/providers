@@ -22,12 +22,22 @@ const {
 
 let log
 
+/**
+ * @typedef {Object} ConsoleLike
+ * @property {function} debug - Like console.debug
+ * @property {function} error - Like console.error
+ * @property {function} info - Like console.info
+ * @property {function} log - Like console.log
+ * @property {function} trace - Like console.trace
+ * @property {function} warn - Like console.warn
+ */
+
 module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
   /**
    * @param {Object} connectionStream - A Node.js duplex stream
    * @param {Object} opts - An options bag
-   * @param {Object} [opts.logger] - The logging API to use. Default: console
+   * @param {ConsoleLike} [opts.logger] - The logging API to use. Default: console
    * @param {number} [opts.maxEventListeners] - The maximum number of event
    * listeners. Default: 100
    * @param {boolean} [opts.shouldSendMetadata] - Whether the provider should
