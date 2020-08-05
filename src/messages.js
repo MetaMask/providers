@@ -5,6 +5,11 @@ module.exports = {
     unsupportedSync: (method) => `MetaMask: The MetaMask Web3 object does not support synchronous methods like ${method} without a callback parameter.`,
     invalidDuplexStream: () => 'Must provide a Node.js-style duplex stream.',
     invalidOptions: (maxEventListeners, shouldSendMetadata) => `Invalid options. Received: { maxEventListeners: ${maxEventListeners}, shouldSendMetadata: ${shouldSendMetadata} }`,
+    invalidRequestArgs: () => `Expected a single, non-array, object argument.`,
+    invalidRequestMethod: () => `'args.method' must be a non-empty string.`,
+    invalidRequestParams: () => `'args.params' must be an object or array if provided.`,
+    invalidLoggerObject: () => `'args.logger' must be an object if provided.`,
+    invalidLoggerMethod: (method) => `'args.logger' must include required method '${method}'.`,
   },
   warnings: {
     // TODO:deprecation:remove

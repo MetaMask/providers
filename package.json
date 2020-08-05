@@ -1,11 +1,15 @@
 {
   "name": "@metamask/inpage-provider",
-  "version": "6.1.1",
+  "version": "6.2.0",
   "description": "A JavaScript Ethereum provider that connects over a WebExtension port.",
   "main": "index.js",
   "scripts": {
+    "test": "jest",
+    "coverage": "jest --coverage",
     "lint": "eslint . --ext js,json",
-    "lint:fix": "eslint . --ext js,json --fix"
+    "lint:fix": "eslint . --ext js,json --fix",
+    "prepublishOnly": "yarn require-clean-git && yarn lint && yarn test",
+    "require-clean-git": "git diff --quiet || echo 'Please clean the working directory.' && exit 1"
   },
   "author": "MetaMask",
   "license": "MIT",
@@ -31,7 +35,6 @@
     "is-stream": "^2.0.0",
     "json-rpc-engine": "^5.2.0",
     "json-rpc-middleware-stream": "^2.1.1",
-    "loglevel": "^1.6.1",
     "obj-multiplex": "^1.0.0",
     "obs-store": "^4.0.3",
     "pump": "^3.0.0",
@@ -39,8 +42,11 @@
   },
   "devDependencies": {
     "@metamask/eslint-config": "^2.1.1",
+    "@types/jest": "^26.0.5",
     "eslint": "^6.8.0",
     "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-json": "^2.0.1"
+    "eslint-plugin-jest": "^23.18.0",
+    "eslint-plugin-json": "^2.0.1",
+    "jest": "^26.1.0"
   }
 }

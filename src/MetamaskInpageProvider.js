@@ -8,7 +8,6 @@ const ObjectMultiplex = require('obj-multiplex')
 const SafeEventEmitter = require('safe-event-emitter')
 const dequal = require('fast-deep-equal')
 const { ethErrors } = require('eth-rpc-errors')
-const log = require('loglevel')
 const { duplex: isDuplex } = require('is-stream')
 
 const messages = require('./messages')
@@ -21,18 +20,40 @@ const {
   NOOP,
 } = require('./utils')
 
+let log
+
+/**
+ * @typedef {Object} ConsoleLike
+ * @property {function} debug - Like console.debug
+ * @property {function} error - Like console.error
+ * @property {function} info - Like console.info
+ * @property {function} log - Like console.log
+ * @property {function} trace - Like console.trace
+ * @property {function} warn - Like console.warn
+ */
+
 module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
   /**
    * @param {Object} connectionStream - A Node.js duplex stream
    * @param {Object} opts - An options bag
-   * @param {number} opts.maxEventListeners - The maximum number of event listeners
-   * @param {boolean} opts.shouldSendMetadata - Whether the provider should send page metadata
+   * @param {ConsoleLike} [opts.logger] - The logging API to use. Default: console
+   * @param {number} [opts.maxEventListeners] - The maximum number of event
+   * listeners. Default: 100
+   * @param {boolean} [opts.shouldSendMetadata] - Whether the provider should
+   * send page metadata. Default: true
    */
   constructor (
     connectionStream,
-    { maxEventListeners = 100, shouldSendMetadata = true } = {},
+    {
+      logger = console,
+      maxEventListeners = 100,
+      shouldSendMetadata = true,
+    } = {},
   ) {
+
+    validateLoggerObject(logger)
+    log = logger
 
     if (!isDuplex(connectionStream)) {
       throw new Error(messages.errors.invalidDuplexStream())
@@ -146,7 +167,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       mux.createStream('publicConfig'),
       asStream(this._publicConfigStore),
       // RPC requests should still work if only this stream fails
-      logStreamDisconnectWarning.bind(this, 'MetaMask PublicConfigStore'),
+      logStreamDisconnectWarning.bind(this, log, 'MetaMask PublicConfigStore'),
     )
 
     // ignore phishing warning message (handled elsewhere)
@@ -172,7 +193,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     // handle RPC requests via dapp-side rpc engine
     const rpcEngine = new RpcEngine()
     rpcEngine.push(createIdRemapMiddleware())
-    rpcEngine.push(createErrorMiddleware())
+    rpcEngine.push(createErrorMiddleware(log))
     rpcEngine.push(jsonRpcConnection.middleware)
     this._rpcEngine = rpcEngine
 
@@ -204,7 +225,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     // send website metadata
     if (shouldSendMetadata) {
       const domContentLoadedHandler = () => {
-        sendSiteMetadata(this._rpcEngine)
+        sendSiteMetadata(this._rpcEngine, log)
         window.removeEventListener('DOMContentLoaded', domContentLoadedHandler)
       }
       window.addEventListener('DOMContentLoaded', domContentLoadedHandler)
@@ -263,7 +284,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
     if (!args || typeof args !== 'object' || Array.isArray(args)) {
       throw ethErrors.rpc.invalidRequest({
-        message: `Expected a single, non-array, object argument.`,
+        message: messages.errors.invalidRequestArgs(),
         data: args,
       })
     }
@@ -272,7 +293,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
     if (typeof method !== 'string' || method.length === 0) {
       throw ethErrors.rpc.invalidRequest({
-        message: `'args.method' must be a non-empty string.`,
+        message: messages.errors.invalidRequestMethod(),
         data: args,
       })
     }
@@ -282,7 +303,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       (typeof params !== 'object' || params === null)
     ) {
       throw ethErrors.rpc.invalidRequest({
-        message: `'args.params' must be an object or array if provided.`,
+        message: messages.errors.invalidRequestParams(),
         data: args,
       })
     }
@@ -397,7 +418,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    */
   _handleDisconnect (streamName, err) {
 
-    logStreamDisconnectWarning.bind(this)(streamName, err)
+    logStreamDisconnectWarning.bind(this)(log, streamName, err)
 
     const disconnectError = {
       code: 1011,
@@ -475,7 +496,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    */
   _warnOfDeprecation (eventName) {
     if (this._state.sentWarnings.events[eventName] === false) {
-      console.warn(messages.warnings.events[eventName])
+      log.warn(messages.warnings.events[eventName])
       this._state.sentWarnings.events[eventName] = true
     }
   }
@@ -666,5 +687,20 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
       jsonrpc: payload.jsonrpc,
       result,
     }
+  }
+}
+
+function validateLoggerObject (logger) {
+  if (logger !== console) {
+    if (typeof logger === 'object') {
+      const methodKeys = ['log', 'warn', 'error', 'debug', 'info', 'trace']
+      for (const key of methodKeys) {
+        if (typeof logger[key] !== 'function') {
+          throw new Error(messages.errors.invalidLoggerMethod(key))
+        }
+      }
+      return
+    }
+    throw new Error(messages.errors.invalidLoggerObject())
   }
 }
