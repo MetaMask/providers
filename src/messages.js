@@ -2,7 +2,7 @@ module.exports = {
   errors: {
     disconnected: () => `MetaMask: Lost connection to MetaMask background process.`,
     sendSiteMetadata: () => `MetaMask: Failed to send site metadata. This is an internal error, please report this bug.`,
-    unsupportedSync: (method) => `MetaMask: The MetaMask Web3 object does not support synchronous methods like ${method} without a callback parameter.`,
+    unsupportedSync: (method) => `MetaMask: The MetaMask Ethereum provider does not support synchronous methods like ${method} without a callback parameter.`,
     invalidDuplexStream: () => 'Must provide a Node.js-style duplex stream.',
     invalidOptions: (maxEventListeners, shouldSendMetadata) => `Invalid options. Received: { maxEventListeners: ${maxEventListeners}, shouldSendMetadata: ${shouldSendMetadata} }`,
     invalidRequestArgs: () => `Expected a single, non-array, object argument.`,
@@ -12,8 +12,6 @@ module.exports = {
     invalidLoggerMethod: (method) => `'args.logger' must include required method '${method}'.`,
   },
   warnings: {
-    // TODO:deprecation:remove
-    autoRefreshDeprecation: `MetaMask: MetaMask will soon stop reloading pages on network change.\nFor more information, see: https://docs.metamask.io/guide/ethereum-provider.html#ethereum-autorefreshonnetworkchange \nSet 'ethereum.autoRefreshOnNetworkChange' to 'false' to silence this warning.`,
     // deprecated methods
     enableDeprecation: `MetaMask: 'ethereum.enable()' is deprecated and may be removed in the future. Please use the 'eth_requestAccounts' RPC method instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1102`,
     sendDeprecation: `MetaMask: 'ethereum.send(...)' is deprecated and may be removed in the future. Please use 'ethereum.sendAsync(...)' or 'ethereum.request(...)' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193`,
