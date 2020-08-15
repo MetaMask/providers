@@ -3,7 +3,7 @@
   "version": "6.2.0",
   "description": "A JavaScript Ethereum provider that connects over a WebExtension port.",
   "main": "index.js",
-  "type": "index.d.js",
+  "type": "index.d.ts",
   "scripts": {
     "test": "jest",
     "coverage": "jest --coverage",
