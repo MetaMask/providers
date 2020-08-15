@@ -3,6 +3,7 @@
   "version": "6.2.0",
   "description": "A JavaScript Ethereum provider that connects over a WebExtension port.",
   "main": "index.js",
+  "type": "index.d.js",
   "scripts": {
     "test": "jest",
     "coverage": "jest --coverage",
@@ -27,7 +28,8 @@
   },
   "homepage": "https://github.com/MetaMask/inpage-provider#readme",
   "files": [
-    "src/"
+    "src/",
+    "index.d.ts"
   ],
   "dependencies": {
     "eth-rpc-errors": "^2.1.1",
