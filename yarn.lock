@@ -484,10 +484,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@metamask/eslint-config@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@metamask/eslint-config/-/eslint-config-2.1.1.tgz#df38ff2199783ac2e7726b17d140328d1cb595f9"
-  integrity sha512-DBixWzP6B5q00OPYXhRFg6GlR5ZxXWDOFeSa31I31GjZCEVY4NUwjSAT10UEaR7RncUI0WONXIC/P3P43UZx3w==
+"@metamask/eslint-config@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@metamask/eslint-config/-/eslint-config-3.0.0.tgz#39c4275e440cfc690524d328a0bda8227bd69326"
+  integrity sha512-AYnNopj+K0YyWuCXY4mflgMQzIcm/Jc+HiXzBzY8SJ3fMlnBXjQjsbu0B78zxLR9HZ2uW9IrCj0VG7hMj1b4og==
 
 "@sinonjs/commons@^1.7.0":
   version "1.8.1"
