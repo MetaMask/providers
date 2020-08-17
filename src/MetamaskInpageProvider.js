@@ -103,8 +103,8 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
     // public state
     this.selectedAddress = null
-    this.networkVersion = undefined
-    this.chainId = undefined
+    this.networkVersion = null
+    this.chainId = null
 
     // bind functions (to prevent e.g. web3@1.x from making unbound calls)
     this._handleAccountsChanged = this._handleAccountsChanged.bind(this)
@@ -151,14 +151,14 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
       // Emit chainChanged event on chain change
       if ('chainId' in state && state.chainId !== this.chainId) {
-        this.chainId = state.chainId
+        this.chainId = state.chainId || null
         this.emit('chainChanged', this.chainId)
         this.emit('chainIdChanged', this.chainId) // TODO:deprecation:remove
       }
 
       // Emit networkChanged event on network change
       if ('networkVersion' in state && state.networkVersion !== this.networkVersion) {
-        this.networkVersion = state.networkVersion
+        this.networkVersion = state.networkVersion || null
         this.emit('networkChanged', this.networkVersion)
       }
     })
