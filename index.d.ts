@@ -1,6 +1,5 @@
 import { EventEmitter } from 'events'
 import { Duplex } from 'stream'
-import { AbstractProvider } from 'web3-core'
 
 export interface MetamaskInpageProviderOptions {
     /**
@@ -19,7 +18,7 @@ export interface MetamaskInpageProviderOptions {
      */
     shouldSendMetadata?: boolean
 }
-export class MetamaskInpageProvider extends EventEmitter implements AbstractProvider {
+export class MetamaskInpageProvider extends EventEmitter {
     /**
      *
      * @param connectionStream A Node.js duplex stream
