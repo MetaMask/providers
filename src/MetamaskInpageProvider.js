@@ -320,7 +320,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    * Submit a JSON-RPC request object and a callback to make an RPC method call.
    *
    * @param {Object} payload - The RPC request object.
-   * @param {Function} callback - The callback function.
+   * @param {Function} cb - The callback function.
    */
   sendAsync (payload, cb) {
     this._rpcRequest(payload, cb)
@@ -382,7 +382,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
    *
    * @param {Object} payload - The RPC request object.
    * @param {Function} callback - The consumer's callback.
-   * @param {boolean} isInternal - Whether the request is internal.
+   * @param {boolean} [isInternal=false] - Whether the request is internal.
    */
   _rpcRequest (payload, callback, isInternal = false) {
 
