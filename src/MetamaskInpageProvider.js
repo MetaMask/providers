@@ -235,10 +235,12 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
     setTimeout(() => this.emit('connect', { chainId: this.chainId }))
 
     // TODO:deprecation:remove
+    /** @deprecated */
     this._web3Ref = undefined
 
     // TODO:deprecation:remove
     // if true, MetaMask reloads the page if window.web3 has been accessed
+    /** @deprecated */
     this.autoRefreshOnNetworkChange = true
 
     // TODO:deprecation:remove
@@ -547,9 +549,9 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
         // TODO:deprecation:remove isEnabled, isApproved
         /**
-         * DEPRECATED. To be removed.
          * Synchronously determines if this domain is currently enabled, with a potential false negative if called to soon
          *
+         * @deprecated
          * @returns {boolean} - returns true if this domain is currently enabled
          */
         isEnabled: () => {
@@ -557,9 +559,9 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
         },
 
         /**
-         * DEPRECATED. To be removed.
          * Asynchronously determines if this domain is currently enabled
          *
+         * @deprecated
          * @returns {Promise<boolean>} - Promise resolving to true if this domain is currently enabled
          */
         isApproved: async () => {
@@ -589,9 +591,9 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   //====================
 
   /**
-   * DEPRECATED.
    * Equivalent to: ethereum.request('eth_requestAccounts')
    *
+   * @deprecated
    * @returns {Promise<Array<string>>} - A promise that resolves to an array of addresses.
    */
   enable () {
@@ -614,10 +616,10 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
-   * DEPRECATED.
    * Sends an RPC request to MetaMask.
    * Many different return types, which is why this method should not be used.
    *
+   * @deprecated
    * @param {(string | Object)} methodOrPayload - The method name, or the RPC request object.
    * @param {Array<any> | Function} [callbackOrArgs] - If given a method name, the method's parameters.
    * @returns {unknown} - The method result, or a JSON RPC response object.
@@ -653,8 +655,9 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
-   * DEPRECATED.
    * Internal backwards compatibility method, used in send.
+   *
+   * @deprecated
    */
   _sendSync (payload) {
 
