@@ -55,12 +55,17 @@ export function setGlobalProvider(providerInstance: MetamaskInpageProvider): voi
 export interface JsonRpcPayload {
     jsonrpc: string
     method: string
-    params: unknown[]
+    params?: unknown[]
     id?: string | number
 }
 export interface JsonRpcResponse {
     jsonrpc: string
-    id: number
+    id: string | number
     result?: unknown
-    error?: string
+    error?: {
+        code: number
+        message: string
+        data?: unknown
+        stack?: any
+    }
 }
