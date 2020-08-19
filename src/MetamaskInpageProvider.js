@@ -36,11 +36,11 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
 
   /**
    * @param {Object} connectionStream - A Node.js duplex stream
-   * @param {Object} opts - An options bag
-   * @param {ConsoleLike} [opts.logger] - The logging API to use. Default: console
-   * @param {number} [opts.maxEventListeners] - The maximum number of event
+   * @param {Object} options - An options bag
+   * @param {ConsoleLike} [options.logger] - The logging API to use. Default: console
+   * @param {number} [options.maxEventListeners] - The maximum number of event
    * listeners. Default: 100
-   * @param {boolean} [opts.shouldSendMetadata] - Whether the provider should
+   * @param {boolean} [options.shouldSendMetadata] - Whether the provider should
    * send page metadata. Default: true
    */
   constructor (
@@ -266,14 +266,14 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   //====================
 
   /**
-   * Returns whether the inpage provider is connected to MetaMask.
+   * Returns whether the provider can process RPC requests.
    */
   isConnected () {
     return this._state.isConnected
   }
 
   /**
-   * Submits an RPC request to MetaMask for the given method, with the given params.
+   * Submits an RPC request for the given method, with the given params.
    * Resolves with the result of the method call, or rejects on error.
    *
    * @param {Object} args - The RPC request arguments.
@@ -319,7 +319,7 @@ module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
-   * Submit a JSON-RPC request object and a callback to make an RPC method call.
+   * Submits an RPC request per the given JSON-RPC request object.
    *
    * @param {Object} payload - The RPC request object.
    * @param {Function} cb - The callback function.
