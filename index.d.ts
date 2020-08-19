@@ -32,7 +32,7 @@ export class MetamaskInpageProvider extends EventEmitter {
     isConnected(): boolean
     sendAsync(payload: JsonRpcPayload, callback: (error: Error | null, result?: JsonRpcResponse) => void): void
     /** Submits an RPC request to MetaMask for the given method, with the given params. Resolves with the result of the method call, or rejects on error. */
-    request(args: JsonRpcPayload): Promise<any>
+    request(args: JsonRpcPayload): Promise<unknown>
 }
 /**
  * Initializes a MetamaskInpageProvider and (optionally) sets it on window.ethereum.
@@ -66,6 +66,5 @@ export interface JsonRpcResponse {
         code: number
         message: string
         data?: unknown
-        stack?: any
     }
 }
