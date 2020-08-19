@@ -3,11 +3,11 @@ const MetamaskInpageProvider = require('./MetamaskInpageProvider')
 /**
    * Initializes a MetamaskInpageProvider and (optionally) sets it on window.ethereum.
    *
-   * @param {Object} opts - An options bag.
-   * @param {Object} opts.connectionStream - A Node.js stream.
-   * @param {number} opts.maxEventListeners - The maximum number of event listeners.
-   * @param {boolean} opts.shouldSendMetadata - Whether the provider should send page metadata.
-   * @param {boolean} opts.shouldSetOnWindow - Whether the provider should be set as window.ethereum
+   * @param {Object} options - An options bag.
+   * @param {Object} options.connectionStream - A Node.js stream.
+   * @param {number} options.maxEventListeners - The maximum number of event listeners.
+   * @param {boolean} options.shouldSendMetadata - Whether the provider should send page metadata.
+   * @param {boolean} options.shouldSetOnWindow - Whether the provider should be set as window.ethereum
    * @returns {MetamaskInpageProvider | Proxy} The initialized provider (whether set or not).
    */
 function initProvider ({
