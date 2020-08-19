@@ -25,11 +25,32 @@ export interface MetamaskInpageProviderOptions {
 export class MetamaskInpageProvider extends EventEmitter {
 
   /**
-   *
    * @param connectionStream A Node.js duplex stream
    * @param options An options bag
    */
   constructor (connectionStream: Duplex, options?: MetamaskInpageProviderOptions);
+
+  isConnected (): boolean;
+
+  /**
+   * Submits an RPC request to MetaMask for the given method, with the given params.
+   * Resolves with the result of the method call, or rejects on error.
+   */
+  request (args: RequestArguments): Promise<unknown>;
+
+  sendAsync (
+    payload: JsonRpcPayload,
+    callback: (error: Error | null, result?: JsonRpcResponse) => void,
+  ): void;
+
+  send (method: string, params?: unknown[]): Promise<JsonRpcResponse>;
+
+  send (
+    payload: JsonRpcPayload,
+    callback: (error: Error | null, result?: JsonRpcResponse) => void,
+  ): void;
+
+  send (payload: SendSyncJsonRpcPayload): JsonRpcResponse;
 
   readonly isMetaMask: true;
 
@@ -38,19 +59,6 @@ export class MetamaskInpageProvider extends EventEmitter {
   readonly networkVersion: string | null;
 
   readonly chainId: string | undefined;
-
-  isConnected (): boolean;
-
-  sendAsync (
-    payload: JsonRpcPayload,
-    callback: (error: Error | null, result?: JsonRpcResponse) => void,
-  ): void;
-
-  /**
-   * Submits an RPC request to MetaMask for the given method, with the given params.
-   * Resolves with the result of the method call, or rejects on error.
-   */
-  request (args: RequestArguments): Promise<unknown>;
 }
 
 /**
@@ -100,4 +108,8 @@ export interface JsonRpcResponse {
     message: string;
     data?: unknown;
   };
+}
+
+interface SendSyncJsonRpcPayload extends JsonRpcPayload {
+  method: 'eth_accounts' | 'eth_coinbase' | 'eth_uninstallFilter' | 'net_version';
 }
