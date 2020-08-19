@@ -66,10 +66,10 @@ export class MetamaskInpageProvider extends EventEmitter {
  * @returns The initialized provider (whether set or not).
  */
 export function initProvider (
-  opts?: Pick<MetamaskInpageProviderOptions, 'maxEventListeners' | 'shouldSendMetadata'> & {
+  opts: Pick<MetamaskInpageProviderOptions, 'maxEventListeners' | 'shouldSendMetadata'> & {
 
     /** A Node.js duplex stream */
-    connectionStream?: Duplex;
+    connectionStream: Duplex;
 
     /** Whether the provider should be set as window.ethereum */
     shouldSetOnWindow?: boolean;
