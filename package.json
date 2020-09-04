@@ -10,7 +10,7 @@
     "lint": "eslint . --ext js,json",
     "lint:fix": "eslint . --ext js,json --fix",
     "prepublishOnly": "yarn require-clean-git && yarn lint && yarn test",
-    "require-clean-git": "git diff --quiet || echo 'Please clean the working directory.' && exit 1"
+    "require-clean-git": "git diff --quiet || (echo 'Please clean the working directory.' && exit 1)"
   },
   "author": "MetaMask",
   "license": "MIT",
