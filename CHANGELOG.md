@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.3.0] - 2020-09-04
+
+### Added
+
+- Types
+
+### Changed
+
+- `ethereum.networkVersion` and `.chainId` now default to `null` instead of `undefined`
+- Improved JSDoc comments and tags
+
 ## [6.2.0] - 2020-08-04
 
 ### Added
