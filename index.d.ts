@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { Duplex } from 'stream';
 
-export interface MetamaskInpageProviderOptions {
+export interface MetaMaskInpageProviderOptions {
 
   /**
    * The logging API to use.
@@ -22,13 +22,13 @@ export interface MetamaskInpageProviderOptions {
   shouldSendMetadata?: boolean;
 }
 
-export class MetamaskInpageProvider extends EventEmitter {
+export class MetaMaskInpageProvider extends EventEmitter {
 
   /**
    * @param connectionStream - A Node.js duplex stream.
    * @param options - An options bag.
    */
-  constructor (connectionStream: Duplex, options?: MetamaskInpageProviderOptions);
+  constructor (connectionStream: Duplex, options?: MetaMaskInpageProviderOptions);
 
   /**
    * Returns whether the provider can process RPC requests.
@@ -97,11 +97,11 @@ export class MetamaskInpageProvider extends EventEmitter {
 }
 
 /**
- * Initializes a MetamaskInpageProvider and (optionally) assigns it as window.ethereum.
+ * Initializes a MetaMaskInpageProvider and (optionally) assigns it as window.ethereum.
  * @returns The initialized provider (whether set or not).
  */
 export function initProvider (
-  options: Pick<MetamaskInpageProviderOptions, 'maxEventListeners' | 'shouldSendMetadata'> & {
+  options: Pick<MetaMaskInpageProviderOptions, 'maxEventListeners' | 'shouldSendMetadata'> & {
 
     /** A Node.js duplex stream. */
     connectionStream: Duplex;
@@ -112,7 +112,7 @@ export function initProvider (
      */
     shouldSetOnWindow?: boolean;
   }
-): MetamaskInpageProvider;
+): MetaMaskInpageProvider;
 
 /**
  * Sets the given provider instance as window.ethereum and dispatches
@@ -120,7 +120,7 @@ export function initProvider (
  *
  * @param providerInstance - The provider instance.
  */
-export function setGlobalProvider (providerInstance: MetamaskInpageProvider): void;
+export function setGlobalProvider (providerInstance: MetaMaskInpageProvider): void;
 
 export interface RequestArguments {
 

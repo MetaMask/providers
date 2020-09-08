@@ -52,7 +52,7 @@ const getRpcPromiseCallback = (resolve, reject, unwrapResult = true) => (error, 
  * @param {Error} err - The associated error to log.
  */
 function logStreamDisconnectWarning (log, remoteLabel, err) {
-  let warningMsg = `MetamaskInpageProvider - lost connection to ${remoteLabel}`
+  let warningMsg = `MetaMaskInpageProvider - lost connection to ${remoteLabel}`
   if (err) {
     warningMsg += `\n${err.stack}`
   }

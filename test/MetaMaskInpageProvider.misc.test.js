@@ -1,9 +1,9 @@
-const MetamaskInpageProvider = require('../src/MetamaskInpageProvider')
+const MetaMaskInpageProvider = require('../src/MetaMaskInpageProvider')
 const messages = require('../src/messages')
 
 const MockDuplexStream = require('./mocks/DuplexStream')
 
-describe('MetamaskInpageProvider: Miscellanea', () => {
+describe('MetaMaskInpageProvider: Miscellanea', () => {
 
   describe('constructor', () => {
 
@@ -16,26 +16,26 @@ describe('MetamaskInpageProvider: Miscellanea', () => {
     })
 
     it('succeeds if stream is provided', () => {
-      expect(() => new MetamaskInpageProvider(new MockDuplexStream())).not.toThrow()
+      expect(() => new MetaMaskInpageProvider(new MockDuplexStream())).not.toThrow()
     })
 
     it('succeeds if stream and valid options are provided', () => {
       const stream = new MockDuplexStream()
 
       expect(
-        () => new MetamaskInpageProvider(stream, {
+        () => new MetaMaskInpageProvider(stream, {
           maxEventListeners: 10,
         }),
       ).not.toThrow()
 
       expect(
-        () => new MetamaskInpageProvider(stream, {
+        () => new MetaMaskInpageProvider(stream, {
           shouldSendMetadata: false,
         }),
       ).not.toThrow()
 
       expect(
-        () => new MetamaskInpageProvider(stream, {
+        () => new MetaMaskInpageProvider(stream, {
           maxEventListeners: 10,
           shouldSendMetadata: false,
         }),
@@ -44,15 +44,15 @@ describe('MetamaskInpageProvider: Miscellanea', () => {
 
     it('throws if no or invalid stream is provided', () => {
       expect(
-        () => new MetamaskInpageProvider(),
+        () => new MetaMaskInpageProvider(),
       ).toThrow(messages.errors.invalidDuplexStream())
 
       expect(
-        () => new MetamaskInpageProvider('foo'),
+        () => new MetaMaskInpageProvider('foo'),
       ).toThrow(messages.errors.invalidDuplexStream())
 
       expect(
-        () => new MetamaskInpageProvider({}),
+        () => new MetaMaskInpageProvider({}),
       ).toThrow(messages.errors.invalidDuplexStream())
     })
 
@@ -60,18 +60,18 @@ describe('MetamaskInpageProvider: Miscellanea', () => {
       const stream = new MockDuplexStream()
 
       expect(
-        () => new MetamaskInpageProvider(stream, null),
+        () => new MetaMaskInpageProvider(stream, null),
       ).toThrow('Cannot destructure property `logger` of \'undefined\' or \'null\'')
 
       expect(
-        () => new MetamaskInpageProvider(stream, {
+        () => new MetaMaskInpageProvider(stream, {
           maxEventListeners: 10,
           shouldSendMetadata: 'foo',
         }),
       ).toThrow(messages.errors.invalidOptions(10, 'foo'))
 
       expect(
-        () => new MetamaskInpageProvider(stream, {
+        () => new MetaMaskInpageProvider(stream, {
           maxEventListeners: 'foo',
           shouldSendMetadata: true,
         }),
@@ -90,7 +90,7 @@ describe('MetamaskInpageProvider: Miscellanea', () => {
       }
 
       expect(
-        () => new MetamaskInpageProvider(stream, {
+        () => new MetaMaskInpageProvider(stream, {
           logger: customLogger,
         }),
       ).not.toThrow()
@@ -100,7 +100,7 @@ describe('MetamaskInpageProvider: Miscellanea', () => {
       const stream = new MockDuplexStream()
 
       expect(
-        () => new MetamaskInpageProvider(stream, {
+        () => new MetaMaskInpageProvider(stream, {
           logger: 'foo',
         }),
       ).toThrow(messages.errors.invalidLoggerObject())
@@ -118,7 +118,7 @@ describe('MetamaskInpageProvider: Miscellanea', () => {
       }
 
       expect(
-        () => new MetamaskInpageProvider(stream, {
+        () => new MetaMaskInpageProvider(stream, {
           logger: customLogger,
         }),
       ).toThrow(messages.errors.invalidLoggerMethod('warn'))
@@ -136,7 +136,7 @@ describe('MetamaskInpageProvider: Miscellanea', () => {
       }
 
       expect(
-        () => new MetamaskInpageProvider(stream, {
+        () => new MetaMaskInpageProvider(stream, {
           logger: customLogger,
         }),
       ).toThrow(messages.errors.invalidLoggerMethod('warn'))
@@ -147,7 +147,7 @@ describe('MetamaskInpageProvider: Miscellanea', () => {
     it('returns isConnected state', () => {
 
       jest.useFakeTimers()
-      const provider = new MetamaskInpageProvider(new MockDuplexStream())
+      const provider = new MetaMaskInpageProvider(new MockDuplexStream())
       provider.autoRefreshOnNetworkChange = false
 
       expect(

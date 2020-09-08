@@ -32,7 +32,7 @@ let log
  * @property {function} warn - Like console.warn
  */
 
-module.exports = class MetamaskInpageProvider extends SafeEventEmitter {
+module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
 
   /**
    * @param {Object} connectionStream - A Node.js duplex stream
