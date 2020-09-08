@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.0] - 2020-09-08
+
+### Changed
+
+- **BREAKING:** Changed casing of `Metamask` in all exports to `MetaMask`
+  - A brand is a brand ¯\\_(ツ)_/¯
+
 ## [6.3.0] - 2020-09-04
 
 ### Added
@@ -145,3 +152,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deprecated the events `close`, `networkChanged`, and `notification`, and
   added deprecation warnings for them ([#30](https://github.com/MetaMask/inpage-provider/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/inpage-provider/pull/29))
+
+[Unreleased]:https://github.com/MetaMask/inpage-provider/compare/v7.0.0...HEAD
+[7.0.0]:https://github.com/MetaMask/inpage-provider/compare/v6.3.0...v7.0.0
+[6.3.0]:https://github.com/MetaMask/inpage-provider/compare/v6.2.0...v6.3.0
+[6.2.0]:https://github.com/MetaMask/inpage-provider/compare/v6.1.1...v6.2.0
+[6.1.1]:https://github.com/MetaMask/inpage-provider/compare/v6.1.0...v6.1.1
+[6.1.0]:https://github.com/MetaMask/inpage-provider/compare/v6.0.1...v6.1.0
+[6.0.1]:https://github.com/MetaMask/inpage-provider/compare/v6.0.0...v6.0.1
+[6.0.0]:https://github.com/MetaMask/inpage-provider/compare/v5.2.1...v6.0.0
+[5.2.1]:https://github.com/MetaMask/inpage-provider/compare/v5.2.0...v5.2.1
+[5.2.0]:https://github.com/MetaMask/inpage-provider/compare/v5.1.0...v5.2.0
+[5.1.0]:https://github.com/MetaMask/inpage-provider/compare/v5.0.2...v5.1.0
+[5.0.2]:https://github.com/MetaMask/inpage-provider/compare/v5.0.1...v5.0.2
+[5.0.1]:https://github.com/MetaMask/inpage-provider/compare/v5.0.0...v5.0.1
+[5.0.0]:https://github.com/MetaMask/inpage-provider/compare/v4.1.2...v5.0.0
