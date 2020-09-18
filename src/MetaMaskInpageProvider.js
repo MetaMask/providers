@@ -2,12 +2,12 @@ const pump = require('pump')
 const RpcEngine = require('json-rpc-engine')
 const createIdRemapMiddleware = require('json-rpc-engine/src/idRemapMiddleware')
 const createJsonRpcStream = require('json-rpc-middleware-stream')
+const ObservableStore = require('obs-store')
 const ObjectMultiplex = require('obj-multiplex')
 const SafeEventEmitter = require('safe-event-emitter')
 const dequal = require('fast-deep-equal')
 const { ethErrors } = require('eth-rpc-errors')
 const { duplex: isDuplex } = require('is-stream')
-const ObservableStore = require('obs-store')
 
 const messages = require('./messages')
 const { sendSiteMetadata } = require('./siteMetadata')
@@ -93,17 +93,10 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
         autoRefresh: false,
         publicConfigStore: false,
       },
-      isConnected: null,
       accounts: null,
+      isConnected: false,
       isUnlocked: false,
     }
-
-    // TODO:deprecation:remove
-    this._publicConfigStore = new ObservableStore({
-      isUnlocked: this._state.isUnlocked,
-      networkVersion: this._state.networkVersion,
-      chainId: this._state.chainId,
-    })
 
     this._metamask = this._getExperimentalApi()
 
@@ -111,6 +104,13 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
     this.selectedAddress = null
     this.networkVersion = null
     this.chainId = null
+
+    // TODO:deprecation:remove
+    this._publicConfigStore = new ObservableStore({
+      isUnlocked: this._state.isUnlocked,
+      networkVersion: this.networkVersion,
+      chainId: this.chainId,
+    })
 
     // bind functions (to prevent e.g. web3@1.x from making unbound calls)
     this._handleAccountsChanged = this._handleAccountsChanged.bind(this)
