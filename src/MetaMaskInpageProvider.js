@@ -161,6 +161,8 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
     rpcEngine.push(jsonRpcConnection.middleware)
     this._rpcEngine = rpcEngine
 
+    this._initialize()
+
     // handle JSON RPC notifications
     jsonRpcConnection.events.on('notification', (payload) => {
 
@@ -184,30 +186,6 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
         this.emit('notification', params.result)
       }
     })
-
-    // get initial state
-    this.request({ method: 'wallet_getProviderState' })
-      .then((state) => {
-        const {
-          chainId,
-          networkVersion,
-          isUnlocked,
-          accounts,
-        } = state
-
-        this._handleChainChanged({ chainId, networkVersion })
-        this._handleAccountsChanged(accounts)
-        this._handleUnlockStateChanged(isUnlocked)
-
-        // indicate that we've connected, for EIP-1193 compliance
-        this.emit('connect', { chainId: this.chainId })
-      })
-      .catch((error) => {
-        log.error(
-          'MetaMask: Failed to get initial state. Please report this bug.',
-          error,
-        )
-      })
 
     // miscellanea
 
@@ -364,6 +342,38 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
   //====================
   // Private Methods
   //====================
+
+  /**
+   * Constructor helper.
+   * Populates initial state by calling 'wallet_getProviderState' and
+   * 'eth_accounts', and emits necessary events.
+   */
+  _initialize () {
+    Promise.all([
+      this.request({ method: 'wallet_getProviderState' }),
+      this.request({ method: 'eth_accounts' }),
+    ])
+      .then(([state, accounts]) => {
+        const {
+          chainId,
+          networkVersion,
+          isUnlocked,
+        } = state
+
+        // indicate that we've connected, for EIP-1193 compliance
+        this.emit('connect', { chainId })
+
+        this._handleChainChanged({ chainId, networkVersion })
+        this._handleAccountsChanged(accounts)
+        this._handleUnlockStateChanged(isUnlocked)
+      })
+      .catch((error) => {
+        log.error(
+          'MetaMask: Failed to get initial state. Please report this bug.',
+          error,
+        )
+      })
+  }
 
   /**
    * Internal RPC method. Forwards requests to background via the RPC engine.
