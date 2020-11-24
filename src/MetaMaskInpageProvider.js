@@ -1,6 +1,5 @@
 const pump = require('pump')
-const RpcEngine = require('json-rpc-engine')
-const createIdRemapMiddleware = require('json-rpc-engine/src/idRemapMiddleware')
+const { JsonRpcEngine, createIdRemapMiddleware } = require('json-rpc-engine')
 const createJsonRpcStream = require('json-rpc-middleware-stream')
 const ObservableStore = require('obs-store')
 const asStream = require('obs-store/lib/asStream')
@@ -191,7 +190,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
     )
 
     // handle RPC requests via dapp-side rpc engine
-    const rpcEngine = new RpcEngine()
+    const rpcEngine = new JsonRpcEngine()
     rpcEngine.push(createIdRemapMiddleware())
     rpcEngine.push(createErrorMiddleware(log))
     rpcEngine.push(jsonRpcConnection.middleware)
