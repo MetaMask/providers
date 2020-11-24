@@ -545,32 +545,6 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
             )
           })
         },
-
-        // TODO:deprecation:remove isEnabled, isApproved
-        /**
-         * Synchronously determines if this domain is currently enabled, with a potential false negative if called to soon
-         *
-         * @deprecated
-         * @returns {boolean} - returns true if this domain is currently enabled
-         */
-        isEnabled: () => {
-          return Array.isArray(this._state.accounts) && this._state.accounts.length > 0
-        },
-
-        /**
-         * Asynchronously determines if this domain is currently enabled
-         *
-         * @deprecated
-         * @returns {Promise<boolean>} - Promise resolving to true if this domain is currently enabled
-         */
-        isApproved: async () => {
-          if (this._state.accounts === undefined) {
-            await new Promise(
-              (resolve) => this.once('accountsChanged', () => resolve()),
-            )
-          }
-          return Array.isArray(this._state.accounts) && this._state.accounts.length > 0
-        },
       },
       {
         get: (obj, prop) => {
