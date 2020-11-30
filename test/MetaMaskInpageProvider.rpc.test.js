@@ -5,7 +5,7 @@ const MockDuplexStream = require('./mocks/DuplexStream')
 
 const MOCK_ERROR_MESSAGE = 'Did you specify a mock return value?'
 
-function initProvider () {
+function initializeProvider () {
   jest.useFakeTimers()
   const mockStream = new MockDuplexStream()
   const provider = new MetaMaskInpageProvider(mockStream)
@@ -35,7 +35,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
 
     beforeEach(() => {
       resetRpcEngineResponseMock()
-      provider = initProvider()
+      provider = initializeProvider()
       jest.spyOn(provider, '_handleAccountsChanged').mockImplementation()
       jest.spyOn(provider._rpcEngine, 'handle').mockImplementation(
         (_payload, cb) => cb(...mockRpcEngineResponse()),
@@ -245,7 +245,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
 
     beforeEach(() => {
       resetRpcRequestResponseMock()
-      provider = initProvider()
+      provider = initializeProvider()
       jest.spyOn(provider, '_rpcRequest').mockImplementation(
         (_payload, cb, _isInternal) => cb(...mockRpcRequestResponse()),
       )
@@ -354,7 +354,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
 
     beforeEach(() => {
       resetRpcEngineResponseMock()
-      provider = initProvider()
+      provider = initializeProvider()
       jest.spyOn(provider, '_handleAccountsChanged').mockImplementation()
       jest.spyOn(provider._rpcEngine, 'handle').mockImplementation(
         (_payload, cb) => cb(...mockRpcEngineResponse()),
@@ -473,7 +473,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
 
     beforeEach(() => {
       resetRpcRequestResponseMock()
-      provider = initProvider()
+      provider = initializeProvider()
       jest.spyOn(provider, '_rpcRequest').mockImplementation(
         (_payload, cb, _isInternal) => cb(...mockRpcRequestResponse()),
       )
