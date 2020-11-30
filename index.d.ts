@@ -1,3 +1,4 @@
+// You may have to bring your own Node types (e.g. @types/node) for these imports.
 import { EventEmitter } from 'events';
 import { Duplex } from 'stream';
 

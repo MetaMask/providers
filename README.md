@@ -27,6 +27,11 @@ initializeProvider({
 const { ethereum } = window
 ```
 
+### Types
+
+Types are exposed at `index.d.ts`.
+They require Node.js `EventEmitter` and `Duplex` stream types, which you can grab from e.g. [`@types/node`](https://npmjs.com/package/@types/node).
+
 ### Do Not Modify the Provider
 
 The Provider object should not be mutated by consumers under any circumstances.
