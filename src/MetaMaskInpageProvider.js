@@ -82,7 +82,6 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
         send: false,
         // events
         events: {
-          chainIdChanged: false,
           close: false,
           data: false,
           networkChanged: false,
@@ -151,7 +150,6 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       if ('chainId' in state && state.chainId !== this.chainId) {
         this.chainId = state.chainId || null
         this.emit('chainChanged', this.chainId)
-        this.emit('chainIdChanged', this.chainId) // TODO:deprecation:remove
       }
 
       // Emit networkChanged event on network change
@@ -513,32 +511,6 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
               getRpcPromiseCallback(resolve, reject),
             )
           })
-        },
-
-        // TODO:deprecation:remove isEnabled, isApproved
-        /**
-         * Synchronously determines if this domain is currently enabled, with a potential false negative if called to soon
-         *
-         * @deprecated
-         * @returns {boolean} - returns true if this domain is currently enabled
-         */
-        isEnabled: () => {
-          return Array.isArray(this._state.accounts) && this._state.accounts.length > 0
-        },
-
-        /**
-         * Asynchronously determines if this domain is currently enabled
-         *
-         * @deprecated
-         * @returns {Promise<boolean>} - Promise resolving to true if this domain is currently enabled
-         */
-        isApproved: async () => {
-          if (this._state.accounts === undefined) {
-            await new Promise(
-              (resolve) => this.once('accountsChanged', () => resolve()),
-            )
-          }
-          return Array.isArray(this._state.accounts) && this._state.accounts.length > 0
         },
       },
       {
