@@ -10,7 +10,7 @@ const MetaMaskInpageProvider = require('./MetaMaskInpageProvider')
  * @param {boolean} options.shouldSetOnWindow - Whether the provider should be set as window.ethereum
  * @returns {MetaMaskInpageProvider | Proxy} The initialized provider (whether set or not).
  */
-function initProvider ({
+function initializeProvider ({
   connectionStream,
   maxEventListeners = 100,
   shouldSendMetadata = true,
@@ -44,6 +44,6 @@ function setGlobalProvider (providerInstance) {
 }
 
 module.exports = {
-  initProvider,
+  initializeProvider,
   setGlobalProvider,
 }

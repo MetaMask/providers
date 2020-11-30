@@ -82,7 +82,6 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
         send: false,
         // events
         events: {
-          chainIdChanged: false,
           close: false,
           data: false,
           networkChanged: false,
@@ -152,7 +151,6 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       if ('chainId' in state && state.chainId !== this.chainId) {
         this.chainId = state.chainId || null
         this.emit('chainChanged', this.chainId)
-        this.emit('chainIdChanged', this.chainId) // TODO:deprecation:remove
       }
 
       // Emit networkChanged event on network change
