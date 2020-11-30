@@ -11,7 +11,7 @@ not suitable for out-of-the-box use with other wallets.
 ## Usage
 
 ```javascript
-import { initProvider } from '@metamask/inpage-provider'
+import { initializeProvider } from '@metamask/inpage-provider'
 
 // Create a stream to a remote provider:
 const metamaskStream = new LocalMessageDuplexStream({
@@ -20,7 +20,7 @@ const metamaskStream = new LocalMessageDuplexStream({
 })
 
 // this will initialize the provider and set it as window.ethereum
-initProvider({
+initializeProvider({
   connectionStream: metamaskStream,
 })
 
