@@ -22,7 +22,8 @@ function initializeProvider ({
   )
 
   provider = new Proxy(provider, {
-    deleteProperty: () => true, // some libraries, e.g. web3@1.x, mess with our API
+    // some common libraries, e.g. web3@1.x, mess with our API
+    deleteProperty: () => true,
   })
 
   if (shouldSetOnWindow) {

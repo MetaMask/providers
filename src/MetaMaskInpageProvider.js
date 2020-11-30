@@ -89,7 +89,6 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
         },
         // misc
         // TODO:deprecation:remove
-        autoRefresh: false,
         publicConfigStore: false,
       },
       isConnected: undefined,
@@ -104,7 +103,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
     this.networkVersion = null
     this.chainId = null
 
-    // bind functions (to prevent e.g. web3@1.x from making unbound calls)
+    // bind functions (to prevent consumers from making unbound calls)
     this._handleAccountsChanged = this._handleAccountsChanged.bind(this)
     this._handleDisconnect = this._handleDisconnect.bind(this)
     this._sendSync = this._sendSync.bind(this)
@@ -230,24 +229,6 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
 
     // indicate that we've connected, for EIP-1193 compliance
     setTimeout(() => this.emit('connect', { chainId: this.chainId }))
-
-    // TODO:deprecation:remove
-    /** @deprecated */
-    this._web3Ref = undefined
-
-    // TODO:deprecation:remove
-    // if true, MetaMask reloads the page if window.web3 has been accessed
-    /** @deprecated */
-    this.autoRefreshOnNetworkChange = true
-
-    // TODO:deprecation:remove
-    // wait a second to attempt to send this, so that the warning can be silenced
-    setTimeout(() => {
-      if (this.autoRefreshOnNetworkChange && !this._state.sentWarnings.autoRefresh) {
-        log.warn(messages.warnings.autoRefreshDeprecation)
-        this._state.sentWarnings.autoRefresh = true
-      }
-    }, 1000)
   }
 
   get publicConfigStore () {
@@ -471,18 +452,6 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       // handle selectedAddress
       if (this.selectedAddress !== _accounts[0]) {
         this.selectedAddress = _accounts[0] || null
-      }
-
-      // TODO:deprecation:remove
-      // handle web3
-      if (this._web3Ref) {
-        this._web3Ref.defaultAccount = this.selectedAddress
-      } else if (
-        window.web3 &&
-        window.web3.eth &&
-        typeof window.web3.eth === 'object'
-      ) {
-        window.web3.eth.defaultAccount = this.selectedAddress
       }
 
       // only emit the event once all state has been updated
