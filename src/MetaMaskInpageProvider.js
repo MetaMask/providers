@@ -152,12 +152,12 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
     jsonRpcConnection.events.on('notification', (payload) => {
       const { method, params, result } = payload
 
-      if (method === 'wallet_accountsChanged') {
+      if (method === 'metamask_accountsChanged') {
         this._handleAccountsChanged(result)
 
-      } else if (method === 'wallet_unlockStateChanged') {
+      } else if (method === 'metamask_unlockStateChanged') {
         this._handleUnlockStateChanged(result)
-      } else if (method === 'wallet_chainChanged') {
+      } else if (method === 'metamask_chainChanged') {
         this._handleChainChanged(result)
       } else if (EMITTED_NOTIFICATIONS.includes(method)) {
         this.emit('notification', payload) // deprecated
@@ -304,14 +304,14 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
 
   /**
    * Constructor helper.
-   * Populates initial state by calling 'wallet_getProviderState' and
+   * Populates initial state by calling 'metamask_getProviderState' and
    * 'eth_accounts', and emits necessary events.
    *
    * @private
    */
   _initializeState () {
     Promise.all([
-      this.request({ method: 'wallet_getProviderState' }),
+      this.request({ method: 'metamask_getProviderState' }),
       this.request({ method: 'eth_accounts' }),
     ])
       .then(([state, accounts]) => {

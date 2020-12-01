@@ -18,7 +18,7 @@ async function sendSiteMetadata (engine, log) {
     // call engine.handle directly to avoid normal RPC request handling
     engine.handle(
       {
-        method: 'wallet_sendDomainMetadata',
+        method: 'metamask_sendDomainMetadata',
         domainMetadata,
       },
       NOOP,
