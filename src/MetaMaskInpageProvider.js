@@ -457,8 +457,8 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
    */
   _handleChainChanged ({ chainId, networkVersion } = {}) {
     if (
-      typeof chainId !== 'string' || !chainId.startsWith('0x') ||
-      typeof networkVersion !== 'string'
+      !chainId || typeof chainId !== 'string' || !chainId.startsWith('0x') ||
+      !networkVersion || typeof networkVersion !== 'string'
     ) {
       log.error(
         'MetaMask: Received invalid network parameters. Please report this bug.',
@@ -467,10 +467,12 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       return
     }
 
-    if (chainId !== this.chainId || networkVersion !== this.networkVersion) {
+    if (chainId !== this.chainId) {
       this.chainId = chainId
       this.emit('chainChanged', this.chainId)
+    }
 
+    if (networkVersion !== this.networkVersion) {
       this.networkVersion = networkVersion
       this.emit('networkChanged', this.networkVersion)
     }
