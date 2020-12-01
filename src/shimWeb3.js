@@ -25,11 +25,17 @@ module.exports = function shimWeb3 (provider) {
           }
           return Reflect.get(target, property, ...args)
         },
+        set: (...args) => {
+          console.warn(
+            'You are accessing the MetaMask window.web3 shim. This object is deprecated; use window.ethereum instead. For details, see: https://docs.metamask.io/guide/provider-migration.html#replacing-window-web3',
+          )
+          return Reflect.set(...args)
+        },
       },
     )
 
     Object.defineProperty(window, 'web3', {
-      value: Object.freeze(web3Shim),
+      value: web3Shim,
       enumerable: false,
       configurable: true,
       writable: true,
