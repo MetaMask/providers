@@ -304,36 +304,34 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
 
   /**
    * Constructor helper.
-   * Populates initial state by calling 'metamask_getProviderState' and
-   * 'eth_accounts', and emits necessary events.
+   * Populates initial state by calling 'metamask_getProviderState' and emits
+   * necessary events.
    *
    * @private
    */
-  _initializeState () {
-    Promise.all([
-      this.request({ method: 'metamask_getProviderState' }),
-      this.request({ method: 'eth_accounts' }),
-    ])
-      .then(([state, accounts]) => {
-        const {
-          chainId,
-          networkVersion,
-          isUnlocked,
-        } = state
-
-        // indicate that we've connected, for EIP-1193 compliance
-        this.emit('connect', { chainId })
-
-        this._handleChainChanged({ chainId, networkVersion })
-        this._handleUnlockStateChanged(isUnlocked)
-        this._handleAccountsChanged(accounts)
+  async _initializeState () {
+    try {
+      const {
+        accounts,
+        chainId,
+        isUnlocked,
+        networkVersion,
+      } = await this.request({
+        method: 'metamask_getProviderState',
       })
-      .catch((error) => {
-        log.error(
-          'MetaMask: Failed to get initial state. Please report this bug.',
-          error,
-        )
-      })
+
+      // indicate that we've connected, for EIP-1193 compliance
+      this.emit('connect', { chainId })
+
+      this._handleChainChanged({ chainId, networkVersion })
+      this._handleUnlockStateChanged(isUnlocked)
+      this._handleAccountsChanged(accounts)
+    } catch (error) {
+      log.error(
+        'MetaMask: Failed to get initial state. Please report this bug.',
+        error,
+      )
+    }
   }
 
   /**
