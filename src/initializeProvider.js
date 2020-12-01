@@ -1,4 +1,5 @@
 const MetaMaskInpageProvider = require('./MetaMaskInpageProvider')
+const shimWeb3 = require('./shimWeb3')
 
 /**
  * Initializes a MetaMaskInpageProvider and (optionally) assigns it as window.ethereum.
@@ -7,7 +8,8 @@ const MetaMaskInpageProvider = require('./MetaMaskInpageProvider')
  * @param {Object} options.connectionStream - A Node.js stream.
  * @param {number} options.maxEventListeners - The maximum number of event listeners.
  * @param {boolean} options.shouldSendMetadata - Whether the provider should send page metadata.
- * @param {boolean} options.shouldSetOnWindow - Whether the provider should be set as window.ethereum
+ * @param {boolean} options.shouldSetOnWindow - Whether the provider should be set as window.ethereum.
+ * @param {boolean} options.shouldShimWeb3 - Whether a window.web3 shim should be injected.
  * @returns {MetaMaskInpageProvider | Proxy} The initialized provider (whether set or not).
  */
 function initializeProvider ({
@@ -15,6 +17,7 @@ function initializeProvider ({
   maxEventListeners = 100,
   shouldSendMetadata = true,
   shouldSetOnWindow = true,
+  shouldShimWeb3 = false,
 } = {}) {
 
   let provider = new MetaMaskInpageProvider(
@@ -28,6 +31,10 @@ function initializeProvider ({
 
   if (shouldSetOnWindow) {
     setGlobalProvider(provider)
+  }
+
+  if (shouldShimWeb3) {
+    shimWeb3(provider)
   }
 
   return provider
