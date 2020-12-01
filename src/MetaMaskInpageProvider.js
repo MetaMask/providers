@@ -88,6 +88,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       accounts: null,
       isConnected: false,
       isUnlocked: false,
+      initialized: false,
     }
 
     this._metamask = this._getExperimentalApi()
@@ -331,6 +332,9 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
         'MetaMask: Failed to get initial state. Please report this bug.',
         error,
       )
+    } finally {
+      this._state.initialized = true
+      this.emit('_initialized')
     }
   }
 
@@ -535,6 +539,11 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
          * @returns {Promise<boolean>} - Promise resolving to true if MetaMask is currently unlocked
          */
         isUnlocked: async () => {
+          if (!this._state.initialized) {
+            await new Promise((resolve) => {
+              this.on('_initialized', () => resolve())
+            })
+          }
           return this._state.isUnlocked
         },
 
