@@ -16,7 +16,7 @@ module.exports = function shimWeb3 (provider) {
         get: (target, property, ...args) => {
           if (property === 'currentProvider') {
             console.warn(
-              'You are accessing the MetaMask window.web3.currentProvider shim. Just use window.ethereum instead. For details, see: https://docs.metamask.io/guide/provider-migration.html#replacing-window-web3',
+              'You are accessing the MetaMask window.web3.currentProvider shim. This property is deprecated; use window.ethereum instead. For details, see: https://docs.metamask.io/guide/provider-migration.html#replacing-window-web3',
             )
           } else if (property !== SHIM_IDENTIFIER) {
             console.error(
