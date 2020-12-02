@@ -9,7 +9,7 @@ module.exports = function shimWeb3 (provider) {
     const SHIM_IDENTIFIER = '__isMetaMaskShim__'
 
     let web3Shim = { currentProvider: provider }
-    Object.defineProperty(object, SHIM_IDENTIFIER, {
+    Object.defineProperty(web3Shim, SHIM_IDENTIFIER, {
       value: true,
       enumerable: true,
       configurable: false,
@@ -17,7 +17,7 @@ module.exports = function shimWeb3 (provider) {
     })
 
     web3Shim = new Proxy(
-      object,
+      web3Shim,
       {
         get: (target, property, ...args) => {
           if (property === 'currentProvider') {
