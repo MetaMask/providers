@@ -28,6 +28,8 @@ module.exports = function shimWeb3 (provider) {
             console.error(
               `MetaMask no longer injects web3. For details, see: https://docs.metamask.io/guide/provider-migration.html#replacing-window-web3`,
             )
+            provider.request({ method: 'metamask_logWeb3ShimUsage' })
+              .catch(() => undefined)
           }
           return Reflect.get(target, property, ...args)
         },
