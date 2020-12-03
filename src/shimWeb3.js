@@ -3,8 +3,9 @@
  * not break dapps that rely on window.web3.currentProvider.
  *
  * @param {import('./MetaMaskInpageProvider')} provider - The provider to set as window.web3.currentProvider.
+ * @param {typeof console} log - The logging API to use.
  */
-module.exports = function shimWeb3 (provider) {
+module.exports = function shimWeb3 (provider, log = console) {
   if (!window.web3) {
     const SHIM_IDENTIFIER = '__isMetaMaskShim__'
 
@@ -21,18 +22,22 @@ module.exports = function shimWeb3 (provider) {
       {
         get: (target, property, ...args) => {
           if (property === 'currentProvider') {
-            console.warn(
+            log.warn(
               'You are accessing the MetaMask window.web3.currentProvider shim. This property is deprecated; use window.ethereum instead. For details, see: https://docs.metamask.io/guide/provider-migration.html#replacing-window-web3',
             )
           } else if (property !== SHIM_IDENTIFIER) {
-            console.error(
+            log.error(
               `MetaMask no longer injects web3. For details, see: https://docs.metamask.io/guide/provider-migration.html#replacing-window-web3`,
             )
+            provider.request({ method: 'metamask_logWeb3ShimUsage' })
+              .catch((error) => {
+                log.debug('MetaMask: Failed to log web3 shim usage.', error)
+              })
           }
           return Reflect.get(target, property, ...args)
         },
         set: (...args) => {
-          console.warn(
+          log.warn(
             'You are accessing the MetaMask window.web3 shim. This object is deprecated; use window.ethereum instead. For details, see: https://docs.metamask.io/guide/provider-migration.html#replacing-window-web3',
           )
           return Reflect.set(...args)
