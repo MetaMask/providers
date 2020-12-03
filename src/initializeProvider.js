@@ -14,6 +14,7 @@ const shimWeb3 = require('./shimWeb3')
  */
 function initializeProvider ({
   connectionStream,
+  logger = console,
   maxEventListeners = 100,
   shouldSendMetadata = true,
   shouldSetOnWindow = true,
@@ -21,7 +22,7 @@ function initializeProvider ({
 } = {}) {
 
   let provider = new MetaMaskInpageProvider(
-    connectionStream, { shouldSendMetadata, maxEventListeners },
+    connectionStream, { logger, maxEventListeners, shouldSendMetadata },
   )
 
   provider = new Proxy(provider, {
@@ -34,7 +35,7 @@ function initializeProvider ({
   }
 
   if (shouldShimWeb3) {
-    shimWeb3(provider)
+    shimWeb3(provider, logger)
   }
 
   return provider
