@@ -1,6 +1,4 @@
-const EventEmitter = require('events')
 const { ethErrors } = require('eth-rpc-errors')
-const SafeEventEmitter = require('safe-event-emitter')
 
 // utility functions
 
@@ -44,28 +42,26 @@ const getRpcPromiseCallback = (resolve, reject, unwrapResult = true) => (error, 
 }
 
 /**
- * Logs a stream disconnection error. Emits an 'error' if bound to an
+ * Logs a stream disconnection error. Emits an 'error' if given an
  * EventEmitter that has listeners for the 'error' event.
  *
- * @param {Object} log - The logging API to use.
+ * @param {typeof console} log - The logging API to use.
  * @param {string} remoteLabel - The label of the disconnected stream.
- * @param {Error} err - The associated error to log.
+ * @param {Error} [err] - The associated error to log.
+ * @param {import('safe-event-emitter')} [emitter] - The logging API to use.
  */
-function logStreamDisconnectWarning (log, remoteLabel, err) {
-  let warningMsg = `MetaMaskInpageProvider - lost connection to ${remoteLabel}`
-  if (err) {
+function logStreamDisconnectWarning (log, remoteLabel, err, emitter) {
+  let warningMsg = `MetaMask: Lost connection to "${remoteLabel}".`
+  if (err && err.stack) {
     warningMsg += `\n${err.stack}`
   }
   log.warn(warningMsg)
-  if (this instanceof EventEmitter || this instanceof SafeEventEmitter) {
-    if (this.listenerCount('error') > 0) {
-      this.emit('error', warningMsg)
-    }
+  if (emitter && emitter.listenerCount('error') > 0) {
+    emitter.emit('error', warningMsg)
   }
 }
 
-// eslint-disable-next-line no-empty-function
-const NOOP = () => {}
+const NOOP = () => undefined
 
 // constants
 

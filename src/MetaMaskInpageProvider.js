@@ -4,7 +4,7 @@ const createJsonRpcStream = require('json-rpc-middleware-stream')
 const ObjectMultiplex = require('obj-multiplex')
 const SafeEventEmitter = require('safe-event-emitter')
 const dequal = require('fast-deep-equal')
-const { ethErrors } = require('eth-rpc-errors')
+const { ethErrors, EthereumRpcError } = require('eth-rpc-errors')
 const { duplex: isDuplex } = require('is-stream')
 
 const messages = require('./messages')
@@ -89,6 +89,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       isConnected: false,
       isUnlocked: false,
       initialized: false,
+      isPermanentlyDisconnected: false,
     }
 
     this._metamask = this._getExperimentalApi()
@@ -100,9 +101,11 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
 
     // bind functions (to prevent consumers from making unbound calls)
     this._handleAccountsChanged = this._handleAccountsChanged.bind(this)
+    this._handleConnect = this._handleConnect.bind(this)
     this._handleChainChanged = this._handleChainChanged.bind(this)
-    this._handleUnlockStateChanged = this._handleUnlockStateChanged.bind(this)
     this._handleDisconnect = this._handleDisconnect.bind(this)
+    this._handleStreamDisconnect = this._handleStreamDisconnect.bind(this)
+    this._handleUnlockStateChanged = this._handleUnlockStateChanged.bind(this)
     this._sendSync = this._sendSync.bind(this)
     this._rpcRequest = this._rpcRequest.bind(this)
     this._warnOfDeprecation = this._warnOfDeprecation.bind(this)
@@ -117,7 +120,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       connectionStream,
       mux,
       connectionStream,
-      this._handleDisconnect.bind(this, 'MetaMask'),
+      this._handleStreamDisconnect.bind(this, 'MetaMask'),
     )
 
     // ignore phishing warning message (handled elsewhere)
@@ -137,7 +140,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       jsonRpcConnection.stream,
       mux.createStream('provider'),
       jsonRpcConnection.stream,
-      this._handleDisconnect.bind(this, 'MetaMask RpcProvider'),
+      this._handleStreamDisconnect.bind(this, 'MetaMask RpcProvider'),
     )
 
     // handle RPC requests via dapp-side rpc engine
@@ -182,9 +185,6 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       }
       window.addEventListener('DOMContentLoaded', domContentLoadedHandler)
     }
-
-    // indicate that we've connected, for EIP-1193 compliance
-    setTimeout(() => this.emit('connect', { chainId: this.chainId }))
   }
 
   //====================
@@ -376,24 +376,106 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
+   * @param {string} chainId - The ID of the newly connected chain.
+   * @emits MetaMaskInpageProvider#connect
+   */
+  _handleConnect (chainId) {
+    if (!this._state.isConnected) {
+      this._state.isConnected = true
+      this.emit('connect', { chainId })
+      log.debug(messages.info.connected(chainId))
+    }
+  }
+
+  /**
+   * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes
+   * @param {boolean} isRecoverable - Whether the disconnection is recoverable.
+   * @param {string} [errorMessage] - A custom error message.
+   * @emits MetaMaskInpageProvider#disconnect
+   */
+  _handleDisconnect (isRecoverable, errorMessage) {
+    if (
+      this._state.isConnected ||
+      (!this._state.isPermanentlyDisconnected && !isRecoverable)
+    ) {
+      this._state.isConnected = false
+
+      let error
+      if (isRecoverable) {
+        error = new EthereumRpcError(
+          1013, // Try again later
+          errorMessage || messages.errors.disconnected(),
+        )
+        log.debug(error)
+      } else {
+        error = new EthereumRpcError(
+          1011, // Internal error
+          errorMessage || messages.errors.permanentlyDisconnected(),
+        )
+        log.error(error)
+        this.chainId = null
+        this.networkVersion = null
+        this._state.accounts = null
+        this.selectedAddress = null
+        this._state.isUnlocked = null
+        this._state.isPermanentlyDisconnected = true
+      }
+
+      this.emit('disconnect', error)
+      this.emit('close', error) // deprecated
+    }
+  }
+
+  /**
    * Called when connection is lost to critical streams.
    *
    * @private
    * @emits MetamaskInpageProvider#disconnect
    */
-  _handleDisconnect (streamName, err) {
-    logStreamDisconnectWarning.bind(this)(log, streamName, err)
+  _handleStreamDisconnect (streamName, error) {
+    logStreamDisconnectWarning(log, streamName, error, this)
+    this._handleDisconnect(false, error ? error.message : undefined)
+  }
 
-    const disconnectError = {
-      code: 1011,
-      reason: messages.errors.disconnected(),
+  /**
+   * Upon receipt of a new chainId and networkVersion, emits corresponding
+   * events and sets relevant public state.
+   * Does nothing if neither the chainId nor the networkVersion are different
+   * from existing values.
+   *
+   * @private
+   * @emits MetamaskInpageProvider#chainChanged
+   * @param {Object} networkInfo - An object with network info.
+   * @param {string} networkInfo.chainId - The latest chain ID.
+   * @param {string} networkInfo.networkVersion - The latest network ID.
+   */
+  _handleChainChanged ({ chainId, networkVersion } = {}) {
+    if (
+      !chainId || typeof chainId !== 'string' || !chainId.startsWith('0x') ||
+      !networkVersion || typeof networkVersion !== 'string'
+    ) {
+      log.error(
+        'MetaMask: Received invalid network parameters. Please report this bug.',
+        { chainId, networkVersion },
+      )
+      return
     }
 
-    if (this._state.isConnected) {
-      this.emit('disconnect', disconnectError)
-      this.emit('close', disconnectError) // deprecated
+    if (networkVersion === 'loading') {
+      this._handleDisconnect(true)
+    } else {
+      this._handleConnect(chainId)
+
+      if (chainId !== this.chainId) {
+        this.chainId = chainId
+        this.emit('chainChanged', this.chainId)
+      }
+
+      if (networkVersion !== this.networkVersion) {
+        this.networkVersion = networkVersion
+        this.emit('networkChanged', this.networkVersion)
+      }
     }
-    this._state.isConnected = false
   }
 
   /**
@@ -440,41 +522,6 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
 
       // only emit the event once all state has been updated
       this.emit('accountsChanged', _accounts)
-    }
-  }
-
-  /**
-   * Upon receipt of a new chainId and networkVersion, emits corresponding
-   * events and sets relevant public state.
-   * Does nothing if neither the chainId nor the networkVersion are different
-   * from existing values.
-   *
-   * @private
-   * @emits MetamaskInpageProvider#chainChanged
-   * @param {Object} networkInfo - An object with network info.
-   * @param {string} networkInfo.chainId - The latest chain ID.
-   * @param {string} networkInfo.networkVersion - The latest network ID.
-   */
-  _handleChainChanged ({ chainId, networkVersion } = {}) {
-    if (
-      !chainId || typeof chainId !== 'string' || !chainId.startsWith('0x') ||
-      !networkVersion || typeof networkVersion !== 'string'
-    ) {
-      log.error(
-        'MetaMask: Received invalid network parameters. Please report this bug.',
-        { chainId, networkVersion },
-      )
-      return
-    }
-
-    if (chainId !== this.chainId) {
-      this.chainId = chainId
-      this.emit('chainChanged', this.chainId)
-    }
-
-    if (networkVersion !== this.networkVersion) {
-      this.networkVersion = networkVersion
-      this.emit('networkChanged', this.networkVersion)
     }
   }
 
