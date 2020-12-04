@@ -438,8 +438,10 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
         this.selectedAddress = _accounts[0] || null
       }
 
-      // only emit the event once all state has been updated
-      this.emit('accountsChanged', _accounts)
+      if (this._state.initialized) {
+        // only emit the event once all state has been updated
+        this.emit('accountsChanged', _accounts)
+      }
     }
   }
 
@@ -469,12 +471,16 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
 
     if (chainId !== this.chainId) {
       this.chainId = chainId
-      this.emit('chainChanged', this.chainId)
+      if (this._state.initialized) {
+        this.emit('chainChanged', this.chainId)
+      }
     }
 
     if (networkVersion !== this.networkVersion) {
       this.networkVersion = networkVersion
-      this.emit('networkChanged', this.networkVersion)
+      if (this._state.initialized) {
+        this.emit('networkChanged', this.networkVersion)
+      }
     }
   }
 
