@@ -374,6 +374,9 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
+   * When the provider becomes connected, updates internal state and emits
+   * required events. Idempotent.
+   *
    * @param {string} chainId - The ID of the newly connected chain.
    * @emits MetaMaskInpageProvider#connect
    */
@@ -386,7 +389,12 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
+   * When the provider becomes disconnected, updates internal state and emits
+   * required events. Idempotent with respect to the isRecoverable parameter.
+   *
+   * Error codes per the CloseEvent status codes as required by EIP-1193:
    * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes
+   *
    * @param {boolean} isRecoverable - Whether the disconnection is recoverable.
    * @param {string} [errorMessage] - A custom error message.
    * @emits MetaMaskInpageProvider#disconnect
