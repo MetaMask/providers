@@ -381,7 +381,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
     if (!this._state.isConnected) {
       this._state.isConnected = true
       this.emit('connect', { chainId })
-      log.debug(messages.info.connected(chainId))
+      this._log.debug(messages.info.connected(chainId))
     }
   }
 
@@ -404,13 +404,13 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
           1013, // Try again later
           errorMessage || messages.errors.disconnected(),
         )
-        log.debug(error)
+        this._log.debug(error)
       } else {
         error = new EthereumRpcError(
           1011, // Internal error
           errorMessage || messages.errors.permanentlyDisconnected(),
         )
-        log.error(error)
+        this._log.error(error)
         this.chainId = null
         this.networkVersion = null
         this._state.accounts = null
@@ -431,7 +431,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
    * @emits MetamaskInpageProvider#disconnect
    */
   _handleStreamDisconnect (streamName, error) {
-    logStreamDisconnectWarning(log, streamName, error, this)
+    logStreamDisconnectWarning(this._log, streamName, error, this)
     this._handleDisconnect(false, error ? error.message : undefined)
   }
 
@@ -452,7 +452,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       !chainId || typeof chainId !== 'string' || !chainId.startsWith('0x') ||
       !networkVersion || typeof networkVersion !== 'string'
     ) {
-      log.error(
+      this._log.error(
         'MetaMask: Received invalid network parameters. Please report this bug.',
         { chainId, networkVersion },
       )
