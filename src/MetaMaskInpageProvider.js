@@ -17,8 +17,6 @@ const {
   NOOP,
 } = require('./utils')
 
-let log
-
 /**
  * @typedef {Object} ConsoleLike
  * @property {function} debug - Like console.debug
@@ -48,9 +46,6 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       shouldSendMetadata = true,
     } = {},
   ) {
-    validateLoggerObject(logger)
-    log = logger
-
     if (!isDuplex(connectionStream)) {
       throw new Error(messages.errors.invalidDuplexStream())
     }
@@ -64,8 +59,11 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       ))
     }
 
+    validateLoggerObject(logger)
+
     super()
 
+    this._log = logger
     this.isMetaMask = true
 
     this.setMaxListeners(maxEventListeners)
@@ -143,7 +141,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
     // handle RPC requests via dapp-side rpc engine
     const rpcEngine = new JsonRpcEngine()
     rpcEngine.push(createIdRemapMiddleware())
-    rpcEngine.push(createErrorMiddleware(log))
+    rpcEngine.push(createErrorMiddleware(this._log))
     rpcEngine.push(jsonRpcConnection.middleware)
     this._rpcEngine = rpcEngine
 
@@ -177,7 +175,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
     // send website metadata
     if (shouldSendMetadata) {
       const domContentLoadedHandler = () => {
-        sendSiteMetadata(this._rpcEngine, log)
+        sendSiteMetadata(this._rpcEngine, this._log)
         window.removeEventListener('DOMContentLoaded', domContentLoadedHandler)
       }
       window.addEventListener('DOMContentLoaded', domContentLoadedHandler)
@@ -328,7 +326,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       this._handleUnlockStateChanged(isUnlocked)
       this._handleAccountsChanged(accounts)
     } catch (error) {
-      log.error(
+      this._log.error(
         'MetaMask: Failed to get initial state. Please report this bug.',
         error,
       )
@@ -382,7 +380,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
    * @emits MetamaskInpageProvider#disconnect
    */
   _handleDisconnect (streamName, err) {
-    logStreamDisconnectWarning.bind(this)(log, streamName, err)
+    logStreamDisconnectWarning.bind(this)(this._log, streamName, err)
 
     const disconnectError = {
       code: 1011,
@@ -412,7 +410,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
     let _accounts = accounts
 
     if (!Array.isArray(accounts)) {
-      log.error(
+      this._log.error(
         'MetaMask: Received invalid accounts parameter. Please report this bug.',
         accounts,
       )
@@ -425,7 +423,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       // we should always have the correct accounts even before eth_accounts
       // returns, except in cases where isInternal is true
       if (isEthAccounts && this._state.accounts !== null && !isInternal) {
-        log.error(
+        this._log.error(
           `MetaMask: 'eth_accounts' unexpectedly updated accounts. Please report this bug.`,
           _accounts,
         )
@@ -460,7 +458,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       !chainId || typeof chainId !== 'string' || !chainId.startsWith('0x') ||
       !networkVersion || typeof networkVersion !== 'string'
     ) {
-      log.error(
+      this._log.error(
         'MetaMask: Received invalid network parameters. Please report this bug.',
         { chainId, networkVersion },
       )
@@ -488,7 +486,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
    */
   _handleUnlockStateChanged (isUnlocked) {
     if (typeof isUnlocked !== 'boolean') {
-      log.error('MetaMask: Received invalid isUnlocked parameter. Please report this bug.')
+      this._log.error('MetaMask: Received invalid isUnlocked parameter. Please report this bug.')
       return
     }
 
@@ -519,7 +517,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
    */
   _warnOfDeprecation (eventName) {
     if (this._state.sentWarnings.events[eventName] === false) {
-      log.warn(messages.warnings.events[eventName])
+      this._log.warn(messages.warnings.events[eventName])
       this._state.sentWarnings.events[eventName] = true
     }
   }
@@ -572,7 +570,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
         get: (obj, prop) => {
 
           if (!this._state.sentWarnings.experimentalMethods) {
-            log.warn(messages.warnings.experimentalMethods)
+            this._log.warn(messages.warnings.experimentalMethods)
             this._state.sentWarnings.experimentalMethods = true
           }
           return obj[prop]
@@ -593,7 +591,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
    */
   enable () {
     if (!this._state.sentWarnings.enable) {
-      log.warn(messages.warnings.enableDeprecation)
+      this._log.warn(messages.warnings.enableDeprecation)
       this._state.sentWarnings.enable = true
     }
 
@@ -620,7 +618,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
    */
   send (methodOrPayload, callbackOrArgs) {
     if (!this._state.sentWarnings.send) {
-      log.warn(messages.warnings.sendDeprecation)
+      this._log.warn(messages.warnings.sendDeprecation)
       this._state.sentWarnings.send = true
     }
 
