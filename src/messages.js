@@ -1,7 +1,7 @@
 module.exports = {
   errors: {
     disconnected: () => 'MetaMask: Disconnected from chain. Attempting to connect.',
-    permanentlyDisconnected: () => 'MetaMask: Provider permanently disconnected. Page reload required.',
+    permanentlyDisconnected: () => 'MetaMask: Disconnected from MetaMask background. Page reload required.',
     sendSiteMetadata: () => `MetaMask: Failed to send site metadata. This is an internal error, please report this bug.`,
     unsupportedSync: (method) => `MetaMask: The MetaMask Ethereum provider does not support synchronous methods like ${method} without a callback parameter.`,
     invalidDuplexStream: () => 'Must provide a Node.js-style duplex stream.',

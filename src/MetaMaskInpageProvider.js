@@ -32,6 +32,8 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
   /**
    * @param {Object} connectionStream - A Node.js duplex stream
    * @param {Object} options - An options bag
+   * @param {string} [options.jsonRpcStreamName] - The name of the internal JSON-RPC stream.
+   * Default: metamask_provider
    * @param {ConsoleLike} [options.logger] - The logging API to use. Default: console
    * @param {number} [options.maxEventListeners] - The maximum number of event
    * listeners. Default: 100
@@ -41,6 +43,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
   constructor (
     connectionStream,
     {
+      jsonRpcStreamName = 'metamask-provider',
       logger = console,
       maxEventListeners = 100,
       shouldSendMetadata = true,
@@ -136,7 +139,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
     const jsonRpcConnection = createJsonRpcStream()
     pump(
       jsonRpcConnection.stream,
-      mux.createStream('provider'),
+      mux.createStream(jsonRpcStreamName),
       jsonRpcConnection.stream,
       this._handleStreamDisconnect.bind(this, 'MetaMask RpcProvider'),
     )
@@ -162,14 +165,17 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       } else if (method === 'metamask_chainChanged') {
         this._handleChainChanged(result)
       } else if (EMITTED_NOTIFICATIONS.includes(method)) {
-        this.emit('notification', payload) // deprecated
         this.emit('message', {
           type: method,
           data: params,
         })
 
         // deprecated
-        this.emit('notification', params.result)
+        this.emit('notification', payload.params.result)
+      } else if (method === 'METAMASK_STREAM_FAILURE') {
+        connectionStream.destroy(
+          new Error(messages.errors.permanentlyDisconnected()),
+        )
       }
     })
 
