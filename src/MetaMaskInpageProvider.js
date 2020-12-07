@@ -486,7 +486,6 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
    * @param {boolean} opts.isUnlocked - The latest isUnlocked value.
    */
   _handleUnlockStateChanged ({ accounts, isUnlocked }) {
-    this._handleAccountsChanged(accounts || [])
     if (typeof isUnlocked !== 'boolean') {
       this._log.error('MetaMask: Received invalid isUnlocked parameter. Please report this bug.')
       return
@@ -494,6 +493,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
 
     if (isUnlocked !== this._state.isUnlocked) {
       this._state.isUnlocked = isUnlocked
+      this._handleAccountsChanged(accounts || [])
     }
   }
 
