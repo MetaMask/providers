@@ -6,14 +6,16 @@ const shimWeb3 = require('./shimWeb3')
  *
  * @param {Object} options - An options bag.
  * @param {Object} options.connectionStream - A Node.js stream.
- * @param {number} options.maxEventListeners - The maximum number of event listeners.
- * @param {boolean} options.shouldSendMetadata - Whether the provider should send page metadata.
- * @param {boolean} options.shouldSetOnWindow - Whether the provider should be set as window.ethereum.
- * @param {boolean} options.shouldShimWeb3 - Whether a window.web3 shim should be injected.
+ * @param {string} [options.jsonRpcStreamName] - The name of the internal JSON-RPC stream.
+ * @param {number} [options.maxEventListeners] - The maximum number of event listeners.
+ * @param {boolean} [options.shouldSendMetadata] - Whether the provider should send page metadata.
+ * @param {boolean} [options.shouldSetOnWindow] - Whether the provider should be set as window.ethereum.
+ * @param {boolean} [options.shouldShimWeb3] - Whether a window.web3 shim should be injected.
  * @returns {MetaMaskInpageProvider | Proxy} The initialized provider (whether set or not).
  */
 function initializeProvider ({
   connectionStream,
+  jsonRpcStreamName,
   logger = console,
   maxEventListeners = 100,
   shouldSendMetadata = true,
@@ -22,7 +24,13 @@ function initializeProvider ({
 } = {}) {
 
   let provider = new MetaMaskInpageProvider(
-    connectionStream, { logger, maxEventListeners, shouldSendMetadata },
+    connectionStream,
+    {
+      logger,
+      jsonRpcStreamName,
+      maxEventListeners,
+      shouldSendMetadata,
+    },
   )
 
   provider = new Proxy(provider, {

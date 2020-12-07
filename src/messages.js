@@ -1,6 +1,7 @@
 module.exports = {
   errors: {
-    disconnected: () => `MetaMask: Lost connection to MetaMask background process.`,
+    disconnected: () => 'MetaMask: Disconnected from chain. Attempting to connect.',
+    permanentlyDisconnected: () => 'MetaMask: Disconnected from MetaMask background. Page reload required.',
     sendSiteMetadata: () => `MetaMask: Failed to send site metadata. This is an internal error, please report this bug.`,
     unsupportedSync: (method) => `MetaMask: The MetaMask Ethereum provider does not support synchronous methods like ${method} without a callback parameter.`,
     invalidDuplexStream: () => 'Must provide a Node.js-style duplex stream.',
@@ -10,6 +11,9 @@ module.exports = {
     invalidRequestParams: () => `'args.params' must be an object or array if provided.`,
     invalidLoggerObject: () => `'args.logger' must be an object if provided.`,
     invalidLoggerMethod: (method) => `'args.logger' must include required method '${method}'.`,
+  },
+  info: {
+    connected: (chainId) => `MetaMask: Connected to chain with ID "${chainId}".`,
   },
   warnings: {
     // deprecated methods
