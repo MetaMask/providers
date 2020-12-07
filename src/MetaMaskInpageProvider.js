@@ -147,17 +147,17 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
 
     this._initializeState()
 
-    // handle JSON RPC notifications
+    // handle JSON-RPC notifications
     jsonRpcConnection.events.on('notification', (payload) => {
-      const { method, params, result } = payload
+      const { method, params } = payload
 
       if (method === 'metamask_accountsChanged') {
-        this._handleAccountsChanged(result)
+        this._handleAccountsChanged(params)
 
       } else if (method === 'metamask_unlockStateChanged') {
-        this._handleUnlockStateChanged(result)
+        this._handleUnlockStateChanged(params)
       } else if (method === 'metamask_chainChanged') {
-        this._handleChainChanged(result)
+        this._handleChainChanged(params)
       } else if (EMITTED_NOTIFICATIONS.includes(method)) {
         this.emit('notification', payload) // deprecated
         this.emit('message', {
@@ -323,7 +323,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
       this.emit('connect', { chainId })
 
       this._handleChainChanged({ chainId, networkVersion })
-      this._handleUnlockStateChanged(isUnlocked)
+      this._handleUnlockStateChanged({ accounts, isUnlocked })
       this._handleAccountsChanged(accounts)
     } catch (error) {
       this._log.error(
@@ -343,9 +343,8 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
    * @private
    * @param {Object} payload - The RPC request object.
    * @param {Function} callback - The consumer's callback.
-   * @param {boolean} [isInternal=false] - Whether the request is internal.
    */
-  _rpcRequest (payload, callback, isInternal = false) {
+  _rpcRequest (payload, callback) {
     let cb = callback
 
     if (!Array.isArray(payload)) {
@@ -364,7 +363,6 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
           this._handleAccountsChanged(
             res.result || [],
             payload.method === 'eth_accounts',
-            isInternal,
           )
           callback(err, res)
         }
@@ -403,10 +401,8 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
    * @param {string[]} accounts - The new accounts value.
    * @param {boolean} isEthAccounts - Whether the accounts value was returned by
    * a call to eth_accounts.
-   * @param {boolean} isInternal - Whether the accounts value was returned by an
-   * internally initiated request.
    */
-  _handleAccountsChanged (accounts, isEthAccounts = false, isInternal = false) {
+  _handleAccountsChanged (accounts, isEthAccounts = false) {
     let _accounts = accounts
 
     if (!Array.isArray(accounts)) {
@@ -421,8 +417,8 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
     if (!dequal(this._state.accounts, _accounts)) {
 
       // we should always have the correct accounts even before eth_accounts
-      // returns, except in cases where isInternal is true
-      if (isEthAccounts && this._state.accounts !== null && !isInternal) {
+      // returns
+      if (isEthAccounts && this._state.accounts !== null) {
         this._log.error(
           `MetaMask: 'eth_accounts' unexpectedly updated accounts. Please report this bug.`,
           _accounts,
@@ -477,14 +473,19 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
   }
 
   /**
-   * Upon receipt of a new isUnlocked state, emits the corresponding event
-   * and sets relevant public state.
+   * Upon receipt of a new isUnlocked state, sets relevant public state.
+   * Calls the accounts changed handler with the received accounts, or an empty
+   * array.
+   *
    * Does nothing if the received value is equal to the existing value.
+   * There are no lock/unlock events.
    *
    * @private
-   * @param {boolean} isUnlocked - The latest isUnlocked value.
+   * @param {Object} opts - Options bag.
+   * @param {string[]} [opts.accounts] - The exposed accounts, if any.
+   * @param {boolean} opts.isUnlocked - The latest isUnlocked value.
    */
-  _handleUnlockStateChanged (isUnlocked) {
+  _handleUnlockStateChanged ({ accounts, isUnlocked }) {
     if (typeof isUnlocked !== 'boolean') {
       this._log.error('MetaMask: Received invalid isUnlocked parameter. Please report this bug.')
       return
@@ -492,21 +493,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
 
     if (isUnlocked !== this._state.isUnlocked) {
       this._state.isUnlocked = isUnlocked
-
-      if (isUnlocked) {
-
-        // this will get the exposed accounts, if any
-        try {
-          this._rpcRequest(
-            { method: 'eth_accounts', params: [] },
-            NOOP,
-            true, // indicating that eth_accounts _should_ update accounts
-          )
-        } catch (_) { /* no-op */ }
-      } else {
-        // accounts are never exposed when the extension is locked
-        this._handleAccountsChanged([])
-      }
+      this._handleAccountsChanged(accounts || [])
     }
   }
 
