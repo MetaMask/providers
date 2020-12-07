@@ -48,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **BREAKING:** Changed casing of `Metamask` in all exports to `MetaMask`
+- **(BREAKING)** Changed casing of `Metamask` in all exports to `MetaMask`
   - A brand is a brand ¯\\\_(ツ)\_/¯
 
 ## [6.3.0] - 2020-09-04
@@ -179,11 +179,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **BREAKING:** Use named instead of default exports ([#31](https://github.com/MetaMask/inpage-provider/pull/31))
-- **BREAKING:** `MetaMaskInpage` constructor now takes a `connectionStream` and an
+- **(BREAKING)** Use named instead of default exports ([#31](https://github.com/MetaMask/inpage-provider/pull/31))
+- **(BREAKING)** `MetaMaskInpage` constructor now takes a `connectionStream` and an
   options object ([#31](https://github.com/MetaMask/inpage-provider/pull/31))
-- **BREAKING:** `_metamask.sendBatch` -> `_metamask.requestBatch` ([#30](https://github.com/MetaMask/inpage-provider/pull/30))
-- **BREAKING:** Revert `send` to match provider in v7.7.8 of `metamask-extension` ([#29](https://github.com/MetaMask/inpage-provider/pull/29))
+- **(BREAKING)** `_metamask.sendBatch` -> `_metamask.requestBatch` ([#30](https://github.com/MetaMask/inpage-provider/pull/30))
+- **(BREAKING)** Revert `send` to match provider in v7.7.8 of `metamask-extension` ([#29](https://github.com/MetaMask/inpage-provider/pull/29))
 - The `connect` event now emits with a `ProviderConnectInfo` object per EIP 1193 ([#30](https://github.com/MetaMask/inpage-provider/pull/30))
 - Deprecated the `send` method ([#30](https://github.com/MetaMask/inpage-provider/pull/30))
 - Deprecated the events `close`, `networkChanged`, and `notification`, and
