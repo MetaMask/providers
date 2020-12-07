@@ -61,7 +61,7 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
 
       expect(
         () => new MetaMaskInpageProvider(stream, null),
-      ).toThrow('Cannot destructure property `logger` of \'undefined\' or \'null\'')
+      ).toThrow('Cannot destructure property `jsonRpcStreamName` of \'undefined\' or \'null\'')
 
       expect(
         () => new MetaMaskInpageProvider(stream, {
