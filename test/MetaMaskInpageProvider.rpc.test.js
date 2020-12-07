@@ -420,7 +420,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
             )
 
             expect(provider._handleAccountsChanged)
-              .toHaveBeenCalledWith(['0x1'], true, false)
+              .toHaveBeenCalledWith(['0x1'], true)
 
             expect(err).toBeNull()
             expect(res).toStrictEqual({ result: ['0x1'] })
@@ -445,7 +445,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
               )
 
               expect(provider._handleAccountsChanged)
-                .toHaveBeenCalledWith([], true, false)
+                .toHaveBeenCalledWith([], true)
 
               expect(err).toStrictEqual(new Error('foo'))
               expect(res).toStrictEqual({ error: 'foo' })
