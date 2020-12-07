@@ -532,6 +532,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
         this.selectedAddress = _accounts[0] || null
       }
 
+      // finally, after all state has been updated, emit the event
       if (this._state.initialized) {
         this.emit('accountsChanged', _accounts)
       }
