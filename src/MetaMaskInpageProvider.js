@@ -183,11 +183,15 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
 
     // send website metadata
     if (shouldSendMetadata) {
-      const domContentLoadedHandler = () => {
+      if (document.readyState === 'complete') {
         sendSiteMetadata(this._rpcEngine, this._log)
-        window.removeEventListener('DOMContentLoaded', domContentLoadedHandler)
+      } else {
+        const domContentLoadedHandler = () => {
+          sendSiteMetadata(this._rpcEngine, this._log)
+          window.removeEventListener('DOMContentLoaded', domContentLoadedHandler)
+        }
+        window.addEventListener('DOMContentLoaded', domContentLoadedHandler)
       }
-      window.addEventListener('DOMContentLoaded', domContentLoadedHandler)
     }
   }
 
