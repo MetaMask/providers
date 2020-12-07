@@ -23,9 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Stop emitting state change events on initialization ([#117](https://github.com/MetaMask/inpage-provider/pull/117))
-  - Includes `accountsChanged`, `chainChanged`, and `networkChanged`.
-  - This prevents sites that handle any of these events by reloading the page from entering into a reload loop.
 - Correctly implement `connect` and `disconnect` events ([#120](https://github.com/MetaMask/inpage-provider/pull/120))
   - See [EIP-1193](https://eips.ethereum.org/EIPS/eip-1193#connect) for the specification of these events.
   - `disconnect` emits with an RPC error. Like all such errors emitted by this module, they have a `code` property with a `number` value. There are currently two codes:
@@ -34,15 +31,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Send page metadata even if page is already loaded ([#119](https://github.com/MetaMask/inpage-provider/pull/119))
 - Convert `MetaMaskInpageProvider` `logger` to instance variable ([#118](https://github.com/MetaMask/inpage-provider/pull/118))
   - Previously, it was erroneously a singleton across all class instances.
+- Stop emitting state change events on initialization ([#117](https://github.com/MetaMask/inpage-provider/pull/117))
+  - Includes `accountsChanged`, `chainChanged`, and `networkChanged`.
+  - This prevents sites that handle any of these events by reloading the page from entering into a reload loop.
 
 ### Removed
 
-- **(BREAKING)** Remove the `chainIdChanged` event ([#111](https://github.com/MetaMask/inpage-provider/pull/111))
 - **(BREAKING)** Remove `_metamask.isEnabled` and `_metamask.isApproved` ([#112](https://github.com/MetaMask/inpage-provider/pull/112))
+- **(BREAKING)** Remove the `chainIdChanged` event ([#111](https://github.com/MetaMask/inpage-provider/pull/111))
+- **(BREAKING)** Remove `ethereum.publicConfigStore` ([#109](https://github.com/MetaMask/inpage-provider/pull/109))
 - **(BREAKING)** Remove `web3.js`-related functionality ([#106](https://github.com/MetaMask/inpage-provider/pull/106))
   - This functionality caused the page to reload if there was a `web3.js` instance at `window.web3`, and kept `web3.eth.defaultAccount` in sync with `ethereum.selectedAddress`.
   - This functionality is replicated in [@metamask/legacy-web3](https://www.npmjs.com/package/@metamask/legacy-web3).
-- **(BREAKING)** Remove `ethereum.publicConfigStore` ([#109](https://github.com/MetaMask/inpage-provider/pull/109))
 
 ## [7.0.0] - 2020-09-08
 
