@@ -32,14 +32,14 @@
     "index.d.ts"
   ],
   "dependencies": {
+    "@metamask/safe-event-emitter": "^2.0.0",
     "eth-rpc-errors": "^4.0.2",
     "fast-deep-equal": "^2.0.1",
     "is-stream": "^2.0.0",
     "json-rpc-engine": "^6.1.0",
     "json-rpc-middleware-stream": "^2.1.1",
     "obj-multiplex": "^1.0.0",
-    "pump": "^3.0.0",
-    "safe-event-emitter": "^1.0.1"
+    "pump": "^3.0.0"
   },
   "devDependencies": {
     "@metamask/eslint-config": "^4.1.0",
