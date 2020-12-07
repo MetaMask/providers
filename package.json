@@ -42,12 +42,13 @@
     "safe-event-emitter": "^1.0.1"
   },
   "devDependencies": {
-    "@metamask/eslint-config": "^3.1.0",
+    "@metamask/eslint-config": "^4.1.0",
     "@types/jest": "^26.0.5",
-    "eslint": "^6.8.0",
+    "eslint": "^7.15.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jest": "^23.18.0",
     "eslint-plugin-json": "^2.0.1",
+    "eslint-plugin-node": "^11.1.0",
     "jest": "^26.1.0"
   }
 }
