@@ -49,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **BREAKING:** Changed casing of `Metamask` in all exports to `MetaMask`
-  - A brand is a brand ¯\\_(ツ)_/¯
+  - A brand is a brand ¯\\\_(ツ)\_/¯
 
 ## [6.3.0] - 2020-09-04
 
