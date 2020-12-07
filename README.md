@@ -4,6 +4,8 @@ The inpage Ethereum provider object injected by MetaMask into web pages.
 Contains a lot of implementation details specific to MetaMask, and is probably
 not suitable for out-of-the-box use with other wallets.
 
+Implements the Ethereum JavaScript provider specification, [EIP-1193](https://eips.ethereum.org/EIPS/eip-1193).
+
 ## Installation
 
 `yarn add @metamask/inpage-provider`
