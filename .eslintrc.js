@@ -14,10 +14,9 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2018,
   },
-  ignorePatterns: [
-    '!.eslintrc.js',
-    'node_modules/',
-  ],
+  rules: {
+    'node/no-sync': 'off',
+  },
   overrides: [
     {
       files: ['test/mocks/**'],
@@ -25,5 +24,15 @@ module.exports = {
         'no-empty-function': 'off',
       },
     },
+    {
+      files: ['test/**'],
+      rules: {
+        'node/no-callback-literal': 'off',
+      },
+    },
+  ],
+  ignorePatterns: [
+    '!.eslintrc.js',
+    'node_modules/',
   ],
 }
