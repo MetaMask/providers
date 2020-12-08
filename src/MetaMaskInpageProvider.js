@@ -1,6 +1,6 @@
 const pump = require('pump')
 const { JsonRpcEngine, createIdRemapMiddleware } = require('json-rpc-engine')
-const createJsonRpcStream = require('json-rpc-middleware-stream')
+const { createStreamMiddleware } = require('json-rpc-middleware-stream')
 const ObjectMultiplex = require('@metamask/object-multiplex')
 const { default: SafeEventEmitter } = require('@metamask/safe-event-emitter')
 const dequal = require('fast-deep-equal')
@@ -136,7 +136,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
 
     // setup RPC connection
 
-    const jsonRpcConnection = createJsonRpcStream()
+    const jsonRpcConnection = createStreamMiddleware()
     pump(
       jsonRpcConnection.stream,
       mux.createStream(jsonRpcStreamName),
