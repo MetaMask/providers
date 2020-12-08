@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.0.1] - 2020-12-08
+
+### Fixed
+
+- Fix `8.0.0` types ([#127](https://github.com/MetaMask/inpage-provider/pull/127))
+
 ## [8.0.0] - 2020-12-07
 
 ### Added
@@ -190,7 +196,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/inpage-provider/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/inpage-provider/pull/29))
 
-[Unreleased]:https://github.com/MetaMask/inpage-provider/compare/v8.0.0...HEAD
+[Unreleased]:https://github.com/MetaMask/inpage-provider/compare/v8.0.1...HEAD
+[8.0.1]:https://github.com/MetaMask/inpage-provider/compare/v8.0.0...v8.0.1
 [8.0.0]:https://github.com/MetaMask/inpage-provider/compare/v7.0.0...v8.0.0
 [7.0.0]:https://github.com/MetaMask/inpage-provider/compare/v6.3.0...v7.0.0
 [6.3.0]:https://github.com/MetaMask/inpage-provider/compare/v6.2.0...v6.3.0
