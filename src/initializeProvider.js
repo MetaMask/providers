@@ -26,8 +26,8 @@ function initializeProvider ({
   let provider = new MetaMaskInpageProvider(
     connectionStream,
     {
-      logger,
       jsonRpcStreamName,
+      logger,
       maxEventListeners,
       shouldSendMetadata,
     },

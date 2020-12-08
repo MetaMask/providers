@@ -33,7 +33,7 @@ module.exports = class MetaMaskInpageProvider extends SafeEventEmitter {
    * @param {Object} connectionStream - A Node.js duplex stream
    * @param {Object} options - An options bag
    * @param {string} [options.jsonRpcStreamName] - The name of the internal JSON-RPC stream.
-   * Default: metamask_provider
+   * Default: metamask-provider
    * @param {ConsoleLike} [options.logger] - The logging API to use. Default: console
    * @param {number} [options.maxEventListeners] - The maximum number of event
    * listeners. Default: 100
