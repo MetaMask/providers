@@ -48,7 +48,7 @@ const getRpcPromiseCallback = (resolve, reject, unwrapResult = true) => (error, 
  * @param {typeof console} log - The logging API to use.
  * @param {string} remoteLabel - The label of the disconnected stream.
  * @param {Error} [err] - The associated error to log.
- * @param {import('safe-event-emitter')} [emitter] - The logging API to use.
+ * @param {import('@metamask/safe-event-emitter').default} [emitter] - The logging API to use.
  */
 function logStreamDisconnectWarning (log, remoteLabel, err, emitter) {
   let warningMsg = `MetaMask: Lost connection to "${remoteLabel}".`
