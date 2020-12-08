@@ -7,12 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.0.0] - 2020-12-07
+
+### Added
+
+- Add `logger` parameter to `initializeProvider` ([#116](https://github.com/MetaMask/inpage-provider/pull/116))
+- Add `window.web3` shim, `shimWeb3` export ([#113](https://github.com/MetaMask/inpage-provider/pull/113), [#115](https://github.com/MetaMask/inpage-provider/pull/115))
+  - This is to maintain `window.web3.currentProvider` once MetaMask stops injecting `window.web3` (very soon), and to log attempts to access any properties on the shim other than `currentProvider`.
+  - `initializeWeb3` now has a `shouldShimWeb3` argument, which causes the shim to be set as `window.web3` if `true`.
+
+### Changed
+
+- **(BREAKING)** Rename `initProvider` export to `initializeProvider` ([#114](https://github.com/MetaMask/inpage-provider/pull/114))
+- **(BREAKING)** Replace `ethereum.publicConfigStore` with new set of JSON-RPC notifications ([#109](https://github.com/MetaMask/inpage-provider/pull/109))
+
+### Fixed
+
+- Correctly implement `connect` and `disconnect` events ([#120](https://github.com/MetaMask/inpage-provider/pull/120))
+  - See [EIP-1193](https://eips.ethereum.org/EIPS/eip-1193#connect) for the specification of these events.
+  - `disconnect` emits with an RPC error. Like all such errors emitted by this module, they have a `code` property with a `number` value. There are currently two codes:
+    - `1013` indicates that MetaMask is attempting to reestablish the connection
+    - `1011` indicates that a page reload is required
+- Send page metadata even if page is already loaded ([#119](https://github.com/MetaMask/inpage-provider/pull/119))
+- Convert `MetaMaskInpageProvider` `logger` to instance variable ([#118](https://github.com/MetaMask/inpage-provider/pull/118))
+  - Previously, it was erroneously a singleton across all class instances.
+- Stop emitting state change events on initialization ([#117](https://github.com/MetaMask/inpage-provider/pull/117))
+  - Includes `accountsChanged`, `chainChanged`, and `networkChanged`.
+  - This prevents sites that handle any of these events by reloading the page from entering into a reload loop.
+
+### Removed
+
+- **(BREAKING)** Remove `_metamask.isEnabled` and `_metamask.isApproved` ([#112](https://github.com/MetaMask/inpage-provider/pull/112))
+- **(BREAKING)** Remove the `chainIdChanged` event ([#111](https://github.com/MetaMask/inpage-provider/pull/111))
+- **(BREAKING)** Remove `ethereum.publicConfigStore` ([#109](https://github.com/MetaMask/inpage-provider/pull/109))
+- **(BREAKING)** Remove `web3.js`-related functionality ([#106](https://github.com/MetaMask/inpage-provider/pull/106))
+  - This functionality caused the page to reload if there was a `web3.js` instance at `window.web3`, and kept `web3.eth.defaultAccount` in sync with `ethereum.selectedAddress`.
+  - This functionality is replicated in [@metamask/legacy-web3](https://www.npmjs.com/package/@metamask/legacy-web3).
+
 ## [7.0.0] - 2020-09-08
 
 ### Changed
 
-- **BREAKING:** Changed casing of `Metamask` in all exports to `MetaMask`
-  - A brand is a brand ¯\\_(ツ)_/¯
+- **(BREAKING)** Changed casing of `Metamask` in all exports to `MetaMask`
+  - A brand is a brand ¯\\\_(ツ)\_/¯
 
 ## [6.3.0] - 2020-09-04
 
@@ -80,7 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Restore the `notification` event value to its pre-`4.0.0` state
+- **(BREAKING)** Restore the `notification` event value to its pre-`4.0.0` state
   - Prior to `4.0.0` this event was emitted by code in the MetaMask extension.
   Its value was inadvertently changed when it was moved to this package.
 
@@ -142,18 +179,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **BREAKING:** Use named instead of default exports ([#31](https://github.com/MetaMask/inpage-provider/pull/31))
-- **BREAKING:** `MetaMaskInpage` constructor now takes a `connectionStream` and an
+- **(BREAKING)** Use named instead of default exports ([#31](https://github.com/MetaMask/inpage-provider/pull/31))
+- **(BREAKING)** `MetaMaskInpage` constructor now takes a `connectionStream` and an
   options object ([#31](https://github.com/MetaMask/inpage-provider/pull/31))
-- **BREAKING:** `_metamask.sendBatch` -> `_metamask.requestBatch` ([#30](https://github.com/MetaMask/inpage-provider/pull/30))
-- **BREAKING:** Revert `send` to match provider in v7.7.8 of `metamask-extension` ([#29](https://github.com/MetaMask/inpage-provider/pull/29))
+- **(BREAKING)** `_metamask.sendBatch` -> `_metamask.requestBatch` ([#30](https://github.com/MetaMask/inpage-provider/pull/30))
+- **(BREAKING)** Revert `send` to match provider in v7.7.8 of `metamask-extension` ([#29](https://github.com/MetaMask/inpage-provider/pull/29))
 - The `connect` event now emits with a `ProviderConnectInfo` object per EIP 1193 ([#30](https://github.com/MetaMask/inpage-provider/pull/30))
 - Deprecated the `send` method ([#30](https://github.com/MetaMask/inpage-provider/pull/30))
 - Deprecated the events `close`, `networkChanged`, and `notification`, and
   added deprecation warnings for them ([#30](https://github.com/MetaMask/inpage-provider/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/inpage-provider/pull/29))
 
-[Unreleased]:https://github.com/MetaMask/inpage-provider/compare/v7.0.0...HEAD
+[Unreleased]:https://github.com/MetaMask/inpage-provider/compare/v8.0.0...HEAD
+[8.0.0]:https://github.com/MetaMask/inpage-provider/compare/v7.0.0...v8.0.0
 [7.0.0]:https://github.com/MetaMask/inpage-provider/compare/v6.3.0...v7.0.0
 [6.3.0]:https://github.com/MetaMask/inpage-provider/compare/v6.2.0...v6.3.0
 [6.2.0]:https://github.com/MetaMask/inpage-provider/compare/v6.1.1...v6.2.0
