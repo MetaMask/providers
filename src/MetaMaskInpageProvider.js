@@ -1,7 +1,7 @@
 const pump = require('pump')
 const { JsonRpcEngine, createIdRemapMiddleware } = require('json-rpc-engine')
 const createJsonRpcStream = require('json-rpc-middleware-stream')
-const ObjectMultiplex = require('obj-multiplex')
+const ObjectMultiplex = require('@metamask/object-multiplex')
 const { default: SafeEventEmitter } = require('@metamask/safe-event-emitter')
 const dequal = require('fast-deep-equal')
 const { ethErrors, EthereumRpcError } = require('eth-rpc-errors')
