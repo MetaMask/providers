@@ -1,24 +1,27 @@
 // You may have to bring your own Node types (e.g. @types/node) for these imports.
 import { EventEmitter } from 'events';
 import { Duplex } from 'stream';
+import { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
 
 export interface MetaMaskInpageProviderOptions {
 
   /**
+   * The name of the stream used to connect to the wallet.
+   */
+  jsonRpcStreamName?: string;
+
+  /**
    * The logging API to use.
-   * @default console
    */
   logger?: Pick<Console, 'log' | 'warn' | 'error' | 'debug' | 'info' | 'trace'>;
 
   /**
    * The maximum number of event listeners.
-   * @default 100
    */
   maxEventListeners?: number;
 
   /**
    * Whether the provider should send page metadata.
-   * @default true
    */
   shouldSendMetadata?: boolean;
 }
@@ -46,23 +49,23 @@ export class MetaMaskInpageProvider extends EventEmitter {
    * Submits an RPC request per the given JSON-RPC request object.
    */
   sendAsync (
-    payload: JsonRpcRequest,
-    callback: (error: Error | null, result?: JsonRpcResponse) => void,
+    payload: JsonRpcRequest<unknown>,
+    callback: (error: Error | null, result?: JsonRpcResponse<unknown>) => void,
   ): void;
 
   /**
    * Submits an RPC request for the given method, with the given params.
    * @deprecated Use {@link request} instead.
    */
-  send (method: string, params?: unknown[]): Promise<JsonRpcResponse>;
+  send (method: string, params?: unknown[]): Promise<JsonRpcResponse<unknown>>;
 
   /**
    * Submits an RPC request per the given JSON-RPC request object.
    * @deprecated Use {@link request} instead.
    */
   send (
-    payload: JsonRpcRequest,
-    callback: (error: Error | null, result?: JsonRpcResponse) => void,
+    payload: JsonRpcRequest<unknown>,
+    callback: (error: Error | null, result?: JsonRpcResponse<unknown>) => void,
   ): void;
 
   /**
@@ -70,7 +73,7 @@ export class MetaMaskInpageProvider extends EventEmitter {
    * for the given method. Only supports 4 specific methods.
    * @deprecated Use {@link request} instead.
    */
-  send (payload: SendSyncJsonRpcRequest): JsonRpcResponse;
+  send (payload: SendSyncJsonRpcRequest): JsonRpcResponse<unknown>;
 
   /**
    * Indicating that this provider is a MetaMask provider.
@@ -97,22 +100,31 @@ export class MetaMaskInpageProvider extends EventEmitter {
   readonly chainId: string | undefined;
 }
 
+interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
+
+  /**
+   * The stream used to connect to the wallet.
+   */
+  connectionStream: Duplex;
+
+  /**
+   * Whether the provider should be set as window.ethereum.
+   */
+  shouldSetOnWindow?: boolean;
+
+  /**
+   * Whether the window.web3 shim should be set.
+   */
+  shouldShimWeb3?: boolean;
+}
+
 /**
  * Initializes a MetaMaskInpageProvider and (optionally) assigns it as window.ethereum.
+ * 
  * @returns The initialized provider (whether set or not).
  */
 export function initializeProvider (
-  options: Pick<MetaMaskInpageProviderOptions, 'maxEventListeners' | 'shouldSendMetadata'> & {
-
-    /** A Node.js duplex stream. */
-    connectionStream: Duplex;
-
-    /**
-     * Whether the provider should be set as window.ethereum.
-     * @default true
-     */
-    shouldSetOnWindow?: boolean;
-  }
+  options: InitializeProviderOptions,
 ): MetaMaskInpageProvider;
 
 /**
@@ -123,53 +135,24 @@ export function initializeProvider (
  */
 export function setGlobalProvider (providerInstance: MetaMaskInpageProvider): void;
 
+/**
+ * If no existing window.web3 is found, this function injects a web3 "shim" to
+ * not break dapps that rely on window.web3.currentProvider.
+ *
+ * @param provider - The provider to set as window.web3.currentProvider.
+ * @param log - The logging API to use.
+ */
+export function shimWeb3 (provider: MetaMaskInpageProvider, log: typeof console): void;
+
 export interface RequestArguments {
 
   /** The RPC method to request. */
   method: string;
 
   /** The params of the RPC method, if any. */
-  params?: unknown[];
-}
-
-export interface JsonRpcRequest {
-
-  /** The RPC method to request. */
-  method: string;
-
-  /** The params of the RPC method, if any. */
-  params?: unknown[];
-
-  /** For spec compliance; handled if not provided. */
-  id?: string | number;
-
-  /** For spec compliance; handled if not provided. */
-  jsonrpc?: '2.0';
+  params?: unknown[] | Record<string, unknown>;
 }
 
 export interface SendSyncJsonRpcRequest extends JsonRpcRequest {
   method: 'eth_accounts' | 'eth_coinbase' | 'eth_uninstallFilter' | 'net_version';
 }
-
-interface JsonRpcResponseBase {
-
-  /** Equal to the corresponding JSON-RPC request object. */
-  id?: string | number;
-
-  /** Equal to the corresponding JSON-RPC request. */
-  jsonrpc?: '2.0';
-}
-
-export interface JsonRpcErrorResponse extends JsonRpcResponseBase {
-  error: {
-    code: number;
-    message: string;
-    data?: unknown;
-  };
-}
-
-export interface JsonRpcSuccessResponse extends JsonRpcResponseBase {
-  result: unknown;
-}
-
-export type JsonRpcResponse = JsonRpcSuccessResponse | JsonRpcErrorResponse;
