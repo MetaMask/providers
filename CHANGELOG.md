@@ -117,7 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Restore the `notification` event value to its pre-`4.0.0` state
+- **(BREAKING)** Restore the `notification` event value to its pre-`4.0.0` state
   - Prior to `4.0.0` this event was emitted by code in the MetaMask extension.
   Its value was inadvertently changed when it was moved to this package.
 
