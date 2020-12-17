@@ -20,4 +20,4 @@ module.exports = {
     '\\.test\\.js$',
   ],
   testTimeout: 5000,
-}
+};

@@ -7,6 +7,7 @@ module.exports = {
     '@metamask/eslint-config',
     '@metamask/eslint-config/config/jest',
     '@metamask/eslint-config/config/nodejs',
+    '@metamask/eslint-config/config/typescript',
   ],
   plugins: [
     'json',
@@ -19,9 +20,16 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['test/mocks/**'],
+      files: [
+        '*.js',
+        '*.json',
+      ],
+      parserOptions: {
+        sourceType: 'script',
+      },
       rules: {
-        'no-empty-function': 'off',
+        '@typescript-eslint/no-require-imports': 'off',
+        '@typescript-eslint/no-var-requires': 'off',
       },
     },
     {
@@ -33,6 +41,7 @@ module.exports = {
   ],
   ignorePatterns: [
     '!.eslintrc.js',
+    'dist/',
     'node_modules/',
   ],
-}
+};
