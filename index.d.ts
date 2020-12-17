@@ -75,28 +75,12 @@ export class MetaMaskInpageProvider extends EventEmitter {
    */
   send(payload: SendSyncJsonRpcRequest): JsonRpcResponse<unknown>;
 
-  /**
-   * Indicating that this provider is a MetaMask provider.
-   */
   readonly isMetaMask: true;
 
-  /**
-   * The user's currently selected Ethereum address.
-   * If null, MetaMask is either locked or the user has not permitted any
-   * addresses to be viewed.
-   */
   readonly selectedAddress: string | null;
 
-  /**
-   * The network ID of the currently connected Ethereum chain.
-   * @deprecated Use {@link chainId} instead.
-   */
   readonly networkVersion: string | null;
 
-  /**
-   * The chain ID of the currently connected Ethereum chain.
-   * See [chainId.network]{@link https://chainid.network} for more information.
-   */
   readonly chainId: string | undefined;
 }
 

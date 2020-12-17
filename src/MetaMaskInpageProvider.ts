@@ -102,14 +102,33 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
 
   private _rpcEngine: JsonRpcEngine;
 
+  /**
+   * The chain ID of the currently connected Ethereum chain.
+   * See [chainId.network]{@link https://chainid.network} for more information.
+   */
   public chainId: string | null;
 
+  /**
+   * The network ID of the currently connected Ethereum chain.
+   * @deprecated Use {@link chainId} instead.
+   */
   public networkVersion: string | null;
 
+  /**
+   * The user's currently selected Ethereum address.
+   * If null, MetaMask is either locked or the user has not permitted any
+   * addresses to be viewed.
+   */
   public selectedAddress: string | null;
 
+  /**
+   * Indicating that this provider is a MetaMask provider.
+   */
   public readonly isMetaMask: true;
 
+  /**
+   * Experimental methods can be found here.
+   */
   public readonly _metamask: ReturnType<MetaMaskInpageProvider['_getExperimentalApi']>;
 
   /**
