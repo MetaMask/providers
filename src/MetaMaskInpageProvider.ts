@@ -249,7 +249,7 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
     // handle RPC requests via dapp-side rpc engine
     const rpcEngine = new JsonRpcEngine();
     rpcEngine.push(createIdRemapMiddleware());
-    rpcEngine.push(createErrorMiddleware(this._log as typeof console));
+    rpcEngine.push(createErrorMiddleware(this._log));
     rpcEngine.push(jsonRpcConnection.middleware);
     this._rpcEngine = rpcEngine;
 
@@ -304,7 +304,7 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
   /**
    * Returns whether the provider can process RPC requests.
    */
-  isConnected() {
+  isConnected(): boolean {
     return this._state.isConnected;
   }
 
@@ -362,7 +362,7 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
   sendAsync(
     payload: JsonRpcRequest<unknown>,
     callback: (error: Error | null, result?: JsonRpcResponse<unknown>) => void,
-  ) {
+  ): void {
     this._rpcRequest(payload, callback);
   }
 
@@ -405,10 +405,8 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
    * Constructor helper.
    * Populates initial state by calling 'metamask_getProviderState' and emits
    * necessary events.
-   *
-   * @private
    */
-  async _initializeState() {
+  private async _initializeState() {
     try {
       const {
         accounts,
@@ -417,7 +415,12 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
         networkVersion,
       } = await this.request({
         method: 'metamask_getProviderState',
-      }) as any; // We're in a try block, so this is OK.
+      }) as {
+        accounts: string[];
+        chainId: string;
+        isUnlocked: boolean;
+        networkVersion: string;
+      };
 
       // indicate that we've connected, for EIP-1193 compliance
       this.emit('connect', { chainId });
@@ -440,11 +443,10 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
    * Internal RPC method. Forwards requests to background via the RPC engine.
    * Also remap ids inbound and outbound.
    *
-   * @private
    * @param payload - The RPC request object.
    * @param callback - The consumer's callback.
    */
-  _rpcRequest(
+  private _rpcRequest(
     payload: UnvalidatedJsonRpcRequest | UnvalidatedJsonRpcRequest[],
     callback: (...args: any[]) => void,
   ) {
@@ -481,7 +483,7 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
    * @param chainId - The ID of the newly connected chain.
    * @emits MetaMaskInpageProvider#connect
    */
-  _handleConnect(chainId: string) {
+  private _handleConnect(chainId: string) {
     if (!this._state.isConnected) {
       this._state.isConnected = true;
       this.emit('connect', { chainId });
@@ -500,7 +502,7 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
    * @param errorMessage - A custom error message.
    * @emits MetaMaskInpageProvider#disconnect
    */
-  _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
+  private _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
     if (
       this._state.isConnected ||
       (!this._state.isPermanentlyDisconnected && !isRecoverable)
@@ -536,10 +538,9 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
   /**
    * Called when connection is lost to critical streams.
    *
-   * @private
    * @emits MetamaskInpageProvider#disconnect
    */
-  _handleStreamDisconnect(streamName: string, error: Error) {
+  private _handleStreamDisconnect(streamName: string, error: Error) {
     logStreamDisconnectWarning(this._log, streamName, error, this);
     this._handleDisconnect(false, error ? error.message : undefined);
   }
@@ -550,13 +551,12 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
    * Does nothing if neither the chainId nor the networkVersion are different
    * from existing values.
    *
-   * @private
    * @emits MetamaskInpageProvider#chainChanged
    * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
    * @param networkInfo.networkVersion - The latest network ID.
    */
-  _handleChainChanged({
+  private _handleChainChanged({
     chainId,
     networkVersion,
   }: { chainId?: string; networkVersion?: string } = {}) {
@@ -597,12 +597,11 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
    * the current one, updates all state as necessary, and emits the
    * accountsChanged event.
    *
-   * @private
    * @param accounts - The new accounts value.
    * @param isEthAccounts - Whether the accounts value was returned by
    * a call to eth_accounts.
    */
-  _handleAccountsChanged(accounts: unknown[], isEthAccounts = false): void {
+  private _handleAccountsChanged(accounts: unknown[], isEthAccounts = false): void {
     let _accounts = accounts;
 
     if (!Array.isArray(accounts)) {
@@ -658,12 +657,11 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
    * Does nothing if the received value is equal to the existing value.
    * There are no lock/unlock events.
    *
-   * @private
    * @param opts - Options bag.
    * @param opts.accounts - The exposed accounts, if any.
    * @param opts.isUnlocked - The latest isUnlocked value.
    */
-  _handleUnlockStateChanged({
+  private _handleUnlockStateChanged({
     accounts,
     isUnlocked,
   }: { accounts?: string[]; isUnlocked?: boolean} = {}) {
@@ -680,10 +678,8 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
 
   /**
    * Warns of deprecation for the given event, if applicable.
-   *
-   * @private
    */
-  _warnOfDeprecation(eventName: string): void {
+  private _warnOfDeprecation(eventName: string): void {
     if (this._state.sentWarnings.events[eventName as WarningEventName] === false) {
       this._log.warn(messages.warnings.events[eventName as WarningEventName]);
       this._state.sentWarnings.events[eventName as WarningEventName] = true;
@@ -694,17 +690,15 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
    * Constructor helper.
    * Gets experimental _metamask API as Proxy, so that we can warn consumers
    * about its experiment nature.
-   *
-   * @private
    */
-  _getExperimentalApi() {
+  private _getExperimentalApi() {
     return new Proxy(
       {
 
         /**
          * Determines if MetaMask is unlocked by the user.
          *
-         * @returns - Promise resolving to true if MetaMask is currently unlocked
+         * @returns Promise resolving to true if MetaMask is currently unlocked
          */
         isUnlocked: async () => {
           if (!this._state.initialized) {
@@ -754,8 +748,8 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
   /**
    * Equivalent to: ethereum.request('eth_requestAccounts')
    *
-   * @deprecated
-   * @returns - A promise that resolves to an array of addresses.
+   * @deprecated Use request({ method: 'eth_requestAccounts' }) instead.
+   * @returns A promise that resolves to an array of addresses.
    */
   enable(): Promise<string[]> {
     if (!this._state.sentWarnings.enable) {
@@ -777,13 +771,22 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
 
   /**
    * Submits an RPC request for the given method, with the given params.
-   * @deprecated Use {@link request} instead.
+   *
+   * @deprecated Use "request" instead.
+   * @param method - The method to request.
+   * @param params - Any params for the method.
+   * @returns A Promise that resolves with the JSON-RPC response object for the
+   * request.
    */
   send<T>(method: string, params?: T[]): Promise<JsonRpcResponse<T>>;
 
   /**
    * Submits an RPC request per the given JSON-RPC request object.
-   * @deprecated Use {@link request} instead.
+   *
+   * @deprecated Use "request" instead.
+   * @param payload - A JSON-RPC request object.
+   * @param callback - An error-first callback that will receive the JSON-RPC
+   * response object.
    */
   send<T>(
     payload: JsonRpcRequest<unknown>,
@@ -792,20 +795,14 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
 
   /**
    * Accepts a JSON-RPC request object, and synchronously returns the cached result
-   * for the given method. Only supports 4 specific methods.
-   * @deprecated Use {@link request} instead.
+   * for the given method. Only supports 4 specific RPC methods.
+   *
+   * @deprecated Use "request" instead.
+   * @param payload - A JSON-RPC request object.
+   * @returns A JSON-RPC response object.
    */
   send<T>(payload: SendSyncJsonRpcRequest): JsonRpcResponse<T>;
 
-  /**
-   * Sends an RPC request to MetaMask.
-   * Many different return types, which is why this method should not be used.
-   *
-   * @deprecated
-   * @param {(string | Object)} methodOrPayload - The method name, or the RPC request object.
-   * @param callbackOrArgs - If given a method name, the method's parameters.
-   * @returns - The method result, or a JSON RPC response object.
-   */
   send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
     if (!this._state.sentWarnings.send) {
       this._log.warn(messages.warnings.sendDeprecation);
@@ -844,7 +841,7 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
    *
    * @deprecated
    */
-  _sendSync(payload: SendSyncJsonRpcRequest) {
+  private _sendSync(payload: SendSyncJsonRpcRequest) {
     let result;
     switch (payload.method) {
 
