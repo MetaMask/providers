@@ -2,13 +2,14 @@
   "name": "@metamask/inpage-provider",
   "version": "8.0.1",
   "description": "A JavaScript Ethereum provider that connects to the wallet over a stream.",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "jest",
+    "build": "tsc --project .",
+    "test": "yarn build && jest",
     "coverage": "jest --coverage",
-    "lint": "eslint . --ext js,json",
-    "lint:fix": "eslint . --ext js,json --fix",
+    "lint": "eslint . --ext ts,js,json",
+    "lint:fix": "yarn lint --fix",
     "prepublishOnly": "yarn require-clean-git && yarn lint && yarn test",
     "require-clean-git": "git diff --quiet || (echo 'Please clean the working directory.' && exit 1)"
   },
@@ -28,8 +29,7 @@
   },
   "homepage": "https://github.com/MetaMask/inpage-provider#readme",
   "files": [
-    "src/",
-    "index.d.ts"
+    "dist/"
   ],
   "dependencies": {
     "@metamask/object-multiplex": "^1.1.0",
@@ -44,11 +44,17 @@
   "devDependencies": {
     "@metamask/eslint-config": "^4.1.0",
     "@types/jest": "^26.0.5",
+    "@types/node": "^14.14.14",
+    "@types/pump": "^1.1.0",
+    "@types/readable-stream": "^2.3.9",
+    "@typescript-eslint/eslint-plugin": "^4.10.0",
+    "@typescript-eslint/parser": "^4.10.0",
     "eslint": "^7.15.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jest": "^23.18.0",
     "eslint-plugin-json": "^2.0.1",
     "eslint-plugin-node": "^11.1.0",
-    "jest": "^26.6.3"
+    "jest": "^26.6.3",
+    "typescript": "^4.1.3"
   }
 }

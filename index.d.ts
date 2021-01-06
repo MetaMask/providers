@@ -32,23 +32,23 @@ export class MetaMaskInpageProvider extends EventEmitter {
    * @param connectionStream - A Node.js duplex stream.
    * @param options - An options bag.
    */
-  constructor (connectionStream: Duplex, options?: MetaMaskInpageProviderOptions);
+  constructor(connectionStream: Duplex, options?: MetaMaskInpageProviderOptions);
 
   /**
    * Returns whether the provider can process RPC requests.
    */
-  isConnected (): boolean;
+  isConnected(): boolean;
 
   /**
    * Submits an RPC request for the given method, with the given params.
    * Resolves with the result of the method call, or rejects on error.
    */
-  request (args: RequestArguments): Promise<unknown>;
+  request(args: RequestArguments): Promise<unknown>;
 
   /**
    * Submits an RPC request per the given JSON-RPC request object.
    */
-  sendAsync (
+  sendAsync(
     payload: JsonRpcRequest<unknown>,
     callback: (error: Error | null, result?: JsonRpcResponse<unknown>) => void,
   ): void;
@@ -57,13 +57,13 @@ export class MetaMaskInpageProvider extends EventEmitter {
    * Submits an RPC request for the given method, with the given params.
    * @deprecated Use {@link request} instead.
    */
-  send (method: string, params?: unknown[]): Promise<JsonRpcResponse<unknown>>;
+  send(method: string, params?: unknown[]): Promise<JsonRpcResponse<unknown>>;
 
   /**
    * Submits an RPC request per the given JSON-RPC request object.
    * @deprecated Use {@link request} instead.
    */
-  send (
+  send(
     payload: JsonRpcRequest<unknown>,
     callback: (error: Error | null, result?: JsonRpcResponse<unknown>) => void,
   ): void;
@@ -73,30 +73,14 @@ export class MetaMaskInpageProvider extends EventEmitter {
    * for the given method. Only supports 4 specific methods.
    * @deprecated Use {@link request} instead.
    */
-  send (payload: SendSyncJsonRpcRequest): JsonRpcResponse<unknown>;
+  send(payload: SendSyncJsonRpcRequest): JsonRpcResponse<unknown>;
 
-  /**
-   * Indicating that this provider is a MetaMask provider.
-   */
   readonly isMetaMask: true;
 
-  /**
-   * The user's currently selected Ethereum address.
-   * If null, MetaMask is either locked or the user has not permitted any
-   * addresses to be viewed.
-   */
   readonly selectedAddress: string | null;
 
-  /**
-   * The network ID of the currently connected Ethereum chain.
-   * @deprecated Use {@link chainId} instead.
-   */
   readonly networkVersion: string | null;
 
-  /**
-   * The chain ID of the currently connected Ethereum chain.
-   * See [chainId.network]{@link https://chainid.network} for more information.
-   */
   readonly chainId: string | undefined;
 }
 
@@ -120,10 +104,10 @@ interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
 
 /**
  * Initializes a MetaMaskInpageProvider and (optionally) assigns it as window.ethereum.
- * 
+ *
  * @returns The initialized provider (whether set or not).
  */
-export function initializeProvider (
+export function initializeProvider(
   options: InitializeProviderOptions,
 ): MetaMaskInpageProvider;
 
@@ -133,7 +117,7 @@ export function initializeProvider (
  *
  * @param providerInstance - The provider instance.
  */
-export function setGlobalProvider (providerInstance: MetaMaskInpageProvider): void;
+export function setGlobalProvider(providerInstance: MetaMaskInpageProvider): void;
 
 /**
  * If no existing window.web3 is found, this function injects a web3 "shim" to
@@ -142,7 +126,7 @@ export function setGlobalProvider (providerInstance: MetaMaskInpageProvider): vo
  * @param provider - The provider to set as window.web3.currentProvider.
  * @param log - The logging API to use.
  */
-export function shimWeb3 (provider: MetaMaskInpageProvider, log: typeof console): void;
+export function shimWeb3(provider: MetaMaskInpageProvider, log: typeof console): void;
 
 export interface RequestArguments {
 
@@ -153,6 +137,6 @@ export interface RequestArguments {
   params?: unknown[] | Record<string, unknown>;
 }
 
-export interface SendSyncJsonRpcRequest extends JsonRpcRequest {
+export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
   method: 'eth_accounts' | 'eth_coinbase' | 'eth_uninstallFilter' | 'net_version';
 }
