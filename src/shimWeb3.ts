@@ -12,6 +12,9 @@ export default function shimWeb3(
   provider: MetaMaskInpageProvider,
   log: ConsoleLike = console,
 ): void {
+  let loggedCurrentProvider = false;
+  let loggedMissingProperty = false;
+
   if (!(window as Record<string, any>).web3) {
     const SHIM_IDENTIFIER = '__isMetaMaskShim__';
 
@@ -27,11 +30,13 @@ export default function shimWeb3(
       web3Shim,
       {
         get: (target, property, ...args) => {
-          if (property === 'currentProvider') {
+          if (property === 'currentProvider' && !loggedCurrentProvider) {
+            loggedCurrentProvider = true;
             log.warn(
               'You are accessing the MetaMask window.web3.currentProvider shim. This property is deprecated; use window.ethereum instead. For details, see: https://docs.metamask.io/guide/provider-migration.html#replacing-window-web3',
             );
-          } else if (property !== SHIM_IDENTIFIER) {
+          } else if (property !== SHIM_IDENTIFIER && !loggedMissingProperty) {
+            loggedMissingProperty = true;
             log.error(
               `MetaMask no longer injects web3. For details, see: https://docs.metamask.io/guide/provider-migration.html#replacing-window-web3`,
             );
