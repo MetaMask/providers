@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.0.2] - 2021-01-12
+
+### Changed
+
+- Reduce `window.web3` shim console noise ([#133](https://github.com/MetaMask/inpage-provider/pull/133))
+
 ## [8.0.1] - 2020-12-08
 
 ### Fixed
