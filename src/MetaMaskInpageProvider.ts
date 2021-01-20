@@ -267,13 +267,16 @@ export default class MetaMaskInpageProvider extends SafeEventEmitter {
       } else if (method === 'metamask_chainChanged') {
         this._handleChainChanged(params);
       } else if (EMITTED_NOTIFICATIONS.includes(method)) {
+        // deprecated
+        // emitted here because that was the original order
+        this.emit('data', payload);
+
         this.emit('message', {
           type: method,
           data: params,
         });
 
         // deprecated
-        this.emit('data', payload);
         this.emit('notification', payload.params.result);
       } else if (method === 'METAMASK_STREAM_FAILURE') {
         connectionStream.destroy(
