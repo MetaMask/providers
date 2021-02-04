@@ -35,7 +35,7 @@ export default function shimWeb3(
             log.warn(
               'You are accessing the MetaMask window.web3.currentProvider shim. This property is deprecated; use window.ethereum instead. For details, see: https://docs.metamask.io/guide/provider-migration.html#replacing-window-web3',
             );
-          } else if (property !== SHIM_IDENTIFIER && !loggedMissingProperty) {
+          } else if (property !== 'currentProvider' && property !== SHIM_IDENTIFIER && !loggedMissingProperty) {
             loggedMissingProperty = true;
             log.error(
               `MetaMask no longer injects web3. For details, see: https://docs.metamask.io/guide/provider-migration.html#replacing-window-web3`,
