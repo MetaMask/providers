@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.0.4] - 2021-02-04
+
+### Fixed
+
+- Fix warning on second `currentProvider` access ([#138](https://github.com/MetaMask/inpage-provider/pull/138))
+
 ## [8.0.3] - 2021-01-20
 
 ### Fixed
@@ -208,7 +214,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/inpage-provider/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/inpage-provider/pull/29))
 
-[Unreleased]:https://github.com/MetaMask/inpage-provider/compare/v8.0.3...HEAD
+[Unreleased]:https://github.com/MetaMask/inpage-provider/compare/v8.0.4...HEAD
+[8.0.4]:https://github.com/MetaMask/inpage-provider/compare/v8.0.3...v8.0.4
 [8.0.3]:https://github.com/MetaMask/inpage-provider/compare/v8.0.2...v8.0.3
 [8.0.2]:https://github.com/MetaMask/inpage-provider/compare/v8.0.1...v8.0.2
 [8.0.1]:https://github.com/MetaMask/inpage-provider/compare/v8.0.0...v8.0.1
