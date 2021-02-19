@@ -47,6 +47,7 @@ export class MetaMaskInpageProvider extends EventEmitter {
 
   /**
    * Submits an RPC request per the given JSON-RPC request object.
+   * @deprecated Use {@link request} instead.
    */
   sendAsync(
     payload: JsonRpcRequest<unknown>,
