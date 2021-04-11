@@ -38,3 +38,9 @@ They require Node.js `EventEmitter` and `Duplex` stream types, which you can gra
 
 The Provider object should not be mutated by consumers under any circumstances.
 The maintainers of this package will neither fix nor take responsbility for bugs caused by third parties mutating the provider object.
+
+## Running tests
+
+```bash
+yarn test
+```
