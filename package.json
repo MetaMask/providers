@@ -4,6 +4,9 @@
   "description": "A JavaScript Ethereum provider that connects to the wallet over a stream.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">=12.0.0"
+  },
   "scripts": {
     "build": "tsc --project .",
     "test": "yarn build && jest",
