@@ -1,8 +1,9 @@
 import { Duplex } from 'stream';
-import MetaMaskInpageProvider, { MetaMaskInpageProviderOptions } from './MetaMaskInpageProvider';
+import MetaMaskInpageProvider from './MetaMaskInpageProvider';
+import { BaseProviderOptions } from './BaseProvider';
 import shimWeb3 from './shimWeb3';
 
-interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
+interface InitializeProviderOptions extends BaseProviderOptions {
 
   /**
    * The stream used to connect to the wallet.
