@@ -14,7 +14,7 @@ import SafeEventEmitter from '@metamask/safe-event-emitter';
 import dequal from 'fast-deep-equal';
 import { ethErrors, EthereumRpcError } from 'eth-rpc-errors';
 import { duplex as isDuplex } from 'is-stream';
-import sendSiteMetadata from './siteMetadata';
+
 import messages from './messages';
 import {
   createErrorMiddleware,
@@ -25,7 +25,7 @@ import {
   Maybe,
 } from './utils';
 
-interface UnvalidatedJsonRpcRequest {
+export interface UnvalidatedJsonRpcRequest {
   id?: JsonRpcId;
   jsonrpc?: JsonRpcVersion;
   method: string;
@@ -49,10 +49,6 @@ export interface BaseProviderOptions {
    */
   maxEventListeners?: number;
 
-  /**
-   * Whether the provider should send page metadata.
-   */
-  shouldSendMetadata?: boolean;
 }
 
 export interface RequestArguments {
@@ -64,20 +60,7 @@ export interface RequestArguments {
   params?: unknown[] | Record<string, unknown>;
 }
 
-export interface InternalState {
-  sentWarnings: {
-    // methods
-    enable: boolean;
-    experimentalMethods: boolean;
-    send: boolean;
-    // events
-    events: {
-      close: boolean;
-      data: boolean;
-      networkChanged: boolean;
-      notification: boolean;
-    };
-  };
+export interface BaseProviderState {
   accounts: null | string[];
   isConnected: boolean;
   isUnlocked: boolean;
@@ -89,9 +72,17 @@ export default class BaseProvider extends SafeEventEmitter {
 
   protected readonly _log: ConsoleLike;
 
-  protected _state: InternalState;
+  protected _state: BaseProviderState;
 
   protected _rpcEngine: JsonRpcEngine;
+
+  protected static _defaultState: BaseProviderState = {
+    accounts: null,
+    isConnected: false,
+    isUnlocked: false,
+    initialized: false,
+    isPermanentlyDisconnected: false,
+  };
 
   /**
    * The chain ID of the currently connected Ethereum chain.
@@ -105,16 +96,6 @@ export default class BaseProvider extends SafeEventEmitter {
    * addresses to be viewed.
    */
   public selectedAddress: string | null;
-
-  /**
-   * Indicating that this provider is a MetaMask provider.
-   */
-  public readonly isMetaMask: true;
-
-  /**
-   * Experimental methods can be found here.
-   */
-  public readonly _metamask: ReturnType<BaseProvider['_getExperimentalApi']>;
 
   /**
    * @param connectionStream - A Node.js duplex stream
@@ -131,54 +112,22 @@ export default class BaseProvider extends SafeEventEmitter {
       jsonRpcStreamName = 'metamask-provider',
       logger = console,
       maxEventListeners = 100,
-      shouldSendMetadata = true,
     }: BaseProviderOptions = {},
   ) {
+    super();
+
     if (!isDuplex(connectionStream)) {
       throw new Error(messages.errors.invalidDuplexStream());
     }
 
-    if (
-      typeof maxEventListeners !== 'number' ||
-      typeof shouldSendMetadata !== 'boolean'
-    ) {
-      throw new Error(messages.errors.invalidOptions(
-        maxEventListeners, shouldSendMetadata,
-      ));
-    }
-
-    validateLoggerObject(logger);
-
-    super();
-
     this._log = logger;
-    this.isMetaMask = true;
 
     this.setMaxListeners(maxEventListeners);
 
     // private state
     this._state = {
-      sentWarnings: {
-        // methods
-        enable: false,
-        experimentalMethods: false,
-        send: false,
-        // events
-        events: {
-          close: false,
-          data: false,
-          networkChanged: false,
-          notification: false,
-        },
-      },
-      accounts: null,
-      isConnected: false,
-      isUnlocked: false,
-      initialized: false,
-      isPermanentlyDisconnected: false,
+      ...BaseProvider._defaultState,
     };
-
-    this._metamask = this._getExperimentalApi();
 
     // public state
     this.selectedAddress = null;
@@ -203,9 +152,6 @@ export default class BaseProvider extends SafeEventEmitter {
       this._handleStreamDisconnect.bind(this, 'MetaMask'),
     );
 
-    // ignore phishing warning message (handled elsewhere)
-    mux.ignoreStream('phishing');
-
     // setup own event listeners
 
     // EIP-1193 connect
@@ -219,7 +165,7 @@ export default class BaseProvider extends SafeEventEmitter {
     pump(
       jsonRpcConnection.stream,
       mux.createStream(jsonRpcStreamName) as unknown as Duplex,
-      jsonRpcConnection.stream,
+      // jsonRpcConnection.stream,
       this._handleStreamDisconnect.bind(this, 'MetaMask RpcProvider'),
     );
 
@@ -235,7 +181,6 @@ export default class BaseProvider extends SafeEventEmitter {
     // handle JSON-RPC notifications
     jsonRpcConnection.events.on('notification', (payload) => {
       const { method, params } = payload;
-
       if (method === 'metamask_accountsChanged') {
         this._handleAccountsChanged(params);
 
@@ -255,18 +200,6 @@ export default class BaseProvider extends SafeEventEmitter {
       }
     });
 
-    // send website metadata
-    if (shouldSendMetadata) {
-      if (document.readyState === 'complete') {
-        sendSiteMetadata(this._rpcEngine, this._log);
-      } else {
-        const domContentLoadedHandler = () => {
-          sendSiteMetadata(this._rpcEngine, this._log);
-          window.removeEventListener('DOMContentLoaded', domContentLoadedHandler);
-        };
-        window.addEventListener('DOMContentLoaded', domContentLoadedHandler);
-      }
-    }
   }
 
   //====================
@@ -561,7 +494,7 @@ export default class BaseProvider extends SafeEventEmitter {
         this.selectedAddress = _accounts[0] as string || null;
       }
 
-      // finally, after all state has been updated, emit the event
+      // finally, after all state has be/.senen updated, emit the event
       if (this._state.initialized) {
         this.emit('accountsChanged', _accounts);
       }
@@ -595,73 +528,4 @@ export default class BaseProvider extends SafeEventEmitter {
     }
   }
 
-  /**
-   * Constructor helper.
-   * Gets experimental _metamask API as Proxy, so that we can warn consumers
-   * about its experiment nature.
-   */
-  protected _getExperimentalApi() {
-    return new Proxy(
-      {
-
-        /**
-         * Determines if MetaMask is unlocked by the user.
-         *
-         * @returns Promise resolving to true if MetaMask is currently unlocked
-         */
-        isUnlocked: async () => {
-          if (!this._state.initialized) {
-            await new Promise<void>((resolve) => {
-              this.on('_initialized', () => resolve());
-            });
-          }
-          return this._state.isUnlocked;
-        },
-
-        /**
-         * Make a batch RPC request.
-         */
-        requestBatch: async (requests: UnvalidatedJsonRpcRequest[]) => {
-          if (!Array.isArray(requests)) {
-            throw ethErrors.rpc.invalidRequest({
-              message: 'Batch requests must be made with an array of request objects.',
-              data: requests,
-            });
-          }
-
-          return new Promise((resolve, reject) => {
-            this._rpcRequest(
-              requests,
-              getRpcPromiseCallback(resolve, reject),
-            );
-          });
-        },
-      },
-      {
-        get: (obj, prop, ...args) => {
-
-          if (!this._state.sentWarnings.experimentalMethods) {
-            this._log.warn(messages.warnings.experimentalMethods);
-            this._state.sentWarnings.experimentalMethods = true;
-          }
-          return Reflect.get(obj, prop, ...args);
-        },
-      },
-    );
-  }
-}
-
-function validateLoggerObject(logger: ConsoleLike): void {
-  if (logger !== console) {
-    if (typeof logger === 'object') {
-      const methodKeys = ['log', 'warn', 'error', 'debug', 'info', 'trace'];
-      for (const key of methodKeys) {
-        if (typeof logger[key as keyof ConsoleLike] !== 'function') {
-          throw new Error(messages.errors.invalidLoggerMethod(key));
-        }
-      }
-      return;
-    }
-    throw new Error(messages.errors.invalidLoggerObject());
-  }
 }

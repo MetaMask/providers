@@ -56,28 +56,6 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
       ).toThrow(messages.errors.invalidDuplexStream());
     });
 
-    it('throws if bad options are provided', () => {
-      const stream = new MockDuplexStream();
-
-      expect(
-        () => new MetaMaskInpageProvider(stream, null),
-      ).toThrow('Cannot read property \'jsonRpcStreamName\' of null');
-
-      expect(
-        () => new MetaMaskInpageProvider(stream, {
-          maxEventListeners: 10,
-          shouldSendMetadata: 'foo',
-        }),
-      ).toThrow(messages.errors.invalidOptions(10, 'foo'));
-
-      expect(
-        () => new MetaMaskInpageProvider(stream, {
-          maxEventListeners: 'foo',
-          shouldSendMetadata: true,
-        }),
-      ).toThrow(messages.errors.invalidOptions('foo', true));
-    });
-
     it('accepts valid custom logger', () => {
       const stream = new MockDuplexStream();
       const customLogger = {
@@ -96,51 +74,6 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
       ).not.toThrow();
     });
 
-    it('throws if non-object logger provided', () => {
-      const stream = new MockDuplexStream();
-
-      expect(
-        () => new MetaMaskInpageProvider(stream, {
-          logger: 'foo',
-        }),
-      ).toThrow(messages.errors.invalidLoggerObject());
-    });
-
-    it('throws if provided logger is missing method key', () => {
-      const stream = new MockDuplexStream();
-      const customLogger = {
-        debug: console.debug,
-        error: console.error,
-        info: console.info,
-        log: console.log,
-        trace: console.trace,
-        // warn: console.warn, // missing
-      };
-
-      expect(
-        () => new MetaMaskInpageProvider(stream, {
-          logger: customLogger,
-        }),
-      ).toThrow(messages.errors.invalidLoggerMethod('warn'));
-    });
-
-    it('throws if provided logger has invalid method', () => {
-      const stream = new MockDuplexStream();
-      const customLogger = {
-        debug: console.debug,
-        error: console.error,
-        info: console.info,
-        log: console.log,
-        trace: console.trace,
-        warn: 'foo', // not a function
-      };
-
-      expect(
-        () => new MetaMaskInpageProvider(stream, {
-          logger: customLogger,
-        }),
-      ).toThrow(messages.errors.invalidLoggerMethod('warn'));
-    });
   });
 
   describe('isConnected', () => {

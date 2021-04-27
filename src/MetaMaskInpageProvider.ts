@@ -4,23 +4,71 @@ import {
   JsonRpcResponse,
 } from 'json-rpc-engine';
 import { createStreamMiddleware } from 'json-rpc-middleware-stream';
-
+import { ethErrors } from 'eth-rpc-errors';
+import sendSiteMetadata from './siteMetadata';
 import messages from './messages';
 import {
   EMITTED_NOTIFICATIONS,
   getRpcPromiseCallback,
   NOOP,
 } from './utils';
-import BaseProvider, { BaseProviderOptions, InternalState } from './BaseProvider';
+import BaseProvider, { BaseProviderOptions, UnvalidatedJsonRpcRequest } from './BaseProvider';
 
 export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
   method: 'eth_accounts' | 'eth_coinbase' | 'eth_uninstallFilter' | 'net_version';
 }
 
-type WarningEventName = keyof InternalState['sentWarnings']['events'];
+type WarningEventName = keyof SentWarningsState['events'];
+
+export interface MetaMaskProviderOptions extends BaseProviderOptions {
+
+  /**
+   * Whether the provider should send page metadata.
+   */
+  shouldSendMetadata?: boolean;
+}
+
+interface SentWarningsState {
+  // methods
+  enable: boolean;
+  experimentalMethods: boolean;
+  send: boolean;
+  // events
+  events: {
+    close: boolean;
+    data: boolean;
+    networkChanged: boolean;
+    notification: boolean;
+  };
+}
 
 export default class MetaMaskInpageProvider extends BaseProvider {
+
+  protected sentWarnings: SentWarningsState = {
+    // methods
+    enable: false,
+    experimentalMethods: false,
+    send: false,
+    // events
+    events: {
+      close: false,
+      data: false,
+      networkChanged: false,
+      notification: false,
+    },
+  };
+
+  /**
+   * Experimental methods can be found here.
+   */
+  public readonly _metamask: ReturnType<MetaMaskInpageProvider['_getExperimentalApi']>;
+
   public networkVersion: string | null;
+
+  /**
+   * Indicating that this provider is a MetaMask provider.
+   */
+  public readonly isMetaMask: true;
 
   /**
    * @param connectionStream - A Node.js duplex stream
@@ -40,17 +88,26 @@ export default class MetaMaskInpageProvider extends BaseProvider {
       logger = console,
       maxEventListeners = 100,
       shouldSendMetadata = true,
-    }: BaseProviderOptions = {},
+    }: MetaMaskProviderOptions = {},
   ) {
 
-    super(connectionStream, { jsonRpcStreamName, logger, maxEventListeners, shouldSendMetadata });
+    super(connectionStream, { jsonRpcStreamName, logger, maxEventListeners });
+
     this.networkVersion = null;
+    this.isMetaMask = true;
 
     this._sendSync = this._sendSync.bind(this);
     this.enable = this.enable.bind(this);
     this.send = this.send.bind(this);
     this.sendAsync = this.sendAsync.bind(this);
     this._warnOfDeprecation = this._warnOfDeprecation.bind(this);
+
+    this._metamask = this._getExperimentalApi();
+
+    // TODO: figure out where to put this
+    // ignore phishing warning message (handled elsewhere)
+    // mux.ignoreStream('phishing');
+
     // setup RPC connection
 
     const jsonRpcConnection = createStreamMiddleware();
@@ -66,6 +123,19 @@ export default class MetaMaskInpageProvider extends BaseProvider {
         this.emit('notification', payload.params.result);
       }
     });
+
+    // send website metadata
+    if (shouldSendMetadata) {
+      if (document.readyState === 'complete') {
+        sendSiteMetadata(this._rpcEngine, this._log);
+      } else {
+        const domContentLoadedHandler = () => {
+          sendSiteMetadata(this._rpcEngine, this._log);
+          window.removeEventListener('DOMContentLoaded', domContentLoadedHandler);
+        };
+        window.addEventListener('DOMContentLoaded', domContentLoadedHandler);
+      }
+    }
   }
 
   //====================
@@ -148,9 +218,9 @@ export default class MetaMaskInpageProvider extends BaseProvider {
    * Warns of deprecation for the given event, if applicable.
    */
   protected _warnOfDeprecation(eventName: string): void {
-    if (this._state.sentWarnings.events[eventName as WarningEventName] === false) {
+    if (this.sentWarnings && this.sentWarnings.events[eventName as WarningEventName] === false) {
       this._log.warn(messages.warnings.events[eventName as WarningEventName]);
-      this._state.sentWarnings.events[eventName as WarningEventName] = true;
+      this.sentWarnings.events[eventName as WarningEventName] = true;
     }
   }
 
@@ -165,9 +235,9 @@ export default class MetaMaskInpageProvider extends BaseProvider {
    * @returns A promise that resolves to an array of addresses.
    */
   enable(): Promise<string[]> {
-    if (!this._state.sentWarnings.enable) {
+    if (!this.sentWarnings.enable) {
       this._log.warn(messages.warnings.enableDeprecation);
-      this._state.sentWarnings.enable = true;
+      this.sentWarnings.enable = true;
     }
 
     return new Promise<string[]>((resolve, reject) => {
@@ -217,9 +287,9 @@ export default class MetaMaskInpageProvider extends BaseProvider {
   send<T>(payload: SendSyncJsonRpcRequest): JsonRpcResponse<T>;
 
   send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
-    if (!this._state.sentWarnings.send) {
+    if (!this.sentWarnings.send) {
       this._log.warn(messages.warnings.sendDeprecation);
-      this._state.sentWarnings.send = true;
+      this.sentWarnings.send = true;
     }
 
     if (
@@ -284,5 +354,60 @@ export default class MetaMaskInpageProvider extends BaseProvider {
       jsonrpc: payload.jsonrpc,
       result,
     };
+  }
+
+  /**
+   * Constructor helper.
+   * Gets experimental _metamask API as Proxy, so that we can warn consumers
+   * about its experiment nature.
+   */
+  protected _getExperimentalApi() {
+    return new Proxy(
+      {
+
+        /**
+         * Determines if MetaMask is unlocked by the user.
+         *
+         * @returns Promise resolving to true if MetaMask is currently unlocked
+         */
+        isUnlocked: async () => {
+          if (!this._state.initialized) {
+            await new Promise<void>((resolve) => {
+              this.on('_initialized', () => resolve());
+            });
+          }
+          return this._state.isUnlocked;
+        },
+
+        /**
+         * Make a batch RPC request.
+         */
+        requestBatch: async (requests: UnvalidatedJsonRpcRequest[]) => {
+          if (!Array.isArray(requests)) {
+            throw ethErrors.rpc.invalidRequest({
+              message: 'Batch requests must be made with an array of request objects.',
+              data: requests,
+            });
+          }
+
+          return new Promise((resolve, reject) => {
+            this._rpcRequest(
+              requests,
+              getRpcPromiseCallback(resolve, reject),
+            );
+          });
+        },
+      },
+      {
+        get: (obj, prop, ...args) => {
+
+          if (!this.sentWarnings.experimentalMethods) {
+            this._log.warn(messages.warnings.experimentalMethods);
+            this.sentWarnings.experimentalMethods = true;
+          }
+          return Reflect.get(obj, prop, ...args);
+        },
+      },
+    );
   }
 }
