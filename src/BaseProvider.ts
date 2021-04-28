@@ -7,6 +7,7 @@ import {
   JsonRpcId,
   JsonRpcVersion,
   JsonRpcSuccess,
+  JsonRpcMiddleware,
 } from 'json-rpc-engine';
 import { createStreamMiddleware } from 'json-rpc-middleware-stream';
 import ObjectMultiplex from '@metamask/object-multiplex';
@@ -68,6 +69,12 @@ export interface BaseProviderState {
   isPermanentlyDisconnected: boolean;
 }
 
+export interface JsonRpcConnection {
+  events: SafeEventEmitter;
+  middleware: JsonRpcMiddleware<unknown, unknown>;
+  stream: _Readable.Duplex;
+}
+
 export default class BaseProvider extends SafeEventEmitter {
 
   protected readonly _log: ConsoleLike;
@@ -75,6 +82,8 @@ export default class BaseProvider extends SafeEventEmitter {
   protected _state: BaseProviderState;
 
   protected _rpcEngine: JsonRpcEngine;
+
+  protected _jsonRpcConnection: JsonRpcConnection;
 
   protected static _defaultState: BaseProviderState = {
     accounts: null,
@@ -161,11 +170,11 @@ export default class BaseProvider extends SafeEventEmitter {
 
     // setup RPC connection
 
-    const jsonRpcConnection = createStreamMiddleware();
+    this._jsonRpcConnection = createStreamMiddleware();
     pump(
-      jsonRpcConnection.stream,
+      this._jsonRpcConnection.stream,
       mux.createStream(jsonRpcStreamName) as unknown as Duplex,
-      // jsonRpcConnection.stream,
+      this._jsonRpcConnection.stream,
       this._handleStreamDisconnect.bind(this, 'MetaMask RpcProvider'),
     );
 
@@ -173,13 +182,13 @@ export default class BaseProvider extends SafeEventEmitter {
     const rpcEngine = new JsonRpcEngine();
     rpcEngine.push(createIdRemapMiddleware());
     rpcEngine.push(createErrorMiddleware(this._log));
-    rpcEngine.push(jsonRpcConnection.middleware);
+    rpcEngine.push(this._jsonRpcConnection.middleware);
     this._rpcEngine = rpcEngine;
 
     this._initializeState();
 
     // handle JSON-RPC notifications
-    jsonRpcConnection.events.on('notification', (payload) => {
+    this._jsonRpcConnection.events.on('notification', (payload) => {
       const { method, params } = payload;
       if (method === 'metamask_accountsChanged') {
         this._handleAccountsChanged(params);
@@ -494,7 +503,7 @@ export default class BaseProvider extends SafeEventEmitter {
         this.selectedAddress = _accounts[0] as string || null;
       }
 
-      // finally, after all state has be/.senen updated, emit the event
+      // finally, after all state has been updated, emit the event
       if (this._state.initialized) {
         this.emit('accountsChanged', _accounts);
       }

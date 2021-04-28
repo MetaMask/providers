@@ -44,7 +44,7 @@ interface SentWarningsState {
 
 export default class MetaMaskInpageProvider extends BaseProvider {
 
-  protected sentWarnings: SentWarningsState = {
+  protected _sentWarnings: SentWarningsState = {
     // methods
     enable: false,
     experimentalMethods: false,
@@ -104,16 +104,8 @@ export default class MetaMaskInpageProvider extends BaseProvider {
 
     this._metamask = this._getExperimentalApi();
 
-    // TODO: figure out where to put this
-    // ignore phishing warning message (handled elsewhere)
-    // mux.ignoreStream('phishing');
-
-    // setup RPC connection
-
-    const jsonRpcConnection = createStreamMiddleware();
-
     // handle JSON-RPC notifications
-    jsonRpcConnection.events.on('notification', (payload) => {
+    this._jsonRpcConnection.events.on('notification', (payload) => {
       const { method } = payload;
       if (EMITTED_NOTIFICATIONS.includes(method)) {
         // deprecated
@@ -218,9 +210,9 @@ export default class MetaMaskInpageProvider extends BaseProvider {
    * Warns of deprecation for the given event, if applicable.
    */
   protected _warnOfDeprecation(eventName: string): void {
-    if (this.sentWarnings && this.sentWarnings.events[eventName as WarningEventName] === false) {
+    if (this._sentWarnings?.events[eventName as WarningEventName] === false) {
       this._log.warn(messages.warnings.events[eventName as WarningEventName]);
-      this.sentWarnings.events[eventName as WarningEventName] = true;
+      this._sentWarnings.events[eventName as WarningEventName] = true;
     }
   }
 
@@ -235,9 +227,9 @@ export default class MetaMaskInpageProvider extends BaseProvider {
    * @returns A promise that resolves to an array of addresses.
    */
   enable(): Promise<string[]> {
-    if (!this.sentWarnings.enable) {
+    if (!this._sentWarnings.enable) {
       this._log.warn(messages.warnings.enableDeprecation);
-      this.sentWarnings.enable = true;
+      this._sentWarnings.enable = true;
     }
 
     return new Promise<string[]>((resolve, reject) => {
@@ -287,9 +279,9 @@ export default class MetaMaskInpageProvider extends BaseProvider {
   send<T>(payload: SendSyncJsonRpcRequest): JsonRpcResponse<T>;
 
   send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
-    if (!this.sentWarnings.send) {
+    if (!this._sentWarnings.send) {
       this._log.warn(messages.warnings.sendDeprecation);
-      this.sentWarnings.send = true;
+      this._sentWarnings.send = true;
     }
 
     if (
@@ -401,9 +393,9 @@ export default class MetaMaskInpageProvider extends BaseProvider {
       {
         get: (obj, prop, ...args) => {
 
-          if (!this.sentWarnings.experimentalMethods) {
+          if (!this._sentWarnings.experimentalMethods) {
             this._log.warn(messages.warnings.experimentalMethods);
-            this.sentWarnings.experimentalMethods = true;
+            this._sentWarnings.experimentalMethods = true;
           }
           return Reflect.get(obj, prop, ...args);
         },
