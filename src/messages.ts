@@ -5,7 +5,6 @@ const messages = {
     sendSiteMetadata: () => `MetaMask: Failed to send site metadata. This is an internal error, please report this bug.`,
     unsupportedSync: (method: string) => `MetaMask: The MetaMask Ethereum provider does not support synchronous methods like ${method} without a callback parameter.`,
     invalidDuplexStream: () => 'Must provide a Node.js-style duplex stream.',
-    invalidOptions: (maxEventListeners: unknown, shouldSendMetadata: unknown) => `Invalid options. Received: { maxEventListeners: ${maxEventListeners}, shouldSendMetadata: ${shouldSendMetadata} }`,
     invalidRequestArgs: () => `Expected a single, non-array, object argument.`,
     invalidRequestMethod: () => `'args.method' must be a non-empty string.`,
     invalidRequestParams: () => `'args.params' must be an object or array if provided.`,
