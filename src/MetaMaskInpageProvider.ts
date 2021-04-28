@@ -182,6 +182,26 @@ export default class MetaMaskInpageProvider extends BaseProvider {
   //====================
 
   /**
+   * When the provider becomes disconnected, updates internal state and emits
+   * required events. Idempotent with respect to the isRecoverable parameter.
+   *
+   * Error codes per the CloseEvent status codes as required by EIP-1193:
+   * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes
+   *
+   * @param isRecoverable - Whether the disconnection is recoverable.
+   * @param errorMessage - A custom error message.
+   * @emits MetaMaskInpageProvider#disconnect
+   */
+  protected _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
+    super._handleDisconnect(isRecoverable, errorMessage);
+    if (
+      this.networkVersion && !isRecoverable
+    ) {
+      this.networkVersion = null;
+    }
+  }
+
+  /**
    * Warns of deprecation for the given event, if applicable.
    */
   protected _warnOfDeprecation(eventName: string): void {
