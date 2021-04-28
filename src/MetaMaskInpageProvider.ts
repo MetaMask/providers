@@ -3,7 +3,6 @@ import {
   JsonRpcRequest,
   JsonRpcResponse,
 } from 'json-rpc-engine';
-import { createStreamMiddleware } from 'json-rpc-middleware-stream';
 import { ethErrors } from 'eth-rpc-errors';
 import sendSiteMetadata from './siteMetadata';
 import messages from './messages';
@@ -20,7 +19,7 @@ export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
 
 type WarningEventName = keyof SentWarningsState['events'];
 
-export interface MetaMaskProviderOptions extends BaseProviderOptions {
+export interface MetaMaskInpageProviderOptions extends BaseProviderOptions {
 
   /**
    * Whether the provider should send page metadata.
@@ -88,7 +87,7 @@ export default class MetaMaskInpageProvider extends BaseProvider {
       logger = console,
       maxEventListeners = 100,
       shouldSendMetadata = true,
-    }: MetaMaskProviderOptions = {},
+    }: MetaMaskInpageProviderOptions = {},
   ) {
 
     super(connectionStream, { jsonRpcStreamName, logger, maxEventListeners });
@@ -181,30 +180,6 @@ export default class MetaMaskInpageProvider extends BaseProvider {
   //====================
   // Private Methods
   //====================
-
-  /**
-   * When the provider becomes disconnected, updates internal state and emits
-   * required events. Idempotent with respect to the isRecoverable parameter.
-   *
-   * Error codes per the CloseEvent status codes as required by EIP-1193:
-   * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes
-   *
-   * @param isRecoverable - Whether the disconnection is recoverable.
-   * @param errorMessage - A custom error message.
-   * @emits MetaMaskInpageProvider#disconnect
-   */
-  protected _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
-    super._handleDisconnect(isRecoverable, errorMessage);
-    if (
-      this._state.isConnected ||
-      (!this._state.isPermanentlyDisconnected && !isRecoverable)
-    ) {
-
-      if (!isRecoverable) {
-        this.networkVersion = null;
-      }
-    }
-  }
 
   /**
    * Warns of deprecation for the given event, if applicable.
