@@ -105,19 +105,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Only emit `data` event for notifications present in `^4.0.0`
-([#73](https://github.com/MetaMask/inpage-provider/pull/73))
+  ([#73](https://github.com/MetaMask/inpage-provider/pull/73))
   - Some consumers make assumptions about the shape of the object emitted with the event that do not hold for all notifications in `^6.0.0`.
 - Select icon using `rel~="icon"` when retrieving site metadata
-([#76](https://github.com/MetaMask/inpage-provider/pull/76))
+  ([#76](https://github.com/MetaMask/inpage-provider/pull/76))
   - This is instead of defaulting to `rel="shortcut icon"`.
 
 ### Fixed
 
 - Emit `accountsChanged` event _after_ all related state has been updated
-([#72](https://github.com/MetaMask/inpage-provider/pull/72))
+  ([#72](https://github.com/MetaMask/inpage-provider/pull/72))
   - For example, `ethereum.selectedAddress` will now have been updated by the time the event is emitted.
 - Enable retrieval of site icons _not_ hosted on the same origin
-([#78](https://github.com/MetaMask/inpage-provider/pull/78))
+  ([#78](https://github.com/MetaMask/inpage-provider/pull/78))
   - For example, icons hosted on `assets.foo.com` that are used on `foo.com` will now be retrieved successfully.
 
 ## [6.0.1] - 2020-07-15
@@ -128,8 +128,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - This deprecated event was added back in `6.0.0`, but the warning message was not defined.
 - Restore `publicConfigStore` property as alias for `_publicConfigStore`
   - The `_publicConfigStore` was named `publicConfigStore` before `4.0.0`.
-  The original property turned out to be used by consumers.
-  The store is scheduled to be removed completely, and accessing `publicConfigStore` emits a warning.
+    The original property turned out to be used by consumers.
+    The store is scheduled to be removed completely, and accessing `publicConfigStore` emits a warning.
 
 ## [6.0.0] - 2020-07-04
 
@@ -137,13 +137,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The `data` event
   - This event was removed in `4.0.0`, as it was thought to only be used internally.
-  This assumption was incorrect, and the event is now restored.
+    This assumption was incorrect, and the event is now restored.
 
 ### Changed
 
 - **(BREAKING)** Restore the `notification` event value to its pre-`4.0.0` state
   - Prior to `4.0.0` this event was emitted by code in the MetaMask extension.
-  Its value was inadvertently changed when it was moved to this package.
+    Its value was inadvertently changed when it was moved to this package.
 
 ## [5.2.1] - 2020-06-29
 
@@ -214,22 +214,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/inpage-provider/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/inpage-provider/pull/29))
 
-[Unreleased]:https://github.com/MetaMask/inpage-provider/compare/v8.0.4...HEAD
-[8.0.4]:https://github.com/MetaMask/inpage-provider/compare/v8.0.3...v8.0.4
-[8.0.3]:https://github.com/MetaMask/inpage-provider/compare/v8.0.2...v8.0.3
-[8.0.2]:https://github.com/MetaMask/inpage-provider/compare/v8.0.1...v8.0.2
-[8.0.1]:https://github.com/MetaMask/inpage-provider/compare/v8.0.0...v8.0.1
-[8.0.0]:https://github.com/MetaMask/inpage-provider/compare/v7.0.0...v8.0.0
-[7.0.0]:https://github.com/MetaMask/inpage-provider/compare/v6.3.0...v7.0.0
-[6.3.0]:https://github.com/MetaMask/inpage-provider/compare/v6.2.0...v6.3.0
-[6.2.0]:https://github.com/MetaMask/inpage-provider/compare/v6.1.1...v6.2.0
-[6.1.1]:https://github.com/MetaMask/inpage-provider/compare/v6.1.0...v6.1.1
-[6.1.0]:https://github.com/MetaMask/inpage-provider/compare/v6.0.1...v6.1.0
-[6.0.1]:https://github.com/MetaMask/inpage-provider/compare/v6.0.0...v6.0.1
-[6.0.0]:https://github.com/MetaMask/inpage-provider/compare/v5.2.1...v6.0.0
-[5.2.1]:https://github.com/MetaMask/inpage-provider/compare/v5.2.0...v5.2.1
-[5.2.0]:https://github.com/MetaMask/inpage-provider/compare/v5.1.0...v5.2.0
-[5.1.0]:https://github.com/MetaMask/inpage-provider/compare/v5.0.2...v5.1.0
-[5.0.2]:https://github.com/MetaMask/inpage-provider/compare/v5.0.1...v5.0.2
-[5.0.1]:https://github.com/MetaMask/inpage-provider/compare/v5.0.0...v5.0.1
-[5.0.0]:https://github.com/MetaMask/inpage-provider/compare/v4.1.2...v5.0.0
+[unreleased]: https://github.com/MetaMask/inpage-provider/compare/v8.0.4...HEAD
+[8.0.4]: https://github.com/MetaMask/inpage-provider/compare/v8.0.3...v8.0.4
+[8.0.3]: https://github.com/MetaMask/inpage-provider/compare/v8.0.2...v8.0.3
+[8.0.2]: https://github.com/MetaMask/inpage-provider/compare/v8.0.1...v8.0.2
+[8.0.1]: https://github.com/MetaMask/inpage-provider/compare/v8.0.0...v8.0.1
+[8.0.0]: https://github.com/MetaMask/inpage-provider/compare/v7.0.0...v8.0.0
+[7.0.0]: https://github.com/MetaMask/inpage-provider/compare/v6.3.0...v7.0.0
+[6.3.0]: https://github.com/MetaMask/inpage-provider/compare/v6.2.0...v6.3.0
+[6.2.0]: https://github.com/MetaMask/inpage-provider/compare/v6.1.1...v6.2.0
+[6.1.1]: https://github.com/MetaMask/inpage-provider/compare/v6.1.0...v6.1.1
+[6.1.0]: https://github.com/MetaMask/inpage-provider/compare/v6.0.1...v6.1.0
+[6.0.1]: https://github.com/MetaMask/inpage-provider/compare/v6.0.0...v6.0.1
+[6.0.0]: https://github.com/MetaMask/inpage-provider/compare/v5.2.1...v6.0.0
+[5.2.1]: https://github.com/MetaMask/inpage-provider/compare/v5.2.0...v5.2.1
+[5.2.0]: https://github.com/MetaMask/inpage-provider/compare/v5.1.0...v5.2.0
+[5.1.0]: https://github.com/MetaMask/inpage-provider/compare/v5.0.2...v5.1.0
+[5.0.2]: https://github.com/MetaMask/inpage-provider/compare/v5.0.1...v5.0.2
+[5.0.1]: https://github.com/MetaMask/inpage-provider/compare/v5.0.0...v5.0.1
+[5.0.0]: https://github.com/MetaMask/inpage-provider/compare/v4.1.2...v5.0.0

@@ -4,9 +4,7 @@ const { default: messages } = require('../dist/messages');
 const MockDuplexStream = require('./mocks/DuplexStream');
 
 describe('MetaMaskInpageProvider: Miscellanea', () => {
-
   describe('constructor', () => {
-
     beforeAll(() => {
       jest.useFakeTimers();
     });
@@ -16,44 +14,49 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
     });
 
     it('succeeds if stream is provided', () => {
-      expect(() => new MetaMaskInpageProvider(new MockDuplexStream())).not.toThrow();
+      expect(
+        () => new MetaMaskInpageProvider(new MockDuplexStream()),
+      ).not.toThrow();
     });
 
     it('succeeds if stream and valid options are provided', () => {
       const stream = new MockDuplexStream();
 
       expect(
-        () => new MetaMaskInpageProvider(stream, {
-          maxEventListeners: 10,
-        }),
+        () =>
+          new MetaMaskInpageProvider(stream, {
+            maxEventListeners: 10,
+          }),
       ).not.toThrow();
 
       expect(
-        () => new MetaMaskInpageProvider(stream, {
-          shouldSendMetadata: false,
-        }),
+        () =>
+          new MetaMaskInpageProvider(stream, {
+            shouldSendMetadata: false,
+          }),
       ).not.toThrow();
 
       expect(
-        () => new MetaMaskInpageProvider(stream, {
-          maxEventListeners: 10,
-          shouldSendMetadata: false,
-        }),
+        () =>
+          new MetaMaskInpageProvider(stream, {
+            maxEventListeners: 10,
+            shouldSendMetadata: false,
+          }),
       ).not.toThrow();
     });
 
     it('throws if no or invalid stream is provided', () => {
-      expect(
-        () => new MetaMaskInpageProvider(),
-      ).toThrow(messages.errors.invalidDuplexStream());
+      expect(() => new MetaMaskInpageProvider()).toThrow(
+        messages.errors.invalidDuplexStream(),
+      );
 
-      expect(
-        () => new MetaMaskInpageProvider('foo'),
-      ).toThrow(messages.errors.invalidDuplexStream());
+      expect(() => new MetaMaskInpageProvider('foo')).toThrow(
+        messages.errors.invalidDuplexStream(),
+      );
 
-      expect(
-        () => new MetaMaskInpageProvider({}),
-      ).toThrow(messages.errors.invalidDuplexStream());
+      expect(() => new MetaMaskInpageProvider({})).toThrow(
+        messages.errors.invalidDuplexStream(),
+      );
     });
 
     it('accepts valid custom logger', () => {
@@ -68,36 +71,29 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
       };
 
       expect(
-        () => new MetaMaskInpageProvider(stream, {
-          logger: customLogger,
-        }),
+        () =>
+          new MetaMaskInpageProvider(stream, {
+            logger: customLogger,
+          }),
       ).not.toThrow();
     });
-
   });
 
   describe('isConnected', () => {
     it('returns isConnected state', () => {
-
       jest.useFakeTimers();
       const provider = new MetaMaskInpageProvider(new MockDuplexStream());
       provider.autoRefreshOnNetworkChange = false;
 
-      expect(
-        provider.isConnected(),
-      ).toBe(false);
+      expect(provider.isConnected()).toBe(false);
 
       provider._state.isConnected = true;
 
-      expect(
-        provider.isConnected(),
-      ).toBe(true);
+      expect(provider.isConnected()).toBe(true);
 
       provider._state.isConnected = false;
 
-      expect(
-        provider.isConnected(),
-      ).toBe(false);
+      expect(provider.isConnected()).toBe(false);
 
       jest.runAllTimers();
     });

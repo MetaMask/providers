@@ -1,9 +1,6 @@
 module.exports = {
   coverageReporters: ['text', 'html'],
-  coveragePathIgnorePatterns: [
-    '/node_modules/',
-    '/mocks/',
-  ],
+  coveragePathIgnorePatterns: ['/node_modules/', '/mocks/'],
   // TODO: Require coverage when we're closer to home.
   // coverageThreshold: {
   //   global: {
@@ -16,8 +13,6 @@ module.exports = {
   moduleFileExtensions: ['js'],
   silent: true,
   testEnvironment: 'jsdom',
-  testRegex: [
-    '\\.test\\.js$',
-  ],
+  testRegex: ['\\.test\\.js$'],
   testTimeout: 5000,
 };

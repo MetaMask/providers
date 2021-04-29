@@ -4,7 +4,6 @@ import { Duplex } from 'stream';
 import { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
 
 export interface MetaMaskInpageProviderOptions {
-
   /**
    * The name of the stream used to connect to the wallet.
    */
@@ -27,12 +26,14 @@ export interface MetaMaskInpageProviderOptions {
 }
 
 export class MetaMaskInpageProvider extends EventEmitter {
-
   /**
    * @param connectionStream - A Node.js duplex stream.
    * @param options - An options bag.
    */
-  constructor(connectionStream: Duplex, options?: MetaMaskInpageProviderOptions);
+  constructor(
+    connectionStream: Duplex,
+    options?: MetaMaskInpageProviderOptions,
+  );
 
   /**
    * Returns whether the provider can process RPC requests.
@@ -85,7 +86,6 @@ export class MetaMaskInpageProvider extends EventEmitter {
 }
 
 interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
-
   /**
    * The stream used to connect to the wallet.
    */
@@ -117,7 +117,9 @@ export function initializeProvider(
  *
  * @param providerInstance - The provider instance.
  */
-export function setGlobalProvider(providerInstance: MetaMaskInpageProvider): void;
+export function setGlobalProvider(
+  providerInstance: MetaMaskInpageProvider,
+): void;
 
 /**
  * If no existing window.web3 is found, this function injects a web3 "shim" to
@@ -126,10 +128,12 @@ export function setGlobalProvider(providerInstance: MetaMaskInpageProvider): voi
  * @param provider - The provider to set as window.web3.currentProvider.
  * @param log - The logging API to use.
  */
-export function shimWeb3(provider: MetaMaskInpageProvider, log: typeof console): void;
+export function shimWeb3(
+  provider: MetaMaskInpageProvider,
+  log: typeof console,
+): void;
 
 export interface RequestArguments {
-
   /** The RPC method to request. */
   method: string;
 
@@ -138,5 +142,9 @@ export interface RequestArguments {
 }
 
 export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
-  method: 'eth_accounts' | 'eth_coinbase' | 'eth_uninstallFilter' | 'net_version';
+  method:
+    | 'eth_accounts'
+    | 'eth_coinbase'
+    | 'eth_uninstallFilter'
+    | 'net_version';
 }

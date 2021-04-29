@@ -4,7 +4,10 @@ import { ethErrors } from 'eth-rpc-errors';
 
 export type Maybe<T> = Partial<T> | null | undefined;
 
-export type ConsoleLike = Pick<Console, 'log' | 'warn' | 'error' | 'debug' | 'info' | 'trace'>;
+export type ConsoleLike = Pick<
+  Console,
+  'log' | 'warn' | 'error' | 'debug' | 'info' | 'trace'
+>;
 
 // utility functions
 
@@ -14,9 +17,10 @@ export type ConsoleLike = Pick<Console, 'log' | 'warn' | 'error' | 'debug' | 'in
  * @param log - The logging API to use.
  * @returns  json-rpc-engine middleware function
  */
-export function createErrorMiddleware(log: ConsoleLike): JsonRpcMiddleware<unknown, unknown> {
+export function createErrorMiddleware(
+  log: ConsoleLike,
+): JsonRpcMiddleware<unknown, unknown> {
   return (req, res, next) => {
-
     // json-rpc-engine will terminate the request when it notices this error
     if (typeof req.method !== 'string' || !req.method) {
       res.error = ethErrors.rpc.invalidRequest({
@@ -41,10 +45,7 @@ export const getRpcPromiseCallback = (
   resolve: (value?: any) => void,
   reject: (error?: Error) => void,
   unwrapResult = true,
-) => (
-  error: Error,
-  response: PendingJsonRpcResponse<unknown>,
-): void => {
+) => (error: Error, response: PendingJsonRpcResponse<unknown>): void => {
   if (error || response.error) {
     reject(error || response.error);
   } else {
