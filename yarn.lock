@@ -512,10 +512,25 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@metamask/eslint-config@^4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@metamask/eslint-config/-/eslint-config-4.1.0.tgz#ace2357af2d9c7d04da40a337fc7f4a81a048921"
-  integrity sha512-oc4ONdFB1h2yxBebVj4ACYzGzArB8ZQKiFVNCDlYiTCyeQ/GR4+EUwg0KvlO33LlXCRbAhO3CX0nChbvIB8hEw==
+"@metamask/eslint-config-jest@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@metamask/eslint-config-jest/-/eslint-config-jest-6.0.0.tgz#9e10cfbca31236afd7be2058be70365084e540d6"
+  integrity sha512-C0sXmyp5Hnp5IHVYXaW2TJAo/E9UiS192CwyUcw2qU1Ck7lj4z/wHdgROaH5F6rInqBO3afkDaqnArqvoxvO5Q==
+
+"@metamask/eslint-config-nodejs@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@metamask/eslint-config-nodejs/-/eslint-config-nodejs-6.0.0.tgz#df77bb35b91556030f1b23ad4ff51c1caf033339"
+  integrity sha512-nx7VhJRpJKQrcdDvy2bLCSWqBmWftgqxyG+BUw06XcWQzbmZTn94EXdLlH6zTQxmR4C+m+AOy5ung0NSUwmY3g==
+
+"@metamask/eslint-config-typescript@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@metamask/eslint-config-typescript/-/eslint-config-typescript-6.0.0.tgz#c7bee90a48ed3c49f9f786c53dcdfea4cfd2a6db"
+  integrity sha512-pfchVgPz03jHvBMu+/wRNVVf4gIIgjZ+CtfsoZF6PkxzD3h0T5e+7aGcgDET7SlkOVnAySMQxr39lSnYXHQPvQ==
+
+"@metamask/eslint-config@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@metamask/eslint-config/-/eslint-config-6.0.0.tgz#ec53e8ab278073e882411ed89705bc7d06b78c81"
+  integrity sha512-LyakGYGwM8UQOGhwWa+5erAI1hXuiTgf/y7USzOomX6H9KiuY09IAUYnPh7ToPG2sedD2F48UF1bUm8yvCoZOw==
 
 "@metamask/object-multiplex@^1.1.0":
   version "1.1.0"
@@ -1595,6 +1610,11 @@ escodegen@^1.14.1:
   optionalDependencies:
     source-map "~0.6.1"
 
+eslint-config-prettier@^8.1.0:
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.3.0.tgz#f7471b20b6fe8a9a9254cc684454202886a2dd7a"
+  integrity sha512-BgZuLUSeKzvlL/VUjx/Yb787VQ26RU3gGjA3iiFvdsp/2bMfVIWUVP7tjxtjS0e+HP409cPlPvNkQloz8C91ew==
+
 eslint-import-resolver-node@^0.3.2:
   version "0.3.3"
   resolved "https://registry.yarnpkg.com/eslint-import-resolver-node/-/eslint-import-resolver-node-0.3.3.tgz#dbaa52b6b2816b50bc6711af75422de808e98404"
@@ -1663,6 +1683,13 @@ eslint-plugin-node@^11.1.0:
     minimatch "^3.0.4"
     resolve "^1.10.1"
     semver "^6.1.0"
+
+eslint-plugin-prettier@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-3.4.0.tgz#cdbad3bf1dbd2b177e9825737fe63b476a08f0c7"
+  integrity sha512-UDK6rJT6INSfcOo545jiaOwB701uAIt2/dR7WnFQoGCVl1/EMqdANBmwUaqqQ45aXprsTGzSa39LI1PyuRBxxw==
+  dependencies:
+    prettier-linter-helpers "^1.0.0"
 
 eslint-scope@^5.0.0:
   version "5.0.0"
@@ -1918,6 +1945,11 @@ fast-deep-equal@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.1.tgz#545145077c501491e33b15ec408c294376e94ae4"
   integrity sha512-8UEa58QDLauDNfpbrX55Q9jrGHThw2ZMdOky5Gl1CDtVeJDPVrG4Jxx1N8jw2gkWaff5UUuX1KJd+9zGe2B+ZA==
+
+fast-diff@^1.1.2:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/fast-diff/-/fast-diff-1.2.0.tgz#73ee11982d86caaf7959828d519cfe927fac5f03"
+  integrity sha512-xJuoT5+L99XlZ8twedaRf6Ax2TgQVxvgZOYoPKqZufmJib0tL2tegPBOZb1pVNgIhlqDlA0eO0c3wBvQcmzx4w==
 
 fast-glob@^3.1.1:
   version "3.2.4"
@@ -3653,6 +3685,18 @@ prelude-ls@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
   integrity sha1-IZMqVJ9eUv/ZqCf1cOBL5iqX2lQ=
+
+prettier-linter-helpers@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/prettier-linter-helpers/-/prettier-linter-helpers-1.0.0.tgz#d23d41fe1375646de2d0104d3454a3008802cf7b"
+  integrity sha512-GbK2cP9nraSSUF9N2XwUwqfzlAFlMNYYl+ShE/V+H8a9uNl/oUqB1w2EL54Jh0OlyRSd8RfWYJ3coVS4TROP2w==
+  dependencies:
+    fast-diff "^1.1.2"
+
+prettier@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.2.1.tgz#795a1a78dd52f073da0cd42b21f9c91381923ff5"
+  integrity sha512-PqyhM2yCjg/oKkFPtTGUojv7gnZAoG80ttl45O6x2Ug/rMJw4wcc9k6aaf2hibP7BGVCCM33gZoGjyvt9mm16Q==
 
 pretty-format@^25.2.1, pretty-format@^25.5.0:
   version "25.5.0"

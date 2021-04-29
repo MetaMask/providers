@@ -34,7 +34,6 @@ export interface UnvalidatedJsonRpcRequest {
 }
 
 export interface BaseProviderOptions {
-
   /**
    * The name of the stream used to connect to the wallet.
    */
@@ -49,11 +48,9 @@ export interface BaseProviderOptions {
    * The maximum number of event listeners.
    */
   maxEventListeners?: number;
-
 }
 
 export interface RequestArguments {
-
   /** The RPC method to request. */
   method: string;
 
@@ -76,7 +73,6 @@ export interface JsonRpcConnection {
 }
 
 export default class BaseProvider extends SafeEventEmitter {
-
   protected readonly _log: ConsoleLike;
 
   protected _state: BaseProviderState;
@@ -156,7 +152,7 @@ export default class BaseProvider extends SafeEventEmitter {
     const mux = new ObjectMultiplex();
     pump(
       connectionStream,
-      mux as unknown as Duplex,
+      (mux as unknown) as Duplex,
       connectionStream,
       this._handleStreamDisconnect.bind(this, 'MetaMask'),
     );
@@ -173,7 +169,7 @@ export default class BaseProvider extends SafeEventEmitter {
     this._jsonRpcConnection = createStreamMiddleware();
     pump(
       this._jsonRpcConnection.stream,
-      mux.createStream(jsonRpcStreamName) as unknown as Duplex,
+      (mux.createStream(jsonRpcStreamName) as unknown) as Duplex,
       this._jsonRpcConnection.stream,
       this._handleStreamDisconnect.bind(this, 'MetaMask RpcProvider'),
     );
@@ -192,7 +188,6 @@ export default class BaseProvider extends SafeEventEmitter {
       const { method, params } = payload;
       if (method === 'metamask_accountsChanged') {
         this._handleAccountsChanged(params);
-
       } else if (method === 'metamask_unlockStateChanged') {
         this._handleUnlockStateChanged(params);
       } else if (method === 'metamask_chainChanged') {
@@ -208,7 +203,6 @@ export default class BaseProvider extends SafeEventEmitter {
         );
       }
     });
-
   }
 
   //====================
@@ -250,7 +244,8 @@ export default class BaseProvider extends SafeEventEmitter {
     }
 
     if (
-      params !== undefined && !Array.isArray(params) &&
+      params !== undefined &&
+      !Array.isArray(params) &&
       (typeof params !== 'object' || params === null)
     ) {
       throw ethErrors.rpc.invalidRequest({
@@ -283,9 +278,9 @@ export default class BaseProvider extends SafeEventEmitter {
         chainId,
         isUnlocked,
         networkVersion,
-      } = await this.request({
+      } = (await this.request({
         method: 'metamask_getProviderState',
-      }) as {
+      })) as {
         accounts: string[];
         chainId: string;
         isUnlocked: boolean;
@@ -331,7 +326,6 @@ export default class BaseProvider extends SafeEventEmitter {
         payload.method === 'eth_accounts' ||
         payload.method === 'eth_requestAccounts'
       ) {
-
         // handle accounts changing
         cb = (err: Error, res: JsonRpcSuccess<string[]>) => {
           this._handleAccountsChanged(
@@ -429,8 +423,11 @@ export default class BaseProvider extends SafeEventEmitter {
     networkVersion,
   }: { chainId?: string; networkVersion?: string } = {}) {
     if (
-      !chainId || typeof chainId !== 'string' || !chainId.startsWith('0x') ||
-      !networkVersion || typeof networkVersion !== 'string'
+      !chainId ||
+      typeof chainId !== 'string' ||
+      !chainId.startsWith('0x') ||
+      !networkVersion ||
+      typeof networkVersion !== 'string'
     ) {
       this._log.error(
         'MetaMask: Received invalid network parameters. Please report this bug.',
@@ -462,7 +459,10 @@ export default class BaseProvider extends SafeEventEmitter {
    * @param isEthAccounts - Whether the accounts value was returned by
    * a call to eth_accounts.
    */
-  protected _handleAccountsChanged(accounts: unknown[], isEthAccounts = false): void {
+  protected _handleAccountsChanged(
+    accounts: unknown[],
+    isEthAccounts = false,
+  ): void {
     let _accounts = accounts;
 
     if (!Array.isArray(accounts)) {
@@ -486,7 +486,6 @@ export default class BaseProvider extends SafeEventEmitter {
 
     // emit accountsChanged if anything about the accounts array has changed
     if (!dequal(this._state.accounts, _accounts)) {
-
       // we should always have the correct accounts even before eth_accounts
       // returns
       if (isEthAccounts && this._state.accounts !== null) {
@@ -500,7 +499,7 @@ export default class BaseProvider extends SafeEventEmitter {
 
       // handle selectedAddress
       if (this.selectedAddress !== _accounts[0]) {
-        this.selectedAddress = _accounts[0] as string || null;
+        this.selectedAddress = (_accounts[0] as string) || null;
       }
 
       // finally, after all state has been updated, emit the event
@@ -527,7 +526,9 @@ export default class BaseProvider extends SafeEventEmitter {
     isUnlocked,
   }: { accounts?: string[]; isUnlocked?: boolean } = {}) {
     if (typeof isUnlocked !== 'boolean') {
-      this._log.error('MetaMask: Received invalid isUnlocked parameter. Please report this bug.');
+      this._log.error(
+        'MetaMask: Received invalid isUnlocked parameter. Please report this bug.',
+      );
       return;
     }
 
@@ -536,5 +537,4 @@ export default class BaseProvider extends SafeEventEmitter {
       this._handleAccountsChanged(accounts || []);
     }
   }
-
 }

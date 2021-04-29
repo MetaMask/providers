@@ -50,12 +50,16 @@ async function getSiteMetadata() {
 function getSiteName(windowObject: typeof window): string {
   const { document } = windowObject;
 
-  const siteName: HTMLMetaElement | null = document.querySelector('head > meta[property="og:site_name"]');
+  const siteName: HTMLMetaElement | null = document.querySelector(
+    'head > meta[property="og:site_name"]',
+  );
   if (siteName) {
     return siteName.content;
   }
 
-  const metaTitle: HTMLMetaElement | null = document.querySelector('head > meta[name="title"]');
+  const metaTitle: HTMLMetaElement | null = document.querySelector(
+    'head > meta[name="title"]',
+  );
   if (metaTitle) {
     return metaTitle.content;
   }
@@ -71,14 +75,16 @@ function getSiteName(windowObject: typeof window): string {
  * Extracts an icon for the site from the DOM
  * @returns an icon URL
  */
-async function getSiteIcon(windowObject: typeof window): Promise<string | null> {
+async function getSiteIcon(
+  windowObject: typeof window,
+): Promise<string | null> {
   const { document } = windowObject;
 
   const icons: NodeListOf<HTMLLinkElement> = document.querySelectorAll(
     'head > link[rel~="icon"]',
   );
   for (const icon of icons) {
-    if (icon && await imgExists(icon.href)) {
+    if (icon && (await imgExists(icon.href))) {
       return icon.href;
     }
   }
