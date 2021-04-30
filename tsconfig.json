@@ -4,6 +4,7 @@
     "esModuleInterop": true,
     "module": "CommonJS",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "outDir": "dist",
     "sourceMap": true,
     "strict": true,

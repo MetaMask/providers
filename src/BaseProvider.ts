@@ -69,7 +69,7 @@ export interface BaseProviderState {
 export interface JsonRpcConnection {
   events: SafeEventEmitter;
   middleware: JsonRpcMiddleware<unknown, unknown>;
-  stream: _Readable.Duplex;
+  stream: Duplex;
 }
 
 export default class BaseProvider extends SafeEventEmitter {
@@ -112,7 +112,7 @@ export default class BaseProvider extends SafeEventEmitter {
    * listeners. Default: 100
    */
   constructor(
-    connectionStream: typeof Duplex,
+    connectionStream: Duplex,
     {
       jsonRpcStreamName = 'metamask-provider',
       logger = console,

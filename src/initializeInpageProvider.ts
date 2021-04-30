@@ -8,7 +8,7 @@ interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
   /**
    * The stream used to connect to the wallet.
    */
-  connectionStream: typeof Duplex;
+  connectionStream: Duplex;
 
   /**
    * Whether the provider should be set as window.ethereum.
