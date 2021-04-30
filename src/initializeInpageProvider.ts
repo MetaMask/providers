@@ -1,9 +1,10 @@
 import { Duplex } from 'stream';
-import MetaMaskInpageProvider, { MetaMaskInpageProviderOptions } from './MetaMaskInpageProvider';
+import MetaMaskInpageProvider, {
+  MetaMaskInpageProviderOptions,
+} from './MetaMaskInpageProvider';
 import shimWeb3 from './shimWeb3';
 
 interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
-
   /**
    * The stream used to connect to the wallet.
    */
@@ -41,15 +42,12 @@ export function initializeProvider({
   shouldSetOnWindow = true,
   shouldShimWeb3 = false,
 }: InitializeProviderOptions): MetaMaskInpageProvider {
-  let provider = new MetaMaskInpageProvider(
-    connectionStream,
-    {
-      jsonRpcStreamName,
-      logger,
-      maxEventListeners,
-      shouldSendMetadata,
-    },
-  );
+  let provider = new MetaMaskInpageProvider(connectionStream, {
+    jsonRpcStreamName,
+    logger,
+    maxEventListeners,
+    shouldSendMetadata,
+  });
 
   provider = new Proxy(provider, {
     // some common libraries, e.g. web3@1.x, mess with our API
@@ -73,7 +71,9 @@ export function initializeProvider({
  *
  * @param providerInstance - The provider instance.
  */
-export function setGlobalProvider(providerInstance: MetaMaskInpageProvider): void {
+export function setGlobalProvider(
+  providerInstance: MetaMaskInpageProvider,
+): void {
   (window as Record<string, any>).ethereum = providerInstance;
   window.dispatchEvent(new Event('ethereum#initialized'));
 }

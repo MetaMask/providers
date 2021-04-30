@@ -1,47 +1,27 @@
 module.exports = {
-  env: {
-    browser: true,
-    es6: true,
-  },
-  extends: [
-    '@metamask/eslint-config',
-    '@metamask/eslint-config/config/jest',
-    '@metamask/eslint-config/config/nodejs',
-    '@metamask/eslint-config/config/typescript',
-  ],
-  plugins: [
-    'json',
-  ],
-  parserOptions: {
-    ecmaVersion: 2018,
-  },
-  rules: {
-    'node/no-sync': 'off',
-  },
+  root: true,
+
+  extends: ['@metamask/eslint-config'],
+
   overrides: [
     {
-      files: [
-        '*.js',
-        '*.json',
-      ],
+      files: ['*.ts'],
+      extends: ['@metamask/eslint-config-typescript'],
+    },
+
+    {
+      files: ['*.js'],
       parserOptions: {
         sourceType: 'script',
       },
-      rules: {
-        '@typescript-eslint/no-require-imports': 'off',
-        '@typescript-eslint/no-var-requires': 'off',
-      },
+      extends: ['@metamask/eslint-config-nodejs'],
     },
+
     {
-      files: ['test/**'],
-      rules: {
-        'node/no-callback-literal': 'off',
-      },
+      files: ['*.test.ts', '*.test.js'],
+      extends: ['@metamask/eslint-config-jest'],
     },
   ],
-  ignorePatterns: [
-    '!.eslintrc.js',
-    'dist/',
-    'node_modules/',
-  ],
+
+  ignorePatterns: ['!.eslintrc.js', 'dist/'],
 };

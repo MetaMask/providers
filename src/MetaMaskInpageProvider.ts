@@ -1,26 +1,25 @@
 import { Duplex } from 'stream';
-import {
-  JsonRpcRequest,
-  JsonRpcResponse,
-} from 'json-rpc-engine';
+import { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
 import { ethErrors } from 'eth-rpc-errors';
 import sendSiteMetadata from './siteMetadata';
 import messages from './messages';
-import {
-  EMITTED_NOTIFICATIONS,
-  getRpcPromiseCallback,
-  NOOP,
-} from './utils';
-import BaseProvider, { BaseProviderOptions, UnvalidatedJsonRpcRequest } from './BaseProvider';
+import { EMITTED_NOTIFICATIONS, getRpcPromiseCallback, NOOP } from './utils';
+import BaseProvider, {
+  BaseProviderOptions,
+  UnvalidatedJsonRpcRequest,
+} from './BaseProvider';
 
 export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
-  method: 'eth_accounts' | 'eth_coinbase' | 'eth_uninstallFilter' | 'net_version';
+  method:
+    | 'eth_accounts'
+    | 'eth_coinbase'
+    | 'eth_uninstallFilter'
+    | 'net_version';
 }
 
 type WarningEventName = keyof SentWarningsState['events'];
 
 export interface MetaMaskInpageProviderOptions extends BaseProviderOptions {
-
   /**
    * Whether the provider should send page metadata.
    */
@@ -42,7 +41,6 @@ interface SentWarningsState {
 }
 
 export default class MetaMaskInpageProvider extends BaseProvider {
-
   protected _sentWarnings: SentWarningsState = {
     // methods
     enable: false,
@@ -60,7 +58,9 @@ export default class MetaMaskInpageProvider extends BaseProvider {
   /**
    * Experimental methods can be found here.
    */
-  public readonly _metamask: ReturnType<MetaMaskInpageProvider['_getExperimentalApi']>;
+  public readonly _metamask: ReturnType<
+    MetaMaskInpageProvider['_getExperimentalApi']
+  >;
 
   public networkVersion: string | null;
 
@@ -89,7 +89,6 @@ export default class MetaMaskInpageProvider extends BaseProvider {
       shouldSendMetadata = true,
     }: MetaMaskInpageProviderOptions = {},
   ) {
-
     super(connectionStream, { jsonRpcStreamName, logger, maxEventListeners });
 
     this.networkVersion = null;
@@ -122,7 +121,10 @@ export default class MetaMaskInpageProvider extends BaseProvider {
       } else {
         const domContentLoadedHandler = () => {
           sendSiteMetadata(this._rpcEngine, this._log);
-          window.removeEventListener('DOMContentLoaded', domContentLoadedHandler);
+          window.removeEventListener(
+            'DOMContentLoaded',
+            domContentLoadedHandler,
+          );
         };
         window.addEventListener('DOMContentLoaded', domContentLoadedHandler);
       }
@@ -172,7 +174,10 @@ export default class MetaMaskInpageProvider extends BaseProvider {
     return super.prependListener(eventName, listener);
   }
 
-  prependOnceListener(eventName: string, listener: (...args: unknown[]) => void) {
+  prependOnceListener(
+    eventName: string,
+    listener: (...args: unknown[]) => void,
+  ) {
     this._warnOfDeprecation(eventName);
     return super.prependOnceListener(eventName, listener);
   }
@@ -194,9 +199,7 @@ export default class MetaMaskInpageProvider extends BaseProvider {
    */
   protected _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
     super._handleDisconnect(isRecoverable, errorMessage);
-    if (
-      this.networkVersion && !isRecoverable
-    ) {
+    if (this.networkVersion && !isRecoverable) {
       this.networkVersion = null;
     }
   }
@@ -314,7 +317,6 @@ export default class MetaMaskInpageProvider extends BaseProvider {
   protected _sendSync(payload: SendSyncJsonRpcRequest) {
     let result;
     switch (payload.method) {
-
       case 'eth_accounts':
         result = this.selectedAddress ? [this.selectedAddress] : [];
         break;
@@ -351,7 +353,6 @@ export default class MetaMaskInpageProvider extends BaseProvider {
   protected _getExperimentalApi() {
     return new Proxy(
       {
-
         /**
          * Determines if MetaMask is unlocked by the user.
          *
@@ -372,22 +373,19 @@ export default class MetaMaskInpageProvider extends BaseProvider {
         requestBatch: async (requests: UnvalidatedJsonRpcRequest[]) => {
           if (!Array.isArray(requests)) {
             throw ethErrors.rpc.invalidRequest({
-              message: 'Batch requests must be made with an array of request objects.',
+              message:
+                'Batch requests must be made with an array of request objects.',
               data: requests,
             });
           }
 
           return new Promise((resolve, reject) => {
-            this._rpcRequest(
-              requests,
-              getRpcPromiseCallback(resolve, reject),
-            );
+            this._rpcRequest(requests, getRpcPromiseCallback(resolve, reject));
           });
         },
       },
       {
         get: (obj, prop, ...args) => {
-
           if (!this._sentWarnings.experimentalMethods) {
             this._log.warn(messages.warnings.experimentalMethods);
             this._sentWarnings.experimentalMethods = true;

@@ -13,20 +13,20 @@ Implements the Ethereum JavaScript provider specification, [EIP-1193](https://ei
 ## Usage
 
 ```javascript
-import { initializeProvider } from '@metamask/inpage-provider'
+import { initializeProvider } from '@metamask/inpage-provider';
 
 // Create a stream to a remote provider:
 const metamaskStream = new LocalMessageDuplexStream({
   name: 'inpage',
   target: 'contentscript',
-})
+});
 
 // this will initialize the provider and set it as window.ethereum
 initializeProvider({
   connectionStream: metamaskStream,
-})
+});
 
-const { ethereum } = window
+const { ethereum } = window;
 ```
 
 ### Types

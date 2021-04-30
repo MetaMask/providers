@@ -1,7 +1,6 @@
 const { Duplex } = require('stream');
 
 module.exports = class DuplexStream extends Duplex {
-
   constructor() {
     super({
       objectMode: true,
