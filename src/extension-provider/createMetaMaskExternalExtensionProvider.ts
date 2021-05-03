@@ -1,7 +1,7 @@
 import PortStream from 'extension-port-stream';
 import { detect } from 'detect-browser';
 import { Runtime } from 'webextension-polyfill-ts';
-import MetaMaskInpageProvider from './MetaMaskInpageProvider';
+import MetaMaskInpageProvider from '../MetaMaskInpageProvider';
 import config from './external-extension-config.json';
 
 const browser = detect();

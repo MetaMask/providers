@@ -1,5 +1,5 @@
 import MetaMaskInpageProvider from './MetaMaskInpageProvider';
-import createMetaMaskExternalExtensionProvider from './createMetaMaskExternalExtensionProvider';
+import createMetaMaskExternalExtensionProvider from './extension-provider/createMetaMaskExternalExtensionProvider';
 import BaseProvider from './BaseProvider';
 import {
   initializeProvider,
