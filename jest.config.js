@@ -10,6 +10,7 @@ module.exports = {
   //     statements: 100,
   //   },
   // },
+  setupFilesAfterEnv: ['./jest.setup.js'],
   moduleFileExtensions: ['js'],
   silent: true,
   testEnvironment: 'jsdom',

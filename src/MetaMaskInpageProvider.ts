@@ -81,7 +81,7 @@ export default class MetaMaskInpageProvider extends BaseProvider {
    * send page metadata. Default: true
    */
   constructor(
-    connectionStream: typeof Duplex,
+    connectionStream: Duplex,
     {
       jsonRpcStreamName = 'metamask-provider',
       logger = console,

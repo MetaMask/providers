@@ -39,12 +39,16 @@
   "dependencies": {
     "@metamask/object-multiplex": "^1.1.0",
     "@metamask/safe-event-emitter": "^2.0.0",
+    "@types/chrome": "^0.0.136",
+    "detect-browser": "^5.2.0",
     "eth-rpc-errors": "^4.0.2",
+    "extension-port-stream": "^2.0.1",
     "fast-deep-equal": "^2.0.1",
     "is-stream": "^2.0.0",
     "json-rpc-engine": "^6.1.0",
     "json-rpc-middleware-stream": "^3.0.0",
-    "pump": "^3.0.0"
+    "pump": "^3.0.0",
+    "webextension-polyfill-ts": "^0.25.0"
   },
   "devDependencies": {
     "@metamask/eslint-config": "^6.0.0",
@@ -58,13 +62,14 @@
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/parser": "^4.10.0",
     "eslint": "^7.15.0",
+    "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jest": "^23.18.0",
     "eslint-plugin-json": "^2.0.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.4.0",
-    "eslint-config-prettier": "^8.1.0",
     "jest": "^26.6.3",
+    "jest-chrome": "^0.7.1",
     "prettier": "^2.2.1",
     "typescript": "^4.1.3"
   }
