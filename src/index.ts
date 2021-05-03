@@ -1,5 +1,5 @@
 import MetaMaskInpageProvider from './MetaMaskInpageProvider';
-import createMetaMaskExternalExtensionProvider from './extension-provider/createMetaMaskExternalExtensionProvider';
+import createExternalExtensionProvider from './extension-provider/createExternalExtensionProvider';
 import BaseProvider from './BaseProvider';
 import {
   initializeProvider,
@@ -13,5 +13,5 @@ export {
   BaseProvider,
   setGlobalProvider,
   shimWeb3,
-  createMetaMaskExternalExtensionProvider,
+  createExternalExtensionProvider,
 };

@@ -1,9 +1,6 @@
-const {
-  createMetaMaskExternalExtensionProvider,
-  MetaMaskInpageProvider,
-} = require('../dist');
+const { createExternalExtensionProvider, BaseProvider } = require('../dist');
 
-describe('createMetaMaskExternalExtensionProvider', () => {
+describe('createExternalExtensionProvider', () => {
   beforeAll(() => {
     global.chrome.runtime.connect.mockImplementation(() => {
       return {
@@ -21,14 +18,14 @@ describe('createMetaMaskExternalExtensionProvider', () => {
     jest.restoreAllMocks();
   });
   it('can be called and not throw', () => {
-    expect(() => createMetaMaskExternalExtensionProvider()).not.toThrow();
+    expect(() => createExternalExtensionProvider()).not.toThrow();
   });
   it('calls connect', () => {
-    createMetaMaskExternalExtensionProvider();
+    createExternalExtensionProvider();
     expect(global.chrome.runtime.connect).toHaveBeenCalled();
   });
   it('returns a MetaMaskInpageProvider', () => {
-    const results = createMetaMaskExternalExtensionProvider();
-    expect(results).toBeInstanceOf(MetaMaskInpageProvider);
+    const results = createExternalExtensionProvider();
+    expect(results).toBeInstanceOf(BaseProvider);
   });
 });
