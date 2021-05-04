@@ -4,7 +4,7 @@ on:
     workflow_dispatch:
         inputs:
             release-version:
-                description: 'A specific version to bump to. Mutually exclusive with "release-type".'
+                description: 'A specific version to bump to.'
                 required: false
 
 jobs:
