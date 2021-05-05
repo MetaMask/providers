@@ -1,14 +1,15 @@
-const { MetaMaskInpageProvider } = require('../dist');
-const { default: messages } = require('../dist/messages');
-
-const MockDuplexStream = require('./mocks/DuplexStream');
+import MetaMaskInpageProvider from './MetaMaskInpageProvider';
+import messages from './messages';
+import MockDuplexStream from './mocks/DuplexStream';
 
 const MOCK_ERROR_MESSAGE = 'Did you specify a mock return value?';
 
 function initializeProvider() {
   jest.useFakeTimers();
   const mockStream = new MockDuplexStream();
-  const provider = new MetaMaskInpageProvider(mockStream);
+  const provider: any | MetaMaskInpageProvider = new MetaMaskInpageProvider(
+    mockStream,
+  );
   provider.mockStream = mockStream;
   provider.autoRefreshOnNetworkChange = false;
   jest.runAllTimers();
@@ -19,7 +20,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
   // mocking the underlying stream, and testing the basic functionality of
   // .reqest, .sendAsync, and .send
   describe('integration', () => {
-    let provider;
+    let provider: any | MetaMaskInpageProvider;
     const mockRpcEngineResponse = jest.fn();
 
     const resetRpcEngineResponseMock = () => {
@@ -28,7 +29,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
         .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
     };
 
-    const setNextRpcEngineResponse = (err = null, res = {}) => {
+    const setNextRpcEngineResponse = (err: Error | null = null, res = {}) => {
       mockRpcEngineResponse.mockReturnValueOnce([err, res]);
     };
 
@@ -39,7 +40,9 @@ describe('MetaMaskInpageProvider: RPC', () => {
       jest
         .spyOn(provider._rpcEngine, 'handle')
         // eslint-disable-next-line node/no-callback-literal
-        .mockImplementation((_payload, cb) => cb(...mockRpcEngineResponse()));
+        .mockImplementation((_payload, cb: any) =>
+          cb(...mockRpcEngineResponse()),
+        );
     });
 
     it('.request returns result on success', async () => {
@@ -75,19 +78,22 @@ describe('MetaMaskInpageProvider: RPC', () => {
     it('.sendAsync returns response object on success', async () => {
       setNextRpcEngineResponse(null, { result: 42 });
       await new Promise((done) => {
-        provider.sendAsync({ method: 'foo', params: ['bar'] }, (err, res) => {
-          expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
-            expect.objectContaining({
-              method: 'foo',
-              params: ['bar'],
-            }),
-            expect.any(Function),
-          );
+        provider.sendAsync(
+          { method: 'foo', params: ['bar'] },
+          (err: Error | null, res: any) => {
+            expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+              expect.objectContaining({
+                method: 'foo',
+                params: ['bar'],
+              }),
+              expect.any(Function),
+            );
 
-          expect(err).toBeNull();
-          expect(res).toStrictEqual({ result: 42 });
-          done();
-        });
+            expect(err).toBeNull();
+            expect(res).toStrictEqual({ result: 42 });
+            done(undefined);
+          },
+        );
       });
     });
 
@@ -104,7 +110,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
             { method: 'bar', params: ['baz'] },
             { method: 'baz', params: ['buzz'] },
           ],
-          (err, res) => {
+          (err: Error | null, res: any) => {
             expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
               expect.arrayContaining([
                 { method: 'foo', params: ['bar'] },
@@ -120,7 +126,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
               { result: 41 },
               { result: 40 },
             ]);
-            done();
+            done(undefined);
           },
         );
       });
@@ -129,19 +135,22 @@ describe('MetaMaskInpageProvider: RPC', () => {
     it('.sendAsync returns response object on error', async () => {
       setNextRpcEngineResponse(new Error('foo'), { error: 'foo' });
       await new Promise((done) => {
-        provider.sendAsync({ method: 'foo', params: ['bar'] }, (err, res) => {
-          expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
-            expect.objectContaining({
-              method: 'foo',
-              params: ['bar'],
-            }),
-            expect.any(Function),
-          );
+        provider.sendAsync(
+          { method: 'foo', params: ['bar'] },
+          (err: Error | null, res: any) => {
+            expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+              expect.objectContaining({
+                method: 'foo',
+                params: ['bar'],
+              }),
+              expect.any(Function),
+            );
 
-          expect(err).toStrictEqual(new Error('foo'));
-          expect(res).toStrictEqual({ error: 'foo' });
-          done();
-        });
+            expect(err).toStrictEqual(new Error('foo'));
+            expect(res).toStrictEqual({ error: 'foo' });
+            done(undefined);
+          },
+        );
       });
     });
 
@@ -176,44 +185,50 @@ describe('MetaMaskInpageProvider: RPC', () => {
     it('.send callback signature returns response object on success', async () => {
       setNextRpcEngineResponse(null, { result: 42 });
       await new Promise((done) => {
-        provider.send({ method: 'foo', params: ['bar'] }, (err, res) => {
-          expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
-            expect.objectContaining({
-              method: 'foo',
-              params: ['bar'],
-            }),
-            expect.any(Function),
-          );
+        provider.send(
+          { method: 'foo', params: ['bar'] },
+          (err: any, res: any) => {
+            expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+              expect.objectContaining({
+                method: 'foo',
+                params: ['bar'],
+              }),
+              expect.any(Function),
+            );
 
-          expect(err).toBeNull();
-          expect(res).toStrictEqual({ result: 42 });
-          done();
-        });
+            expect(err).toBeNull();
+            expect(res).toStrictEqual({ result: 42 });
+            done(undefined);
+          },
+        );
       });
     });
 
     it('.send callback signature returns response object on error', async () => {
       setNextRpcEngineResponse(new Error('foo'), { error: 'foo' });
       await new Promise((done) => {
-        provider.send({ method: 'foo', params: ['bar'] }, (err, res) => {
-          expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
-            expect.objectContaining({
-              method: 'foo',
-              params: ['bar'],
-            }),
-            expect.any(Function),
-          );
+        provider.send(
+          { method: 'foo', params: ['bar'] },
+          (err: any, res: any) => {
+            expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+              expect.objectContaining({
+                method: 'foo',
+                params: ['bar'],
+              }),
+              expect.any(Function),
+            );
 
-          expect(err).toStrictEqual(new Error('foo'));
-          expect(res).toStrictEqual({ error: 'foo' });
-          done();
-        });
+            expect(err).toStrictEqual(new Error('foo'));
+            expect(res).toStrictEqual({ error: 'foo' });
+            done(undefined);
+          },
+        );
       });
     });
   });
 
   describe('.request', () => {
-    let provider;
+    let provider: any;
     const mockRpcRequestResponse = jest.fn();
 
     const resetRpcRequestResponseMock = () => {
@@ -222,7 +237,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
         .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
     };
 
-    const setNextRpcRequestResponse = (err = null, res = {}) => {
+    const setNextRpcRequestResponse = (err: Error | null = null, res = {}) => {
       mockRpcRequestResponse.mockReturnValueOnce([err, res]);
     };
 
@@ -231,7 +246,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       provider = initializeProvider();
       jest
         .spyOn(provider, '_rpcRequest')
-        .mockImplementation((_payload, cb, _isInternal) =>
+        .mockImplementation((_payload, cb: any, _isInternal) =>
           // eslint-disable-next-line node/no-callback-literal
           cb(...mockRpcRequestResponse()),
         );
@@ -325,7 +340,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
 
   // this also tests sendAsync, it being effectively an alias for this method
   describe('._rpcRequest', () => {
-    let provider;
+    let provider: any | MetaMaskInpageProvider;
     const mockRpcEngineResponse = jest.fn();
 
     const resetRpcEngineResponseMock = () => {
@@ -334,7 +349,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
         .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
     };
 
-    const setNextRpcEngineResponse = (err = null, res = {}) => {
+    const setNextRpcEngineResponse = (err: Error | null = null, res = {}) => {
       mockRpcEngineResponse.mockReturnValueOnce([err, res]);
     };
 
@@ -345,92 +360,106 @@ describe('MetaMaskInpageProvider: RPC', () => {
       jest
         .spyOn(provider._rpcEngine, 'handle')
         // eslint-disable-next-line node/no-callback-literal
-        .mockImplementation((_payload, cb) => cb(...mockRpcEngineResponse()));
+        .mockImplementation((_payload, cb: any) =>
+          cb(...mockRpcEngineResponse()),
+        );
     });
 
     it('returns response object on success', async () => {
       setNextRpcEngineResponse(null, { result: 42 });
       await new Promise((done) => {
-        provider._rpcRequest({ method: 'foo', params: ['bar'] }, (err, res) => {
-          expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
-            expect.objectContaining({
-              method: 'foo',
-              params: ['bar'],
-            }),
-            expect.any(Function),
-          );
+        provider._rpcRequest(
+          { method: 'foo', params: ['bar'] },
+          (err: any, res: any) => {
+            expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+              expect.objectContaining({
+                method: 'foo',
+                params: ['bar'],
+              }),
+              expect.any(Function),
+            );
 
-          expect(err).toBeNull();
-          expect(res).toStrictEqual({ result: 42 });
-          done();
-        });
+            expect(err).toBeNull();
+            expect(res).toStrictEqual({ result: 42 });
+            done(undefined);
+          },
+        );
       });
     });
 
     it('returns response object on error', async () => {
       setNextRpcEngineResponse(new Error('foo'), { error: 'foo' });
       await new Promise((done) => {
-        provider._rpcRequest({ method: 'foo', params: ['bar'] }, (err, res) => {
-          expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
-            expect.objectContaining({
-              method: 'foo',
-              params: ['bar'],
-            }),
-            expect.any(Function),
-          );
+        provider._rpcRequest(
+          { method: 'foo', params: ['bar'] },
+          (err: any, res: any) => {
+            expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+              expect.objectContaining({
+                method: 'foo',
+                params: ['bar'],
+              }),
+              expect.any(Function),
+            );
 
-          expect(err).toStrictEqual(new Error('foo'));
-          expect(res).toStrictEqual({ error: 'foo' });
-          done();
-        });
+            expect(err).toStrictEqual(new Error('foo'));
+            expect(res).toStrictEqual({ error: 'foo' });
+            done(undefined);
+          },
+        );
       });
     });
 
     it('calls _handleAccountsChanged on request for eth_accounts', async () => {
       setNextRpcEngineResponse(null, { result: ['0x1'] });
       await new Promise((done) => {
-        provider._rpcRequest({ method: 'eth_accounts' }, (err, res) => {
-          expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
-            expect.objectContaining({ method: 'eth_accounts' }),
-            expect.any(Function),
-          );
+        provider._rpcRequest(
+          { method: 'eth_accounts' },
+          (err: any, res: any) => {
+            expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+              expect.objectContaining({ method: 'eth_accounts' }),
+              expect.any(Function),
+            );
 
-          expect(provider._handleAccountsChanged).toHaveBeenCalledWith(
-            ['0x1'],
-            true,
-          );
+            expect(provider._handleAccountsChanged).toHaveBeenCalledWith(
+              ['0x1'],
+              true,
+            );
 
-          expect(err).toBeNull();
-          expect(res).toStrictEqual({ result: ['0x1'] });
-          done();
-        });
+            expect(err).toBeNull();
+            expect(res).toStrictEqual({ result: ['0x1'] });
+            done(undefined);
+          },
+        );
       });
     });
 
     it('calls _handleAccountsChanged with empty array on eth_accounts request returning error', async () => {
       setNextRpcEngineResponse(new Error('foo'), { error: 'foo' });
       await new Promise((done) => {
-        provider._rpcRequest({ method: 'eth_accounts' }, (err, res) => {
-          expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
-            expect.objectContaining({ method: 'eth_accounts' }),
-            expect.any(Function),
-          );
+        provider._rpcRequest(
+          { method: 'eth_accounts' },
+          (err: any, res: any) => {
+            expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
+              expect.objectContaining({ method: 'eth_accounts' }),
+              expect.any(Function),
+            );
 
-          expect(provider._handleAccountsChanged).toHaveBeenCalledWith(
-            [],
-            true,
-          );
+            expect(provider._handleAccountsChanged).toHaveBeenCalledWith(
+              [],
+              true,
+            );
 
-          expect(err).toStrictEqual(new Error('foo'));
-          expect(res).toStrictEqual({ error: 'foo' });
-          done();
-        });
+            expect(err).toStrictEqual(new Error('foo'));
+            expect(res).toStrictEqual({ error: 'foo' });
+            done(undefined);
+          },
+        );
       });
     });
   });
 
   describe('.send', () => {
-    let provider;
+    let provider: any | MetaMaskInpageProvider;
     const mockRpcRequestResponse = jest.fn();
 
     const resetRpcRequestResponseMock = () => {
@@ -439,7 +468,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
         .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
     };
 
-    const setNextRpcRequestResponse = (err = null, res = {}) => {
+    const setNextRpcRequestResponse = (err: Error | null = null, res = {}) => {
       mockRpcRequestResponse.mockReturnValueOnce([err, res]);
     };
 
@@ -448,7 +477,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       provider = initializeProvider();
       jest
         .spyOn(provider, '_rpcRequest')
-        .mockImplementation((_payload, cb, _isInternal) =>
+        .mockImplementation((_payload, cb: any, _isInternal) =>
           // eslint-disable-next-line node/no-callback-literal
           cb(...mockRpcRequestResponse()),
         );
@@ -514,38 +543,44 @@ describe('MetaMaskInpageProvider: RPC', () => {
     it('callback signature returns response object on success', async () => {
       setNextRpcRequestResponse(null, { result: 42 });
       await new Promise((done) => {
-        provider.send({ method: 'foo', params: ['bar'] }, (err, res) => {
-          expect(provider._rpcRequest).toHaveBeenCalledWith(
-            expect.objectContaining({
-              method: 'foo',
-              params: ['bar'],
-            }),
-            expect.any(Function),
-          );
+        provider.send(
+          { method: 'foo', params: ['bar'] },
+          (err: Error | null, res: any) => {
+            expect(provider._rpcRequest).toHaveBeenCalledWith(
+              expect.objectContaining({
+                method: 'foo',
+                params: ['bar'],
+              }),
+              expect.any(Function),
+            );
 
-          expect(err).toBeNull();
-          expect(res).toStrictEqual({ result: 42 });
-          done();
-        });
+            expect(err).toBeNull();
+            expect(res).toStrictEqual({ result: 42 });
+            done(undefined);
+          },
+        );
       });
     });
 
     it('callback signature returns response object on error', async () => {
       setNextRpcRequestResponse(new Error('foo'), { error: 'foo' });
       await new Promise((done) => {
-        provider.send({ method: 'foo', params: ['bar'] }, (err, res) => {
-          expect(provider._rpcRequest).toHaveBeenCalledWith(
-            expect.objectContaining({
-              method: 'foo',
-              params: ['bar'],
-            }),
-            expect.any(Function),
-          );
+        provider.send(
+          { method: 'foo', params: ['bar'] },
+          (err: Error | null, res: any) => {
+            expect(provider._rpcRequest).toHaveBeenCalledWith(
+              expect.objectContaining({
+                method: 'foo',
+                params: ['bar'],
+              }),
+              expect.any(Function),
+            );
 
-          expect(err).toStrictEqual(new Error('foo'));
-          expect(res).toStrictEqual({ error: 'foo' });
-          done();
-        });
+            expect(err).toStrictEqual(new Error('foo'));
+            expect(res).toStrictEqual({ error: 'foo' });
+            done(undefined);
+          },
+        );
       });
     });
 

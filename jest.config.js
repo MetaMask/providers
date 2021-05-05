@@ -11,9 +11,9 @@ module.exports = {
   //   },
   // },
   setupFilesAfterEnv: ['./jest.setup.js'],
-  moduleFileExtensions: ['js'],
-  silent: true,
   testEnvironment: 'jsdom',
-  testRegex: ['\\.test\\.js$'],
+  silent: true,
+  preset: 'ts-jest',
+  testRegex: ['\\.test\\.ts$'],
   testTimeout: 5000,
 };
