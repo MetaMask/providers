@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.1.0] - 2021-05-05
+
+### Changed
+- refactor EIP-1193 interface to new `BaseProvider`
+
 ## [8.0.4] - 2021-02-04
 
 ### Fixed
@@ -215,6 +220,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/inpage-provider/pull/29))
 
 [unreleased]: https://github.com/MetaMask/inpage-provider/compare/v8.0.4...HEAD
+[8.1.4]: https://github.com/MetaMask/inpage-provider/compare/v8.0.4...v8.1.0
 [8.0.4]: https://github.com/MetaMask/inpage-provider/compare/v8.0.3...v8.0.4
 [8.0.3]: https://github.com/MetaMask/inpage-provider/compare/v8.0.2...v8.0.3
 [8.0.2]: https://github.com/MetaMask/inpage-provider/compare/v8.0.1...v8.0.2
