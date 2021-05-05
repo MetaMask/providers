@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
-      - uses: MetaMask/action-create-release-pr@v0.0.12
+      - uses: MetaMask/action-create-release-pr@v0.0.13
         with:
           release-version: ${{ github.event.inputs.release-version }}
         env:
