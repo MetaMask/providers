@@ -11,8 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- EIP-1193 interface via new `BaseProvider` ([#144](https://github.com/MetaMask/inpage-provider/pull/144))
-- migrate [extension-provider](https://github.com/MetaMask/extension-provider/) to `createExternalExtensionProvider` ([#152](https://github.com/MetaMask/inpage-provider/pull/152))
+- `BaseProvider`, implementing EIP-1193 without any legacy features ([#144](https://github.com/MetaMask/inpage-provider/pull/144))
+- `createExternalExtensionProvider`, from the [extension-provider](https://github.com/MetaMask/extension-provider/) package ([#152](https://github.com/MetaMask/inpage-provider/pull/152))
 
 ## [8.0.4] - 2021-02-04
 
