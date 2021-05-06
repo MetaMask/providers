@@ -1,5 +1,5 @@
 {
-  "name": "@metamask/inpage-provider",
+  "name": "@metamask/providers",
   "version": "8.1.0",
   "description": "A JavaScript Ethereum provider that connects to the wallet over a stream.",
   "main": "dist/index.js",
@@ -22,7 +22,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/MetaMask/inpage-provider.git"
+    "url": "git+ssh://git@github.com/MetaMask/providers.git"
   },
   "keywords": [
     "MetaMask",
@@ -30,9 +30,9 @@
     "Provider"
   ],
   "bugs": {
-    "url": "https://github.com/MetaMask/inpage-provider/issues"
+    "url": "https://github.com/MetaMask/providers/issues"
   },
-  "homepage": "https://github.com/MetaMask/inpage-provider#readme",
+  "homepage": "https://github.com/MetaMask/providers#readme",
   "files": [
     "dist/"
   ],
