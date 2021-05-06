@@ -191,7 +191,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Rename package to [@metamask/providers](https://www.npmjs.com/package/@metamask/providers)
+- Rename package to [@metamask/inpage-provider](https://www.npmjs.com/package/@metamask/inpage-provider)
 - Prevent overwrite of certain properties on the Provider
   - `ethereum.request`
   - `ethereum.isMetaMask`
