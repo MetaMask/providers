@@ -1,7 +1,6 @@
+import MockDuplexStream from '../mocks/DuplexStream';
 import BaseProvider from './BaseProvider';
 import messages from './messages';
-
-import MockDuplexStream from './mocks/DuplexStream';
 
 const MOCK_ERROR_MESSAGE = 'Did you specify a mock return value?';
 

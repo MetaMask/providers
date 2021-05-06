@@ -1,6 +1,6 @@
+import MockDuplexStream from '../mocks/DuplexStream';
 import MetaMaskInpageProvider from './MetaMaskInpageProvider';
 import messages from './messages';
-import MockDuplexStream from './mocks/DuplexStream';
 
 describe('MetaMaskInpageProvider: Miscellanea', () => {
   describe('constructor', () => {
