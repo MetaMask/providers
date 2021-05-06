@@ -1,7 +1,6 @@
-const { MetaMaskInpageProvider } = require('../dist');
-const { default: messages } = require('../dist/messages');
-
-const MockDuplexStream = require('./mocks/DuplexStream');
+import MockDuplexStream from '../mocks/DuplexStream';
+import MetaMaskInpageProvider from './MetaMaskInpageProvider';
+import messages from './messages';
 
 describe('MetaMaskInpageProvider: Miscellanea', () => {
   describe('constructor', () => {
@@ -46,15 +45,15 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
     });
 
     it('throws if no or invalid stream is provided', () => {
-      expect(() => new MetaMaskInpageProvider()).toThrow(
+      expect(() => new MetaMaskInpageProvider(undefined as any)).toThrow(
         messages.errors.invalidDuplexStream(),
       );
 
-      expect(() => new MetaMaskInpageProvider('foo')).toThrow(
+      expect(() => new MetaMaskInpageProvider('foo' as any)).toThrow(
         messages.errors.invalidDuplexStream(),
       );
 
-      expect(() => new MetaMaskInpageProvider({})).toThrow(
+      expect(() => new MetaMaskInpageProvider({} as any)).toThrow(
         messages.errors.invalidDuplexStream(),
       );
     });
@@ -82,7 +81,7 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
   describe('isConnected', () => {
     it('returns isConnected state', () => {
       jest.useFakeTimers();
-      const provider = new MetaMaskInpageProvider(new MockDuplexStream());
+      const provider: any = new MetaMaskInpageProvider(new MockDuplexStream());
       provider.autoRefreshOnNetworkChange = false;
 
       expect(provider.isConnected()).toBe(false);

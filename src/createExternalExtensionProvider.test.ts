@@ -1,8 +1,9 @@
-const { createExternalExtensionProvider, BaseProvider } = require('../dist');
+import createExternalExtensionProvider from './extension-provider/createExternalExtensionProvider';
+import BaseProvider from './BaseProvider';
 
 describe('createExternalExtensionProvider', () => {
   beforeAll(() => {
-    global.chrome.runtime.connect.mockImplementation(() => {
+    (global.chrome.runtime.connect as any).mockImplementation(() => {
       return {
         onMessage: {
           addListener: jest.fn(),
