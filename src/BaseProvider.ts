@@ -420,32 +420,21 @@ export default class BaseProvider extends SafeEventEmitter {
    */
   protected _handleChainChanged({
     chainId,
-    networkVersion,
   }: { chainId?: string; networkVersion?: string } = {}) {
-    if (
-      !chainId ||
-      typeof chainId !== 'string' ||
-      !chainId.startsWith('0x') ||
-      !networkVersion ||
-      typeof networkVersion !== 'string'
-    ) {
+    if (!chainId || typeof chainId !== 'string' || !chainId.startsWith('0x')) {
       this._log.error(
         'MetaMask: Received invalid network parameters. Please report this bug.',
-        { chainId, networkVersion },
+        { chainId },
       );
       return;
     }
 
-    if (networkVersion === 'loading') {
-      this._handleDisconnect(true);
-    } else {
-      this._handleConnect(chainId);
+    this._handleConnect(chainId);
 
-      if (chainId !== this.chainId) {
-        this.chainId = chainId;
-        if (this._state.initialized) {
-          this.emit('chainChanged', this.chainId);
-        }
+    if (chainId !== this.chainId) {
+      this.chainId = chainId;
+      if (this._state.initialized) {
+        this.emit('chainChanged', this.chainId);
       }
     }
   }

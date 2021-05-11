@@ -636,4 +636,42 @@ describe('MetaMaskInpageProvider: RPC', () => {
       );
     });
   });
+  describe('provider events', () => {
+    // eslint-disable-next-line jest/no-test-callback
+    it('calls chainChanged when it chainId changes ', (done) => {
+      const mockStream = new MockDuplexStream();
+      const p = new MetaMaskInpageProvider(mockStream);
+      (p as any)._state.initialized = true;
+      p.on('chainChanged', (changed) => {
+        expect(changed).toBe('0x1');
+        done();
+      });
+      mockStream.push({
+        name: 'metamask-provider',
+        data: {
+          jsonrpc: '2.0',
+          method: 'metamask_chainChanged',
+          params: { chainId: '0x1', networkVersion: '0x1' },
+        },
+      });
+    });
+    // eslint-disable-next-line jest/no-test-callback
+    it('calls networkChanged when it networkVersion changes ', (done) => {
+      const mockStream = new MockDuplexStream();
+      const p = new MetaMaskInpageProvider(mockStream);
+      (p as any)._state.initialized = true;
+      p.on('networkChanged', (changed) => {
+        expect(changed).toBe('0x1');
+        done();
+      });
+      mockStream.push({
+        name: 'metamask-provider',
+        data: {
+          jsonrpc: '2.0',
+          method: 'metamask_chainChanged',
+          params: { chainId: '0x1', networkVersion: '0x1' },
+        },
+      });
+    });
+  });
 });

@@ -395,4 +395,54 @@ export default class MetaMaskInpageProvider extends BaseProvider {
       },
     );
   }
+
+  /**
+   * Upon receipt of a new chainId and networkVersion, emits corresponding
+   * events and sets relevant public state.
+   * Does nothing if neither the chainId nor the networkVersion are different
+   * from existing values.
+   *
+   * @emits MetamaskInpageProvider#chainChanged
+   * @param networkInfo - An object with network info.
+   * @param networkInfo.chainId - The latest chain ID.
+   * @param networkInfo.networkVersion - The latest network ID.
+   */
+  protected _handleChainChanged({
+    chainId,
+    networkVersion,
+  }: { chainId?: string; networkVersion?: string } = {}) {
+    if (
+      !chainId ||
+      typeof chainId !== 'string' ||
+      !chainId.startsWith('0x') ||
+      !networkVersion ||
+      typeof networkVersion !== 'string'
+    ) {
+      this._log.error(
+        'MetaMask: Received invalid network parameters. Please report this bug.',
+        { chainId, networkVersion },
+      );
+      return;
+    }
+
+    if (networkVersion === 'loading') {
+      this._handleDisconnect(true);
+    } else {
+      this._handleConnect(chainId);
+
+      if (chainId !== this.chainId) {
+        this.chainId = chainId;
+        if (this._state.initialized) {
+          this.emit('chainChanged', this.chainId);
+        }
+      }
+
+      if (networkVersion !== this.networkVersion) {
+        this.networkVersion = networkVersion;
+        if (this._state.initialized) {
+          this.emit('networkChanged', this.networkVersion);
+        }
+      }
+    }
+  }
 }
