@@ -403,6 +403,7 @@ export default class MetaMaskInpageProvider extends BaseProvider {
    * from existing values.
    *
    * @emits MetamaskInpageProvider#chainChanged
+   * @emits MetamaskInpageProvider#networkChanged
    * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
    * @param networkInfo.networkVersion - The latest network ID.
