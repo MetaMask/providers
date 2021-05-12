@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.1.1] - 2021-05-12
+
+### Fixed
+
+- Restore `networkChanged` event in `MetaMaskInpageProvider` ([#171](https://github.com/MetaMask/providers/pull/171))
+
 ## [8.1.0] - 2021-05-05
 
 ### Added
@@ -221,7 +227,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[unreleased]: https://github.com/MetaMask/providers/compare/v8.1.0...HEAD
+[unreleased]: https://github.com/MetaMask/providers/compare/v8.1.1...HEAD
+[8.1.1]: https://github.com/MetaMask/providers/compare/v8.1.0...v8.1.1
 [8.1.0]: https://github.com/MetaMask/providers/compare/v8.0.4...v8.1.0
 [8.0.4]: https://github.com/MetaMask/providers/compare/v8.0.3...v8.0.4
 [8.0.3]: https://github.com/MetaMask/providers/compare/v8.0.2...v8.0.3
