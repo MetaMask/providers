@@ -309,4 +309,25 @@ describe('BaseProvider: RPC', () => {
       });
     });
   });
+  describe('provider events', () => {
+    it('calls chainChanged when it chainId changes ', async () => {
+      const mockStream = new MockDuplexStream();
+      const baseProvider = new BaseProvider(mockStream);
+      (baseProvider as any)._state.initialized = true;
+      await new Promise((resolve) => {
+        baseProvider.on('chainChanged', (changed) => {
+          expect(changed).toBeDefined();
+          resolve(undefined);
+        });
+        mockStream.push({
+          name: 'metamask-provider',
+          data: {
+            jsonrpc: '2.0',
+            method: 'metamask_chainChanged',
+            params: { chainId: '0x1', networkVersion: '0x1' },
+          },
+        });
+      });
+    });
+  });
 });

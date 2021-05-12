@@ -395,4 +395,34 @@ export default class MetaMaskInpageProvider extends BaseProvider {
       },
     );
   }
+
+  /**
+   * Upon receipt of a new chainId and networkVersion, emits corresponding
+   * events and sets relevant public state.
+   * Does nothing if neither the chainId nor the networkVersion are different
+   * from existing values.
+   *
+   * @emits MetamaskInpageProvider#chainChanged
+   * @emits MetamaskInpageProvider#networkChanged
+   * @param networkInfo - An object with network info.
+   * @param networkInfo.chainId - The latest chain ID.
+   * @param networkInfo.networkVersion - The latest network ID.
+   */
+  protected _handleChainChanged({
+    chainId,
+    networkVersion,
+  }: { chainId?: string; networkVersion?: string } = {}) {
+    super._handleChainChanged({ chainId, networkVersion });
+
+    if (
+      networkVersion &&
+      networkVersion !== 'loading' &&
+      networkVersion !== this.networkVersion
+    ) {
+      this.networkVersion = networkVersion;
+      if (this._state.initialized) {
+        this.emit('networkChanged', this.networkVersion);
+      }
+    }
+  }
 }
