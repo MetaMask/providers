@@ -412,37 +412,16 @@ export default class MetaMaskInpageProvider extends BaseProvider {
     chainId,
     networkVersion,
   }: { chainId?: string; networkVersion?: string } = {}) {
+    super._handleChainChanged({ chainId, networkVersion });
+
     if (
-      !chainId ||
-      typeof chainId !== 'string' ||
-      !chainId.startsWith('0x') ||
-      !networkVersion ||
-      typeof networkVersion !== 'string'
+      networkVersion &&
+      networkVersion !== 'loading' &&
+      networkVersion !== this.networkVersion
     ) {
-      this._log.error(
-        'MetaMask: Received invalid network parameters. Please report this bug.',
-        { chainId, networkVersion },
-      );
-      return;
-    }
-
-    if (networkVersion === 'loading') {
-      this._handleDisconnect(true);
-    } else {
-      this._handleConnect(chainId);
-
-      if (chainId !== this.chainId) {
-        this.chainId = chainId;
-        if (this._state.initialized) {
-          this.emit('chainChanged', this.chainId);
-        }
-      }
-
-      if (networkVersion !== this.networkVersion) {
-        this.networkVersion = networkVersion;
-        if (this._state.initialized) {
-          this.emit('networkChanged', this.networkVersion);
-        }
+      this.networkVersion = networkVersion;
+      if (this._state.initialized) {
+        this.emit('networkChanged', this.networkVersion);
       }
     }
   }
