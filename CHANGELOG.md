@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [8.1.1] - 2021-05-12
 
+### Changed
+
+- Rename package to `@metamask/providers` ([#168](https://github.com/MetaMask/providers/pull/168))
+
 ### Fixed
 
 - Restore `networkChanged` event in `MetaMaskInpageProvider` ([#171](https://github.com/MetaMask/providers/pull/171))

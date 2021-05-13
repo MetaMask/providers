@@ -7,16 +7,19 @@
   "engines": {
     "node": ">=12.0.0"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
-    "build": "tsc --project .",
+    "build": "mkdir -p dist && rm -rf dist/* && tsc --project .",
     "test": "jest",
     "coverage": "jest --coverage",
     "lint:eslint": "eslint . --cache --ext js,ts",
     "lint:misc": "prettier '**/*.json' '**/*.md' '**/*.yml' --single-quote --ignore-path .gitignore",
     "lint": "yarn lint:eslint && yarn lint:misc --check",
     "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write",
-    "prepublishOnly": "yarn require-clean-git && yarn lint && yarn test",
-    "require-clean-git": "git diff --quiet || (echo 'Please clean the working directory.' && exit 1)"
+    "prepublishOnly": "yarn build && yarn lint && yarn test"
   },
   "author": "MetaMask",
   "license": "MIT",
