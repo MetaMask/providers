@@ -42,7 +42,6 @@
   "dependencies": {
     "@metamask/object-multiplex": "^1.1.0",
     "@metamask/safe-event-emitter": "^2.0.0",
-    "@types/chrome": "^0.0.136",
     "detect-browser": "^5.2.0",
     "eth-rpc-errors": "^4.0.2",
     "extension-port-stream": "^2.0.1",
@@ -58,6 +57,7 @@
     "@metamask/eslint-config-jest": "^6.0.0",
     "@metamask/eslint-config-nodejs": "^6.0.0",
     "@metamask/eslint-config-typescript": "^6.0.0",
+    "@types/chrome": "^0.0.136",
     "@types/jest": "^26.0.23",
     "@types/node": "^14.14.14",
     "@types/pump": "^1.1.0",
