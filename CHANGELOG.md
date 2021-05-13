@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Package renamed to `@metamask/providers` ([#168](https://github.com/MetaMask/providers/pull/168))
+- Rename package to `@metamask/providers` ([#168](https://github.com/MetaMask/providers/pull/168))
 
 ### Fixed
 
