@@ -5,10 +5,12 @@ on:
     types: [closed]
 
 jobs:
-  release_merge:
+  publish-release:
+    permissions:
+      contents: write
     if: |
       github.event.pull_request.merged == true &&
-      startsWith(github.event.pull_request.head.ref, 'release-v')
+      startsWith(github.event.pull_request.head.ref, 'release/')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -18,6 +20,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
-      - uses: MetaMask/action-publish-release@v0.0.3
+      - uses: MetaMask/action-publish-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release-branch-prefix: release/
