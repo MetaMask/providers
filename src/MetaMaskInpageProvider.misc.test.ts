@@ -4,14 +4,6 @@ import messages from './messages';
 
 describe('MetaMaskInpageProvider: Miscellanea', () => {
   describe('constructor', () => {
-    beforeAll(() => {
-      jest.useFakeTimers();
-    });
-
-    afterAll(() => {
-      jest.runAllTimers();
-    });
-
     it('succeeds if stream is provided', () => {
       expect(
         () => new MetaMaskInpageProvider(new MockDuplexStream()),
@@ -80,7 +72,6 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
 
   describe('isConnected', () => {
     it('returns isConnected state', () => {
-      jest.useFakeTimers();
       const provider: any = new MetaMaskInpageProvider(new MockDuplexStream());
       provider.autoRefreshOnNetworkChange = false;
 
@@ -93,8 +84,6 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
       provider._state.isConnected = false;
 
       expect(provider.isConnected()).toBe(false);
-
-      jest.runAllTimers();
     });
   });
 });

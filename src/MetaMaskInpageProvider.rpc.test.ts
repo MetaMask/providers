@@ -5,14 +5,12 @@ import messages from './messages';
 const MOCK_ERROR_MESSAGE = 'Did you specify a mock return value?';
 
 function initializeProvider() {
-  jest.useFakeTimers();
   const mockStream = new MockDuplexStream();
   const provider: any | MetaMaskInpageProvider = new MetaMaskInpageProvider(
     mockStream,
   );
   provider.mockStream = mockStream;
   provider.autoRefreshOnNetworkChange = false;
-  jest.runAllTimers();
   return provider;
 }
 
@@ -21,20 +19,15 @@ describe('MetaMaskInpageProvider: RPC', () => {
   // .reqest, .sendAsync, and .send
   describe('integration', () => {
     let provider: any | MetaMaskInpageProvider;
-    const mockRpcEngineResponse = jest.fn();
-
-    const resetRpcEngineResponseMock = () => {
-      mockRpcEngineResponse
-        .mockClear()
-        .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
-    };
+    const mockRpcEngineResponse = jest
+      .fn()
+      .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
 
     const setNextRpcEngineResponse = (err: Error | null = null, res = {}) => {
       mockRpcEngineResponse.mockReturnValueOnce([err, res]);
     };
 
     beforeEach(() => {
-      resetRpcEngineResponseMock();
       provider = initializeProvider();
       jest.spyOn(provider, '_handleAccountsChanged').mockImplementation();
       jest
@@ -229,20 +222,15 @@ describe('MetaMaskInpageProvider: RPC', () => {
 
   describe('.request', () => {
     let provider: any;
-    const mockRpcRequestResponse = jest.fn();
-
-    const resetRpcRequestResponseMock = () => {
-      mockRpcRequestResponse
-        .mockClear()
-        .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
-    };
+    const mockRpcRequestResponse = jest
+      .fn()
+      .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
 
     const setNextRpcRequestResponse = (err: Error | null = null, res = {}) => {
       mockRpcRequestResponse.mockReturnValueOnce([err, res]);
     };
 
     beforeEach(() => {
-      resetRpcRequestResponseMock();
       provider = initializeProvider();
       jest
         .spyOn(provider, '_rpcRequest')
@@ -341,20 +329,15 @@ describe('MetaMaskInpageProvider: RPC', () => {
   // this also tests sendAsync, it being effectively an alias for this method
   describe('._rpcRequest', () => {
     let provider: any | MetaMaskInpageProvider;
-    const mockRpcEngineResponse = jest.fn();
-
-    const resetRpcEngineResponseMock = () => {
-      mockRpcEngineResponse
-        .mockClear()
-        .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
-    };
+    const mockRpcEngineResponse = jest
+      .fn()
+      .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
 
     const setNextRpcEngineResponse = (err: Error | null = null, res = {}) => {
       mockRpcEngineResponse.mockReturnValueOnce([err, res]);
     };
 
     beforeEach(() => {
-      resetRpcEngineResponseMock();
       provider = initializeProvider();
       jest.spyOn(provider, '_handleAccountsChanged').mockImplementation();
       jest
@@ -460,20 +443,15 @@ describe('MetaMaskInpageProvider: RPC', () => {
 
   describe('.send', () => {
     let provider: any | MetaMaskInpageProvider;
-    const mockRpcRequestResponse = jest.fn();
-
-    const resetRpcRequestResponseMock = () => {
-      mockRpcRequestResponse
-        .mockClear()
-        .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
-    };
+    const mockRpcRequestResponse = jest
+      .fn()
+      .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
 
     const setNextRpcRequestResponse = (err: Error | null = null, res = {}) => {
       mockRpcRequestResponse.mockReturnValueOnce([err, res]);
     };
 
-    beforeEach(() => {
-      resetRpcRequestResponseMock();
+    const setupMocks = () => {
       provider = initializeProvider();
       jest
         .spyOn(provider, '_rpcRequest')
@@ -481,6 +459,10 @@ describe('MetaMaskInpageProvider: RPC', () => {
           // eslint-disable-next-line node/no-callback-literal
           cb(...mockRpcRequestResponse()),
         );
+    };
+
+    beforeEach(() => {
+      setupMocks();
     });
 
     it('promise signature returns response object on success', async () => {
@@ -585,6 +567,10 @@ describe('MetaMaskInpageProvider: RPC', () => {
     });
 
     describe('object-only signature handles "synchronous" RPC methods', () => {
+      beforeEach(() => {
+        setupMocks();
+      });
+
       it('eth_accounts', () => {
         const result = provider.send({ method: 'eth_accounts' });
         expect(result).toMatchObject({
@@ -600,10 +586,12 @@ describe('MetaMaskInpageProvider: RPC', () => {
       });
 
       it('eth_uninstallFilter', () => {
+        setNextRpcRequestResponse(null, { result: true });
         const result = provider.send({
           method: 'eth_uninstallFilter',
           params: ['bar'],
         });
+
         expect(result).toMatchObject({
           result: true,
         });
@@ -642,11 +630,13 @@ describe('MetaMaskInpageProvider: RPC', () => {
       const mockStream = new MockDuplexStream();
       const inpageProvider = new MetaMaskInpageProvider(mockStream);
       (inpageProvider as any)._state.initialized = true;
+
       await new Promise((resolve) => {
-        inpageProvider.on('chainChanged', (changed) => {
-          expect(changed).toBe('0x1');
+        inpageProvider.on('chainChanged', (newChainId) => {
+          expect(newChainId).toBe('0x1');
           resolve(undefined);
         });
+
         mockStream.push({
           name: 'metamask-provider',
           data: {
@@ -662,11 +652,13 @@ describe('MetaMaskInpageProvider: RPC', () => {
       const mockStream = new MockDuplexStream();
       const inpageProvider = new MetaMaskInpageProvider(mockStream);
       (inpageProvider as any)._state.initialized = true;
+
       await new Promise((resolve) => {
-        inpageProvider.on('networkChanged', (changed) => {
-          expect(changed).toBe('0x1');
+        inpageProvider.on('networkChanged', (newNetworkId) => {
+          expect(newNetworkId).toBe('0x1');
           resolve(undefined);
         });
+
         mockStream.push({
           name: 'metamask-provider',
           data: {
