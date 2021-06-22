@@ -2,7 +2,7 @@ import createExternalExtensionProvider from './extension-provider/createExternal
 import BaseProvider from './BaseProvider';
 
 describe('createExternalExtensionProvider', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     (global.chrome.runtime.connect as any).mockImplementation(() => {
       return {
         onMessage: {
@@ -15,16 +15,16 @@ describe('createExternalExtensionProvider', () => {
       };
     });
   });
-  afterAll(() => {
-    jest.restoreAllMocks();
-  });
+
   it('can be called and not throw', () => {
     expect(() => createExternalExtensionProvider()).not.toThrow();
   });
+
   it('calls connect', () => {
     createExternalExtensionProvider();
     expect(global.chrome.runtime.connect).toHaveBeenCalled();
   });
+
   it('returns a MetaMaskInpageProvider', () => {
     const results = createExternalExtensionProvider();
     expect(results).toBeInstanceOf(BaseProvider);

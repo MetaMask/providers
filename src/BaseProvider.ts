@@ -152,7 +152,7 @@ export default class BaseProvider extends SafeEventEmitter {
     const mux = new ObjectMultiplex();
     pump(
       connectionStream,
-      (mux as unknown) as Duplex,
+      mux as unknown as Duplex,
       connectionStream,
       this._handleStreamDisconnect.bind(this, 'MetaMask'),
     );
@@ -169,7 +169,7 @@ export default class BaseProvider extends SafeEventEmitter {
     this._jsonRpcConnection = createStreamMiddleware();
     pump(
       this._jsonRpcConnection.stream,
-      (mux.createStream(jsonRpcStreamName) as unknown) as Duplex,
+      mux.createStream(jsonRpcStreamName) as unknown as Duplex,
       this._jsonRpcConnection.stream,
       this._handleStreamDisconnect.bind(this, 'MetaMask RpcProvider'),
     );
@@ -273,19 +273,15 @@ export default class BaseProvider extends SafeEventEmitter {
    */
   private async _initializeState() {
     try {
-      const {
-        accounts,
-        chainId,
-        isUnlocked,
-        networkVersion,
-      } = (await this.request({
-        method: 'metamask_getProviderState',
-      })) as {
-        accounts: string[];
-        chainId: string;
-        isUnlocked: boolean;
-        networkVersion: string;
-      };
+      const { accounts, chainId, isUnlocked, networkVersion } =
+        (await this.request({
+          method: 'metamask_getProviderState',
+        })) as {
+          accounts: string[];
+          chainId: string;
+          isUnlocked: boolean;
+          networkVersion: string;
+        };
 
       // indicate that we've connected, for EIP-1193 compliance
       this.emit('connect', { chainId });

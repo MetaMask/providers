@@ -5,12 +5,10 @@ import messages from './messages';
 const MOCK_ERROR_MESSAGE = 'Did you specify a mock return value?';
 
 function initializeProvider() {
-  jest.useFakeTimers();
   const mockStream = new MockDuplexStream();
   const provider = new BaseProvider(mockStream);
   (provider as any).mockStream = mockStream;
   (provider as any).autoRefreshOnNetworkChange = false;
-  jest.runAllTimers();
   return provider;
 }
 
@@ -19,20 +17,15 @@ describe('BaseProvider: RPC', () => {
   // .reqest, .sendAsync, and .send
   describe('integration', () => {
     let provider: BaseProvider;
-    const mockRpcEngineResponse = jest.fn();
-
-    const resetRpcEngineResponseMock = () => {
-      mockRpcEngineResponse
-        .mockClear()
-        .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
-    };
+    const mockRpcEngineResponse = jest
+      .fn()
+      .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
 
     const setNextRpcEngineResponse = (err: Error | null = null, res = {}) => {
       mockRpcEngineResponse.mockReturnValueOnce([err, res]);
     };
 
     beforeEach(() => {
-      resetRpcEngineResponseMock();
       provider = initializeProvider();
       jest
         .spyOn(provider as any, '_handleAccountsChanged')
@@ -78,20 +71,15 @@ describe('BaseProvider: RPC', () => {
 
   describe('.request', () => {
     let provider: BaseProvider;
-    const mockRpcRequestResponse = jest.fn();
-
-    const resetRpcRequestResponseMock = () => {
-      mockRpcRequestResponse
-        .mockClear()
-        .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
-    };
+    const mockRpcRequestResponse = jest
+      .fn()
+      .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
 
     const setNextRpcRequestResponse = (err: any = null, res = {}) => {
       mockRpcRequestResponse.mockReturnValueOnce([err, res]);
     };
 
     beforeEach(() => {
-      resetRpcRequestResponseMock();
       provider = initializeProvider();
       jest
         .spyOn(provider as any, '_rpcRequest')
@@ -193,20 +181,15 @@ describe('BaseProvider: RPC', () => {
   // this also tests sendAsync, it being effectively an alias for this method
   describe('._rpcRequest', () => {
     let provider: BaseProvider;
-    const mockRpcEngineResponse = jest.fn();
-
-    const resetRpcEngineResponseMock = () => {
-      mockRpcEngineResponse
-        .mockClear()
-        .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
-    };
+    const mockRpcEngineResponse = jest
+      .fn()
+      .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
 
     const setNextRpcEngineResponse = (err: Error | null = null, res = {}) => {
       mockRpcEngineResponse.mockReturnValueOnce([err, res]);
     };
 
     beforeEach(() => {
-      resetRpcEngineResponseMock();
       provider = initializeProvider();
       jest
         .spyOn(provider as any, '_handleAccountsChanged')
@@ -309,16 +292,19 @@ describe('BaseProvider: RPC', () => {
       });
     });
   });
+
   describe('provider events', () => {
-    it('calls chainChanged when it chainId changes ', async () => {
+    it('calls chainChanged when the chainId changes', async () => {
       const mockStream = new MockDuplexStream();
       const baseProvider = new BaseProvider(mockStream);
       (baseProvider as any)._state.initialized = true;
+
       await new Promise((resolve) => {
-        baseProvider.on('chainChanged', (changed) => {
-          expect(changed).toBeDefined();
+        baseProvider.once('chainChanged', (newChainId) => {
+          expect(newChainId).toBe('0x1');
           resolve(undefined);
         });
+
         mockStream.push({
           name: 'metamask-provider',
           data: {
