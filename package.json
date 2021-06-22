@@ -15,7 +15,7 @@
     "setup": "yarn install && yarn allow-scripts",
     "build": "mkdir -p dist && rm -rf dist/* && tsc --project .",
     "test": "jest",
-    "coverage": "jest --coverage",
+    "test:watch": "yarn test --watch",
     "lint:eslint": "eslint . --cache --ext js,ts",
     "lint:misc": "prettier '**/*.json' '**/*.md' '**/*.yml' --single-quote --ignore-path .gitignore",
     "lint": "yarn lint:eslint && yarn lint:misc --check",
