@@ -1,4 +1,35 @@
+const baseConfig = {
+  moduleFileExtensions: ['ts', 'js', 'json', 'node', 'jsx', 'tsx'],
+  preset: 'ts-jest',
+  // "resetMocks" resets all mocks, including mocked modules, to jest.fn(),
+  // between each test case.
+  resetMocks: true,
+  // "restoreMocks" restores all mocks created using jest.spyOn to their
+  // original implementations, between each test. It does not affect mocked
+  // modules.
+  restoreMocks: true,
+  testTimeout: 2500,
+};
+
 module.exports = {
+  projects: [
+    {
+      ...baseConfig,
+      displayName: 'BaseProvider',
+      testEnvironment: 'node',
+      testMatch: ['**/BaseProvider*.test.ts'],
+    },
+    {
+      ...baseConfig,
+      displayName: 'Browser Providers',
+      testEnvironment: 'jsdom',
+      testMatch: [
+        '**/*InpageProvider*.test.ts',
+        '**/*ExtensionProvider*.test.ts',
+      ],
+      setupFilesAfterEnv: ['./jest.setup.js'],
+    },
+  ],
   collectCoverage: true,
   collectCoverageFrom: ['./src/**.ts'],
   coverageReporters: ['text', 'html'],
@@ -12,18 +43,5 @@ module.exports = {
   //     statements: 100,
   //   },
   // },
-  moduleFileExtensions: ['js', 'json', 'ts', 'node'],
-  preset: 'ts-jest',
-  // "resetMocks" resets all mocks, including mocked modules, to jest.fn(),
-  // between each test case.
-  resetMocks: true,
-  // "restoreMocks" restores all mocks created using jest.spyOn to their
-  // original implementations, between each test. It does not affect mocked
-  // modules.
-  restoreMocks: true,
-  setupFilesAfterEnv: ['./jest.setup.js'],
   silent: true,
-  testEnvironment: 'jsdom',
-  testRegex: ['\\.test\\.ts$'],
-  testTimeout: 2500,
 };
