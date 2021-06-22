@@ -451,7 +451,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       mockRpcRequestResponse.mockReturnValueOnce([err, res]);
     };
 
-    const setupMocks = () => {
+    beforeEach(() => {
       provider = initializeProvider();
       jest
         .spyOn(provider, '_rpcRequest')
@@ -459,10 +459,6 @@ describe('MetaMaskInpageProvider: RPC', () => {
           // eslint-disable-next-line node/no-callback-literal
           cb(...mockRpcRequestResponse()),
         );
-    };
-
-    beforeEach(() => {
-      setupMocks();
     });
 
     it('promise signature returns response object on success', async () => {
@@ -567,10 +563,6 @@ describe('MetaMaskInpageProvider: RPC', () => {
     });
 
     describe('object-only signature handles "synchronous" RPC methods', () => {
-      beforeEach(() => {
-        setupMocks();
-      });
-
       it('eth_accounts', () => {
         const result = provider.send({ method: 'eth_accounts' });
         expect(result).toMatchObject({
