@@ -23,5 +23,3 @@ jobs:
       - uses: MetaMask/action-publish-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release-branch-prefix: release/
