@@ -60,7 +60,7 @@
     "@metamask/eslint-config": "^7.0.1",
     "@metamask/eslint-config-jest": "^7.0.0",
     "@metamask/eslint-config-nodejs": "^6.0.0",
-    "@metamask/eslint-config-typescript": "^6.0.0",
+    "@metamask/eslint-config-typescript": "^7.0.1",
     "@types/jest": "^26.0.23",
     "@types/node": "^14.14.14",
     "@types/pump": "^1.1.0",
