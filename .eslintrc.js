@@ -13,6 +13,7 @@ module.exports = {
       files: ['*.js'],
       parserOptions: {
         sourceType: 'script',
+        ecmaVersion: 2018,
       },
       extends: ['@metamask/eslint-config-nodejs'],
     },
