@@ -531,6 +531,7 @@ export default class BaseProvider extends SafeEventEmitter {
     if (isUnlocked !== this._state.isUnlocked) {
       this._state.isUnlocked = isUnlocked;
       this._handleAccountsChanged(accounts || []);
+      this.emit('unlockStateChanged', isUnlocked);
     }
   }
 }
