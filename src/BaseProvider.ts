@@ -511,7 +511,6 @@ export default class BaseProvider extends SafeEventEmitter {
    * array.
    *
    * Does nothing if the received value is equal to the existing value.
-   * There are no lock/unlock events.
    *
    * @param opts - Options bag.
    * @param opts.accounts - The exposed accounts, if any.
