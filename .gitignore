@@ -3,3 +3,14 @@ coverage/
 node_modules/
 *.log
 .eslintcache
+
+# yarn 2
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+.idea

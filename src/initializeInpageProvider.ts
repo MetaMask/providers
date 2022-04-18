@@ -1,10 +1,13 @@
 import { Duplex } from 'stream';
+import ObjectMultiplex from '@metamask/object-multiplex';
+import pump from 'pump';
 import MetaMaskInpageProvider, {
   MetaMaskInpageProviderOptions,
 } from './MetaMaskInpageProvider';
 import shimWeb3 from './shimWeb3';
 
 interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
+  jsonRpcStreamName: string;
   /**
    * The stream used to connect to the wallet.
    */
@@ -42,12 +45,21 @@ export function initializeProvider({
   shouldSetOnWindow = true,
   shouldShimWeb3 = false,
 }: InitializeProviderOptions): MetaMaskInpageProvider {
-  let provider = new MetaMaskInpageProvider(connectionStream, {
-    jsonRpcStreamName,
-    logger,
-    maxEventListeners,
-    shouldSendMetadata,
+  const mux = new ObjectMultiplex();
+  pump(connectionStream, mux, connectionStream, (err) => {
+    if (err) {
+      console.error(err);
+    }
   });
+
+  let provider = new MetaMaskInpageProvider(
+    mux.createStream(jsonRpcStreamName) as Duplex,
+    {
+      logger,
+      maxEventListeners,
+      shouldSendMetadata,
+    },
+  );
 
   provider = new Proxy(provider, {
     // some common libraries, e.g. web3@1.x, mess with our API

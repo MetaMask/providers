@@ -72,7 +72,6 @@ export default class MetaMaskInpageProvider extends BaseProvider {
   /**
    * @param connectionStream - A Node.js duplex stream
    * @param options - An options bag
-   * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
    * Default: metamask-provider
    * @param options.logger - The logging API to use. Default: console
    * @param options.maxEventListeners - The maximum number of event
@@ -83,13 +82,12 @@ export default class MetaMaskInpageProvider extends BaseProvider {
   constructor(
     connectionStream: Duplex,
     {
-      jsonRpcStreamName = 'metamask-provider',
       logger = console,
       maxEventListeners = 100,
       shouldSendMetadata = true,
     }: MetaMaskInpageProviderOptions = {},
   ) {
-    super(connectionStream, { jsonRpcStreamName, logger, maxEventListeners });
+    super(connectionStream, { logger, maxEventListeners });
 
     this.networkVersion = null;
     this.isMetaMask = true;

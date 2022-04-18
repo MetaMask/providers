@@ -10,7 +10,6 @@ import {
   JsonRpcMiddleware,
 } from 'json-rpc-engine';
 import { createStreamMiddleware } from 'json-rpc-middleware-stream';
-import ObjectMultiplex from '@metamask/object-multiplex';
 import SafeEventEmitter from '@metamask/safe-event-emitter';
 import dequal from 'fast-deep-equal';
 import { ethErrors, EthereumRpcError } from 'eth-rpc-errors';
@@ -34,11 +33,6 @@ export interface UnvalidatedJsonRpcRequest {
 }
 
 export interface BaseProviderOptions {
-  /**
-   * The name of the stream used to connect to the wallet.
-   */
-  jsonRpcStreamName?: string;
-
   /**
    * The logging API to use.
    */
@@ -113,11 +107,7 @@ export default class BaseProvider extends SafeEventEmitter {
    */
   constructor(
     connectionStream: Duplex,
-    {
-      jsonRpcStreamName = 'metamask-provider',
-      logger = console,
-      maxEventListeners = 100,
-    }: BaseProviderOptions = {},
+    { logger = console, maxEventListeners = 100 }: BaseProviderOptions = {},
   ) {
     super();
 
@@ -148,28 +138,16 @@ export default class BaseProvider extends SafeEventEmitter {
     this._rpcRequest = this._rpcRequest.bind(this);
     this.request = this.request.bind(this);
 
-    // setup connectionStream multiplexing
-    const mux = new ObjectMultiplex();
-    pump(
-      connectionStream,
-      mux as unknown as Duplex,
-      connectionStream,
-      this._handleStreamDisconnect.bind(this, 'MetaMask'),
-    );
-
-    // setup own event listeners
-
     // EIP-1193 connect
     this.on('connect', () => {
       this._state.isConnected = true;
     });
 
     // setup RPC connection
-
     this._jsonRpcConnection = createStreamMiddleware();
     pump(
       this._jsonRpcConnection.stream,
-      mux.createStream(jsonRpcStreamName) as unknown as Duplex,
+      connectionStream,
       this._jsonRpcConnection.stream,
       this._handleStreamDisconnect.bind(this, 'MetaMask RpcProvider'),
     );
