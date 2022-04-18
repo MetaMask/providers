@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Uncategorized
+- fix: mount on window.voyage and fire voyage#initialized
+- 9.0.1 ([#4](https://github.com/voyage-finance/providers/pull/4))
 
 ## [9.0.1]
 

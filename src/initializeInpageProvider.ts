@@ -4,24 +4,20 @@ import pump from 'pump';
 import MetaMaskInpageProvider, {
   MetaMaskInpageProviderOptions,
 } from './MetaMaskInpageProvider';
-import shimWeb3 from './shimWeb3';
+
+const DEFAULT_INPAGE_STREAM_NAME = 'voyage-provider';
 
 interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
-  jsonRpcStreamName: string;
+  jsonRpcStreamName?: string;
   /**
    * The stream used to connect to the wallet.
    */
   connectionStream: Duplex;
 
   /**
-   * Whether the provider should be set as window.ethereum.
+   * Whether the provider should be set as window.voyage.
    */
   shouldSetOnWindow?: boolean;
-
-  /**
-   * Whether the window.web3 shim should be set.
-   */
-  shouldShimWeb3?: boolean;
 }
 
 /**
@@ -38,12 +34,11 @@ interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
  */
 export function initializeProvider({
   connectionStream,
-  jsonRpcStreamName,
+  jsonRpcStreamName = DEFAULT_INPAGE_STREAM_NAME,
   logger = console,
   maxEventListeners = 100,
   shouldSendMetadata = true,
   shouldSetOnWindow = true,
-  shouldShimWeb3 = false,
 }: InitializeProviderOptions): MetaMaskInpageProvider {
   const mux = new ObjectMultiplex();
   pump(connectionStream, mux, connectionStream, (err) => {
@@ -70,10 +65,6 @@ export function initializeProvider({
     setGlobalProvider(provider);
   }
 
-  if (shouldShimWeb3) {
-    shimWeb3(provider, logger);
-  }
-
   return provider;
 }
 
@@ -86,6 +77,6 @@ export function initializeProvider({
 export function setGlobalProvider(
   providerInstance: MetaMaskInpageProvider,
 ): void {
-  (window as Record<string, any>).ethereum = providerInstance;
-  window.dispatchEvent(new Event('ethereum#initialized'));
+  (window as Record<string, any>).voyage = providerInstance;
+  window.dispatchEvent(new Event('voyage#initialized'));
 }
