@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.0.1]
+
 ## [9.0.0]
 ### Uncategorized
 - feat: make multiplexing external to providers ([#2](https://github.com/voyage-finance/providers/pull/2))
@@ -204,7 +206,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/voyage-finance/providers/compare/v9.0.0...HEAD
+[Unreleased]: https://github.com/voyage-finance/providers/compare/v9.0.1...HEAD
+[9.0.1]: https://github.com/voyage-finance/providers/compare/v9.0.0...v9.0.1
 [9.0.0]: https://github.com/voyage-finance/providers/compare/v8.1.1...v9.0.0
 [8.1.1]: https://github.com/voyage-finance/providers/compare/v8.1.0...v8.1.1
 [8.1.0]: https://github.com/voyage-finance/providers/compare/v8.0.4...v8.1.0
