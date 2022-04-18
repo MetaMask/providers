@@ -1,5 +1,5 @@
 {
-  "name": "@metamask/providers",
+  "name": "@voyage-finance/providers",
   "version": "8.1.1",
   "description": "A JavaScript Ethereum provider that connects to the wallet over a stream.",
   "main": "dist/index.js",
@@ -13,7 +13,7 @@
   },
   "scripts": {
     "setup": "yarn install && yarn allow-scripts",
-    "build": "mkdir -p dist && rm -rf dist/* && tsc --project .",
+    "build": "mkdir -p dist && rm -rf dist && tsc --project .",
     "test": "jest",
     "test:watch": "yarn test --watch",
     "lint:eslint": "eslint . --cache --ext js,ts",
@@ -26,7 +26,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MetaMask/providers.git"
+    "url": "https://github.com/voyage-finance/providers.git"
   },
   "keywords": [
     "MetaMask",
@@ -34,9 +34,9 @@
     "Provider"
   ],
   "bugs": {
-    "url": "https://github.com/MetaMask/providers/issues"
+    "url": "https://github.com/voyage-finance/providers/issues"
   },
-  "homepage": "https://github.com/MetaMask/providers#readme",
+  "homepage": "https://github.com/voyage-finance/providers#readme",
   "files": [
     "dist/"
   ],
@@ -55,7 +55,7 @@
     "webextension-polyfill-ts": "^0.25.0"
   },
   "devDependencies": {
-    "@lavamoat/allow-scripts": "^1.0.6",
+    "@lavamoat/allow-scripts": "latest",
     "@metamask/auto-changelog": "^2.3.0",
     "@metamask/eslint-config": "^7.0.1",
     "@metamask/eslint-config-jest": "^7.0.0",

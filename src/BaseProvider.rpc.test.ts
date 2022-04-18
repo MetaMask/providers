@@ -306,12 +306,9 @@ describe('BaseProvider: RPC', () => {
         });
 
         mockStream.push({
-          name: 'metamask-provider',
-          data: {
-            jsonrpc: '2.0',
-            method: 'metamask_chainChanged',
-            params: { chainId: '0x1', networkVersion: '0x1' },
-          },
+          jsonrpc: '2.0',
+          method: 'metamask_chainChanged',
+          params: { chainId: '0x1', networkVersion: '0x1' },
         });
       });
     });
