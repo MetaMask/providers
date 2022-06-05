@@ -12,6 +12,21 @@ const baseConfig = {
 };
 
 module.exports = {
+  collectCoverage: true,
+  collectCoverageFrom: [
+    '<rootDir>/**/src/**/*.ts',
+    '!<rootDir>/**/src/**/*.test.ts',
+  ],
+  coverageReporters: ['clover', 'json', 'lcov', 'text', 'json-summary'],
+  coveragePathIgnorePatterns: ['/node_modules/', '/mocks/', '/test/'],
+  coverageThreshold: {
+    global: {
+      branches: 43.11,
+      functions: 45.12,
+      lines: 47.09,
+      statements: 47.41,
+    },
+  },
   projects: [
     {
       ...baseConfig,
@@ -30,18 +45,5 @@ module.exports = {
       setupFilesAfterEnv: ['./jest.setup.js'],
     },
   ],
-  collectCoverage: true,
-  collectCoverageFrom: ['./src/**.ts'],
-  coverageReporters: ['text', 'html'],
-  coveragePathIgnorePatterns: ['/node_modules/', '/mocks/'],
-  // TODO: Require coverage when we're closer to home.
-  // coverageThreshold: {
-  //   global: {
-  //     branches: 100,
-  //     functions: 100,
-  //     lines: 100,
-  //     statements: 100,
-  //   },
-  // },
   silent: true,
 };
