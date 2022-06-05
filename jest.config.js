@@ -8,7 +8,6 @@ const baseConfig = {
   // original implementations, between each test. It does not affect mocked
   // modules.
   restoreMocks: true,
-  testTimeout: 2500,
 };
 
 module.exports = {
@@ -21,10 +20,10 @@ module.exports = {
   coveragePathIgnorePatterns: ['/node_modules/', '/mocks/', '/test/'],
   coverageThreshold: {
     global: {
-      branches: 43.11,
-      functions: 45.12,
-      lines: 47.09,
-      statements: 47.41,
+      branches: 50.22,
+      functions: 48.78,
+      lines: 53.44,
+      statements: 53.63,
     },
   },
   projects: [
@@ -46,4 +45,5 @@ module.exports = {
     },
   ],
   silent: true,
+  testTimeout: 2500,
 };
