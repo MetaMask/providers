@@ -3,19 +3,14 @@ import { ethErrors, EthereumRpcError } from 'eth-rpc-errors';
 import dequal from 'fast-deep-equal';
 import {
   JsonRpcEngine,
-  createIdRemapMiddleware,
   JsonRpcRequest,
   JsonRpcId,
   JsonRpcVersion,
   JsonRpcSuccess,
+  JsonRpcMiddleware,
 } from 'json-rpc-engine';
 import messages from './messages';
-import {
-  createErrorMiddleware,
-  getRpcPromiseCallback,
-  ConsoleLike,
-  Maybe,
-} from './utils';
+import { getRpcPromiseCallback, ConsoleLike, Maybe } from './utils';
 
 export interface UnvalidatedJsonRpcRequest {
   id?: JsonRpcId;
@@ -34,6 +29,12 @@ export interface BaseProviderOptions {
    * The maximum number of event listeners.
    */
   maxEventListeners?: number;
+
+  /**
+   * `json-rpc-engine` middleware. The middleware will be inserted in the given
+   * order immediately after engine initialization.
+   */
+  rpcMiddleware?: JsonRpcMiddleware<unknown, unknown>[];
 }
 
 export interface RequestArguments {
@@ -99,6 +100,7 @@ export default abstract class BaseProvider extends SafeEventEmitter {
   constructor({
     logger = console,
     maxEventListeners = 100,
+    rpcMiddleware = [],
   }: BaseProviderOptions = {}) {
     super();
 
@@ -131,11 +133,10 @@ export default abstract class BaseProvider extends SafeEventEmitter {
 
     // Handle RPC requests via dapp-side RPC engine.
     //
-    // ATTN: Implementers must push middleware that hands off requests to
+    // ATTN: Implementers must push a middleware that hands off requests to
     // the server.
     const rpcEngine = new JsonRpcEngine();
-    rpcEngine.push(createIdRemapMiddleware());
-    rpcEngine.push(createErrorMiddleware(this._log));
+    rpcMiddleware.forEach((middleware) => rpcEngine.push(middleware));
     this._rpcEngine = rpcEngine;
   }
 

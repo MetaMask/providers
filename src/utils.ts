@@ -1,4 +1,8 @@
-import { JsonRpcMiddleware, PendingJsonRpcResponse } from 'json-rpc-engine';
+import {
+  createIdRemapMiddleware,
+  JsonRpcMiddleware,
+  PendingJsonRpcResponse,
+} from 'json-rpc-engine';
 import { ethErrors } from 'eth-rpc-errors';
 
 export type Maybe<T> = Partial<T> | null | undefined;
@@ -8,15 +12,33 @@ export type ConsoleLike = Pick<
   'log' | 'warn' | 'error' | 'debug' | 'info' | 'trace'
 >;
 
-// utility functions
+// Constants
+
+export const EMITTED_NOTIFICATIONS = Object.freeze([
+  'eth_subscription', // per eth-json-rpc-filters/subscriptionManager
+]);
+
+// Utility functions
+
+/**
+ * Gets the default middleware for external providers, consisting of an ID
+ * remapping middleware and an error middleware.
+ *
+ * @param logger - The logger to use in the error middleware.
+ * @returns An array of json-rpc-engine middleware functions.
+ */
+export const getDefaultExternalMiddleware = (logger: ConsoleLike = console) => [
+  createIdRemapMiddleware(),
+  createErrorMiddleware(logger),
+];
 
 /**
  * json-rpc-engine middleware that logs RPC errors and and validates req.method.
  *
  * @param log - The logging API to use.
- * @returns  json-rpc-engine middleware function
+ * @returns A json-rpc-engine middleware function.
  */
-export function createErrorMiddleware(
+function createErrorMiddleware(
   log: ConsoleLike,
 ): JsonRpcMiddleware<unknown, unknown> {
   return (req, res, next) => {
@@ -57,9 +79,3 @@ export const getRpcPromiseCallback =
   };
 
 export const NOOP = () => undefined;
-
-// constants
-
-export const EMITTED_NOTIFICATIONS = Object.freeze([
-  'eth_subscription', // per eth-json-rpc-filters/subscriptionManager
-]);

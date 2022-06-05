@@ -3,7 +3,12 @@ import type { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
 import { ethErrors } from 'eth-rpc-errors';
 import sendSiteMetadata from './siteMetadata';
 import messages from './messages';
-import { EMITTED_NOTIFICATIONS, getRpcPromiseCallback, NOOP } from './utils';
+import {
+  EMITTED_NOTIFICATIONS,
+  getDefaultExternalMiddleware,
+  getRpcPromiseCallback,
+  NOOP,
+} from './utils';
 import type { UnvalidatedJsonRpcRequest } from './BaseProvider';
 import StreamProvider, { StreamProviderOptions } from './StreamProvider';
 
@@ -17,7 +22,8 @@ export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
 
 type WarningEventName = keyof SentWarningsState['events'];
 
-export interface MetaMaskInpageProviderOptions extends StreamProviderOptions {
+export interface MetaMaskInpageProviderOptions
+  extends Omit<StreamProviderOptions, 'rpcMiddleware'> {
   /**
    * Whether the provider should send page metadata.
    */
@@ -81,13 +87,18 @@ export default class MetaMaskInpageProvider extends StreamProvider {
   constructor(
     connectionStream: Duplex,
     {
-      jsonRpcStreamName = 'metamask-provider',
+      jsonRpcStreamName,
       logger = console,
-      maxEventListeners = 100,
-      shouldSendMetadata = true,
+      maxEventListeners,
+      shouldSendMetadata,
     }: MetaMaskInpageProviderOptions = {},
   ) {
-    super(connectionStream, { jsonRpcStreamName, logger, maxEventListeners });
+    super(connectionStream, {
+      jsonRpcStreamName,
+      logger,
+      maxEventListeners,
+      rpcMiddleware: getDefaultExternalMiddleware(logger),
+    });
 
     this.networkVersion = null;
     this.isMetaMask = true;

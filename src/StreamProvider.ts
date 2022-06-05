@@ -42,11 +42,12 @@ export default class StreamProvider extends BaseProvider {
     connectionStream: Duplex,
     {
       jsonRpcStreamName = 'metamask-provider',
-      logger = console,
-      maxEventListeners = 100,
+      logger,
+      maxEventListeners,
+      rpcMiddleware,
     }: StreamProviderOptions = {},
   ) {
-    super({ logger, maxEventListeners });
+    super({ logger, maxEventListeners, rpcMiddleware });
 
     if (!isDuplex(connectionStream)) {
       throw new Error(messages.errors.invalidDuplexStream());
