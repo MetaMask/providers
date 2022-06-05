@@ -17,15 +17,15 @@ module.exports = {
       ...baseConfig,
       displayName: 'BaseProvider',
       testEnvironment: 'node',
-      testMatch: ['**/BaseProvider*.test.ts'],
+      testMatch: ['**/BaseProvider.test.ts'],
     },
     {
       ...baseConfig,
       displayName: 'Browser Providers',
       testEnvironment: 'jsdom',
       testMatch: [
-        '**/*InpageProvider*.test.ts',
-        '**/*ExtensionProvider*.test.ts',
+        '**/*InpageProvider.test.ts',
+        '**/*ExtensionProvider.test.ts',
       ],
       setupFilesAfterEnv: ['./jest.setup.js'],
     },
