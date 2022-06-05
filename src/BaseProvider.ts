@@ -53,9 +53,14 @@ export interface BaseProviderState {
 }
 
 /**
- * An abstract class implementing the EIP-1193 interface. The class is abstract
- * because the internal `_rpcEngine` needs to be wired up with a middleware that
- * hands off JSON-RPC requests.
+ * An abstract class implementing the EIP-1193 interface. Implementers must:
+ *
+ * 1. At initialization, push a middleware to the internal `_rpcEngine` that
+ *    hands off requests to the server and receives responses in return.
+ * 2. At initialization, retrieve initial state and call
+ *    {@link BaseProvider._initialize} **once**.
+ * 3. Ensure that the provider's state is synchronized with the wallet.
+ * 4. Ensure that notifications are received and emitted as appropriate.
  */
 export default abstract class BaseProvider extends SafeEventEmitter {
   protected readonly _log: ConsoleLike;
@@ -101,16 +106,16 @@ export default abstract class BaseProvider extends SafeEventEmitter {
 
     this.setMaxListeners(maxEventListeners);
 
-    // private state
+    // Private state
     this._state = {
       ...BaseProvider._defaultState,
     };
 
-    // public state
+    // Public state
     this.selectedAddress = null;
     this.chainId = null;
 
-    // bind functions to prevent consumers from making unbound calls
+    // Bind functions to prevent consumers from making unbound calls
     this._handleAccountsChanged = this._handleAccountsChanged.bind(this);
     this._handleConnect = this._handleConnect.bind(this);
     this._handleChainChanged = this._handleChainChanged.bind(this);
@@ -119,20 +124,19 @@ export default abstract class BaseProvider extends SafeEventEmitter {
     this._rpcRequest = this._rpcRequest.bind(this);
     this.request = this.request.bind(this);
 
-    // setup own event listeners
-
-    // EIP-1193 connect
+    // EIP-1193 connect, emitted in _initialize
     this.on('connect', () => {
       this._state.isConnected = true;
     });
 
-    // handle RPC requests via dapp-side rpc engine
+    // Handle RPC requests via dapp-side RPC engine.
+    //
+    // ATTN: Implementers must push middleware that hands off requests to
+    // the server.
     const rpcEngine = new JsonRpcEngine();
     rpcEngine.push(createIdRemapMiddleware());
     rpcEngine.push(createErrorMiddleware(this._log));
     this._rpcEngine = rpcEngine;
-
-    this._initializeState();
   }
 
   //====================
@@ -197,37 +201,37 @@ export default abstract class BaseProvider extends SafeEventEmitter {
   //====================
 
   /**
-   * Constructor helper.
-   * Populates initial state by calling 'metamask_getProviderState' and emits
-   * necessary events.
+   * Sets initial state if provided and marks this provider as initialized.
+   * Throws if called more than once.
+   *
+   * @param initialState - The provider's initial state.
+   * @emits BaseProvider#_initialized
    */
-  private async _initializeState() {
-    try {
-      const { accounts, chainId, isUnlocked, networkVersion } =
-        (await this.request({
-          method: 'metamask_getProviderState',
-        })) as {
-          accounts: string[];
-          chainId: string;
-          isUnlocked: boolean;
-          networkVersion: string;
-        };
+  protected _initialize(initialState?: {
+    accounts: string[];
+    chainId: string;
+    isUnlocked: boolean;
+    networkVersion: string;
+  }) {
+    if (this._state.initialized === true) {
+      throw new Error('Provider already initialized.');
+    }
 
-      // indicate that we've connected, for EIP-1193 compliance
+    if (initialState) {
+      const { accounts, chainId, isUnlocked, networkVersion } = initialState;
+
+      // EIP-1193 connect
       this.emit('connect', { chainId });
 
       this._handleChainChanged({ chainId, networkVersion });
       this._handleUnlockStateChanged({ accounts, isUnlocked });
       this._handleAccountsChanged(accounts);
-    } catch (error) {
-      this._log.error(
-        'MetaMask: Failed to get initial state. Please report this bug.',
-        error,
-      );
-    } finally {
-      this._state.initialized = true;
-      this.emit('_initialized');
     }
+
+    // Mark provider as initialized regardless of whether initial state was
+    // retrieved.
+    this._state.initialized = true;
+    this.emit('_initialized');
   }
 
   /**

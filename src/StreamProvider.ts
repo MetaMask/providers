@@ -1,5 +1,4 @@
 import type { Duplex } from 'stream';
-import type { EventEmitter } from 'events';
 import ObjectMultiplex from '@metamask/object-multiplex';
 import SafeEventEmitter from '@metamask/safe-event-emitter';
 import { duplex as isDuplex } from 'is-stream';
@@ -7,7 +6,7 @@ import type { JsonRpcMiddleware } from 'json-rpc-engine';
 import { createStreamMiddleware } from 'json-rpc-middleware-stream';
 import pump from 'pump';
 import messages from './messages';
-import { ConsoleLike, EMITTED_NOTIFICATIONS } from './utils';
+import { EMITTED_NOTIFICATIONS } from './utils';
 import BaseProvider, { BaseProviderOptions } from './BaseProvider';
 
 export interface StreamProviderOptions extends BaseProviderOptions {
@@ -56,7 +55,7 @@ export default class StreamProvider extends BaseProvider {
     // Bind functions to prevent consumers from making unbound calls
     this._handleStreamDisconnect = this._handleStreamDisconnect.bind(this);
 
-    // setup connectionStream multiplexing
+    // Set up connectionStream multiplexing
     const mux = new ObjectMultiplex();
     pump(
       connectionStream,
@@ -65,8 +64,7 @@ export default class StreamProvider extends BaseProvider {
       this._handleStreamDisconnect.bind(this, 'MetaMask'),
     );
 
-    // setup RPC connection
-
+    // Set up RPC connection
     this._jsonRpcConnection = createStreamMiddleware();
     pump(
       this._jsonRpcConnection.stream,
@@ -78,7 +76,10 @@ export default class StreamProvider extends BaseProvider {
     // Wire up the JsonRpcEngine to the JSON-RPC connection stream
     this._rpcEngine.push(this._jsonRpcConnection.middleware);
 
-    // handle JSON-RPC notifications
+    // Set initial state
+    this._initializeAsync();
+
+    // Handle JSON-RPC notifications
     this._jsonRpcConnection.events.on('notification', (payload) => {
       const { method, params } = payload;
       if (method === 'metamask_accountsChanged') {
@@ -105,37 +106,43 @@ export default class StreamProvider extends BaseProvider {
   //====================
 
   /**
-   * Called when connection is lost to critical streams.
+   * Constructor helper. Calls `metamask_getProviderState` and passes the result
+   * to {@link BaseProvider._initialize}. Logs an error if getting initial state
+   * fails.
+   */
+  private async _initializeAsync() {
+    let initialState: Parameters<BaseProvider['_initialize']>[0];
+
+    try {
+      initialState = (await this.request({
+        method: 'metamask_getProviderState',
+      })) as Parameters<BaseProvider['_initialize']>[0];
+    } catch (error) {
+      this._log.error(
+        'MetaMask: Failed to get initial state. Please report this bug.',
+        error,
+      );
+    }
+    this._initialize(initialState);
+  }
+
+  /**
+   * Called when connection is lost to critical streams. Emits an 'error' event
+   * from the provider with the error message and stack if present.
    *
    * @emits MetamaskInpageProvider#disconnect
    */
-  protected _handleStreamDisconnect(streamName: string, error: Error) {
-    logStreamDisconnectWarning(this._log, streamName, error, this);
-    this._handleDisconnect(false, error ? error.message : undefined);
-  }
-}
+  private _handleStreamDisconnect(streamName: string, error: Error) {
+    let warningMsg = `MetaMask: Lost connection to "${streamName}".`;
+    if (error?.stack) {
+      warningMsg += `\n${error.stack}`;
+    }
 
-/**
- * Logs a stream disconnection error. Emits an 'error' if given an
- * EventEmitter that has listeners for the 'error' event.
- *
- * @param log - The logging API to use.
- * @param remoteLabel - The label of the disconnected stream.
- * @param error - The associated error to log.
- * @param emitter - The logging API to use.
- */
-function logStreamDisconnectWarning(
-  log: ConsoleLike,
-  remoteLabel: string,
-  error: Error,
-  emitter: EventEmitter,
-): void {
-  let warningMsg = `MetaMask: Lost connection to "${remoteLabel}".`;
-  if (error?.stack) {
-    warningMsg += `\n${error.stack}`;
-  }
-  log.warn(warningMsg);
-  if (emitter && emitter.listenerCount('error') > 0) {
-    emitter.emit('error', warningMsg);
+    this._log.warn(warningMsg);
+    if (this.listenerCount('error') > 0) {
+      this.emit('error', warningMsg);
+    }
+
+    this._handleDisconnect(false, error ? error.message : undefined);
   }
 }
