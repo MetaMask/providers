@@ -148,7 +148,7 @@ export default class MetaMaskInpageProvider extends StreamProvider {
    * Submits an RPC request per the given JSON-RPC request object.
    *
    * @param payload - The RPC request object.
-   * @param cb - The callback function.
+   * @param callback - The callback function.
    */
   sendAsync(
     payload: JsonRpcRequest<unknown>,

@@ -207,6 +207,7 @@ export default abstract class BaseProvider extends SafeEventEmitter {
    *
    * @param initialState - The provider's initial state.
    * @emits BaseProvider#_initialized
+   * @emits BaseProvider#connect - If `initialState` is defined.
    */
   protected _initialize(initialState?: {
     accounts: string[];
