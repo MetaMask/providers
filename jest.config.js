@@ -15,9 +15,9 @@ module.exports = {
   projects: [
     {
       ...baseConfig,
-      displayName: 'BaseProvider',
+      displayName: 'StreamProvider',
       testEnvironment: 'node',
-      testMatch: ['**/BaseProvider.test.ts'],
+      testMatch: ['**/StreamProvider.test.ts'],
     },
     {
       ...baseConfig,

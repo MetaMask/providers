@@ -1,7 +1,7 @@
 import PortStream from 'extension-port-stream';
 import { detect } from 'detect-browser';
 import { Runtime } from 'webextension-polyfill-ts';
-import BaseProvider from '../BaseProvider';
+import StreamProvider from '../StreamProvider';
 import config from './external-extension-config.json';
 
 const browser = detect();
@@ -14,7 +14,7 @@ export default function createMetaMaskExternalExtensionProvider() {
       currentMetaMaskId,
     ) as Runtime.Port;
     const pluginStream = new PortStream(metamaskPort);
-    provider = new BaseProvider(pluginStream);
+    provider = new StreamProvider(pluginStream);
   } catch (e) {
     console.dir(`Metamask connect error `, e);
     throw e;

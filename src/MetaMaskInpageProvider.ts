@@ -1,13 +1,11 @@
-import { Duplex } from 'stream';
-import { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
+import type { Duplex } from 'stream';
+import type { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
 import { ethErrors } from 'eth-rpc-errors';
 import sendSiteMetadata from './siteMetadata';
 import messages from './messages';
 import { EMITTED_NOTIFICATIONS, getRpcPromiseCallback, NOOP } from './utils';
-import BaseProvider, {
-  BaseProviderOptions,
-  UnvalidatedJsonRpcRequest,
-} from './BaseProvider';
+import type { UnvalidatedJsonRpcRequest } from './BaseProvider';
+import StreamProvider, { StreamProviderOptions } from './StreamProvider';
 
 export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
   method:
@@ -19,7 +17,7 @@ export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
 
 type WarningEventName = keyof SentWarningsState['events'];
 
-export interface MetaMaskInpageProviderOptions extends BaseProviderOptions {
+export interface MetaMaskInpageProviderOptions extends StreamProviderOptions {
   /**
    * Whether the provider should send page metadata.
    */
@@ -40,7 +38,7 @@ interface SentWarningsState {
   };
 }
 
-export default class MetaMaskInpageProvider extends BaseProvider {
+export default class MetaMaskInpageProvider extends StreamProvider {
   protected _sentWarnings: SentWarningsState = {
     // methods
     enable: false,

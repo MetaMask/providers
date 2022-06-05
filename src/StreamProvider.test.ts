@@ -1,22 +1,22 @@
 import MockDuplexStream from '../mocks/DuplexStream';
-import BaseProvider from './BaseProvider';
+import StreamProvider from './StreamProvider';
 import messages from './messages';
 
 const MOCK_ERROR_MESSAGE = 'Did you specify a mock return value?';
 
 function initializeProvider() {
   const mockStream = new MockDuplexStream();
-  const provider = new BaseProvider(mockStream);
+  const provider = new StreamProvider(mockStream);
   (provider as any).mockStream = mockStream;
   (provider as any).autoRefreshOnNetworkChange = false;
   return provider;
 }
 
-describe('BaseProvider: RPC', () => {
+describe('StreamProvider: RPC', () => {
   // mocking the underlying stream, and testing the basic functionality of
   // .reqest, .sendAsync, and .send
   describe('integration', () => {
-    let provider: BaseProvider;
+    let provider: StreamProvider;
     const mockRpcEngineResponse = jest
       .fn()
       .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
@@ -70,7 +70,7 @@ describe('BaseProvider: RPC', () => {
   });
 
   describe('.request', () => {
-    let provider: BaseProvider;
+    let provider: StreamProvider;
     const mockRpcRequestResponse = jest
       .fn()
       .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
@@ -180,7 +180,7 @@ describe('BaseProvider: RPC', () => {
 
   // this also tests sendAsync, it being effectively an alias for this method
   describe('._rpcRequest', () => {
-    let provider: BaseProvider;
+    let provider: StreamProvider;
     const mockRpcEngineResponse = jest
       .fn()
       .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
@@ -296,11 +296,11 @@ describe('BaseProvider: RPC', () => {
   describe('provider events', () => {
     it('calls chainChanged when the chainId changes', async () => {
       const mockStream = new MockDuplexStream();
-      const baseProvider = new BaseProvider(mockStream);
-      (baseProvider as any)._state.initialized = true;
+      const streamProvider = new StreamProvider(mockStream);
+      (streamProvider as any)._state.initialized = true;
 
       await new Promise((resolve) => {
-        baseProvider.once('chainChanged', (newChainId) => {
+        streamProvider.once('chainChanged', (newChainId) => {
           expect(newChainId).toBe('0x1');
           resolve(undefined);
         });

@@ -1,5 +1,6 @@
-import { Duplex } from 'stream';
-import pump from 'pump';
+import SafeEventEmitter from '@metamask/safe-event-emitter';
+import { ethErrors, EthereumRpcError } from 'eth-rpc-errors';
+import dequal from 'fast-deep-equal';
 import {
   JsonRpcEngine,
   createIdRemapMiddleware,
@@ -7,21 +8,11 @@ import {
   JsonRpcId,
   JsonRpcVersion,
   JsonRpcSuccess,
-  JsonRpcMiddleware,
 } from 'json-rpc-engine';
-import { createStreamMiddleware } from 'json-rpc-middleware-stream';
-import ObjectMultiplex from '@metamask/object-multiplex';
-import SafeEventEmitter from '@metamask/safe-event-emitter';
-import dequal from 'fast-deep-equal';
-import { ethErrors, EthereumRpcError } from 'eth-rpc-errors';
-import { duplex as isDuplex } from 'is-stream';
-
 import messages from './messages';
 import {
   createErrorMiddleware,
-  EMITTED_NOTIFICATIONS,
   getRpcPromiseCallback,
-  logStreamDisconnectWarning,
   ConsoleLike,
   Maybe,
 } from './utils';
@@ -34,11 +25,6 @@ export interface UnvalidatedJsonRpcRequest {
 }
 
 export interface BaseProviderOptions {
-  /**
-   * The name of the stream used to connect to the wallet.
-   */
-  jsonRpcStreamName?: string;
-
   /**
    * The logging API to use.
    */
@@ -66,20 +52,17 @@ export interface BaseProviderState {
   isPermanentlyDisconnected: boolean;
 }
 
-export interface JsonRpcConnection {
-  events: SafeEventEmitter;
-  middleware: JsonRpcMiddleware<unknown, unknown>;
-  stream: Duplex;
-}
-
-export default class BaseProvider extends SafeEventEmitter {
+/**
+ * An abstract class implementing the EIP-1193 interface. The class is abstract
+ * because the internal `_rpcEngine` needs to be wired up with a middleware that
+ * hands off JSON-RPC requests.
+ */
+export default abstract class BaseProvider extends SafeEventEmitter {
   protected readonly _log: ConsoleLike;
 
   protected _state: BaseProviderState;
 
   protected _rpcEngine: JsonRpcEngine;
-
-  protected _jsonRpcConnection: JsonRpcConnection;
 
   protected static _defaultState: BaseProviderState = {
     accounts: null,
@@ -103,27 +86,16 @@ export default class BaseProvider extends SafeEventEmitter {
   public selectedAddress: string | null;
 
   /**
-   * @param connectionStream - A Node.js duplex stream
    * @param options - An options bag
-   * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
-   * Default: metamask-provider
    * @param options.logger - The logging API to use. Default: console
    * @param options.maxEventListeners - The maximum number of event
    * listeners. Default: 100
    */
-  constructor(
-    connectionStream: Duplex,
-    {
-      jsonRpcStreamName = 'metamask-provider',
-      logger = console,
-      maxEventListeners = 100,
-    }: BaseProviderOptions = {},
-  ) {
+  constructor({
+    logger = console,
+    maxEventListeners = 100,
+  }: BaseProviderOptions = {}) {
     super();
-
-    if (!isDuplex(connectionStream)) {
-      throw new Error(messages.errors.invalidDuplexStream());
-    }
 
     this._log = logger;
 
@@ -138,24 +110,14 @@ export default class BaseProvider extends SafeEventEmitter {
     this.selectedAddress = null;
     this.chainId = null;
 
-    // bind functions (to prevent consumers from making unbound calls)
+    // bind functions to prevent consumers from making unbound calls
     this._handleAccountsChanged = this._handleAccountsChanged.bind(this);
     this._handleConnect = this._handleConnect.bind(this);
     this._handleChainChanged = this._handleChainChanged.bind(this);
     this._handleDisconnect = this._handleDisconnect.bind(this);
-    this._handleStreamDisconnect = this._handleStreamDisconnect.bind(this);
     this._handleUnlockStateChanged = this._handleUnlockStateChanged.bind(this);
     this._rpcRequest = this._rpcRequest.bind(this);
     this.request = this.request.bind(this);
-
-    // setup connectionStream multiplexing
-    const mux = new ObjectMultiplex();
-    pump(
-      connectionStream,
-      mux as unknown as Duplex,
-      connectionStream,
-      this._handleStreamDisconnect.bind(this, 'MetaMask'),
-    );
 
     // setup own event listeners
 
@@ -164,45 +126,13 @@ export default class BaseProvider extends SafeEventEmitter {
       this._state.isConnected = true;
     });
 
-    // setup RPC connection
-
-    this._jsonRpcConnection = createStreamMiddleware();
-    pump(
-      this._jsonRpcConnection.stream,
-      mux.createStream(jsonRpcStreamName) as unknown as Duplex,
-      this._jsonRpcConnection.stream,
-      this._handleStreamDisconnect.bind(this, 'MetaMask RpcProvider'),
-    );
-
     // handle RPC requests via dapp-side rpc engine
     const rpcEngine = new JsonRpcEngine();
     rpcEngine.push(createIdRemapMiddleware());
     rpcEngine.push(createErrorMiddleware(this._log));
-    rpcEngine.push(this._jsonRpcConnection.middleware);
     this._rpcEngine = rpcEngine;
 
     this._initializeState();
-
-    // handle JSON-RPC notifications
-    this._jsonRpcConnection.events.on('notification', (payload) => {
-      const { method, params } = payload;
-      if (method === 'metamask_accountsChanged') {
-        this._handleAccountsChanged(params);
-      } else if (method === 'metamask_unlockStateChanged') {
-        this._handleUnlockStateChanged(params);
-      } else if (method === 'metamask_chainChanged') {
-        this._handleChainChanged(params);
-      } else if (EMITTED_NOTIFICATIONS.includes(method)) {
-        this.emit('message', {
-          type: method,
-          data: params,
-        });
-      } else if (method === 'METAMASK_STREAM_FAILURE') {
-        connectionStream.destroy(
-          new Error(messages.errors.permanentlyDisconnected()),
-        );
-      }
-    });
   }
 
   //====================
@@ -391,16 +321,6 @@ export default class BaseProvider extends SafeEventEmitter {
 
       this.emit('disconnect', error);
     }
-  }
-
-  /**
-   * Called when connection is lost to critical streams.
-   *
-   * @emits MetamaskInpageProvider#disconnect
-   */
-  protected _handleStreamDisconnect(streamName: string, error: Error) {
-    logStreamDisconnectWarning(this._log, streamName, error, this);
-    this._handleDisconnect(false, error ? error.message : undefined);
   }
 
   /**
