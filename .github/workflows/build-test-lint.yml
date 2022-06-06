@@ -21,8 +21,22 @@ jobs:
       - run: yarn --frozen-lockfile
       - run: yarn allow-scripts
       - run: yarn build
+      - name: Require clean working directory after building
+        shell: bash
+        run: |
+          if ! git diff --exit-code; then
+            echo "Working tree dirty after building"
+            exit 1
+          fi
       - run: yarn lint
       - run: yarn test
+      - name: Require clean working directory after tests
+        shell: bash
+        run: |
+          if ! git diff --exit-code; then
+            echo "Working tree dirty after tests"
+            exit 1
+          fi
       - name: Validate RC changelog
         if: ${{ startsWith(github.ref, 'release/') }}
         run: yarn auto-changelog validate --rc
