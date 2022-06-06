@@ -1,5 +1,5 @@
-import createExternalExtensionProvider from './extension-provider/createExternalExtensionProvider';
-import BaseProvider from './BaseProvider';
+import BaseProvider from '../BaseProvider';
+import createExternalExtensionProvider from './createExternalExtensionProvider';
 
 describe('createExternalExtensionProvider', () => {
   beforeEach(() => {

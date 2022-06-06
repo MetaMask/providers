@@ -347,8 +347,9 @@ export default class MetaMaskInpageProvider extends BaseProvider {
 
   /**
    * Constructor helper.
-   * Gets experimental _metamask API as Proxy, so that we can warn consumers
-   * about its experiment nature.
+   *
+   * Gets the experimental _metamask API as Proxy, so that we can warn consumers
+   * about its experimental nature.
    */
   protected _getExperimentalApi() {
     return new Proxy(
