@@ -59,7 +59,7 @@ export interface BaseProviderState {
  * 1. At initialization, push a middleware to the internal `_rpcEngine` that
  *    hands off requests to the server and receives responses in return.
  * 2. At initialization, retrieve initial state and call
- *    {@link BaseProvider._initialize} **once**.
+ *    {@link BaseProvider._initializeState} **once**.
  * 3. Ensure that the provider's state is synchronized with the wallet.
  * 4. Ensure that notifications are received and emitted as appropriate.
  */
@@ -126,7 +126,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     this._rpcRequest = this._rpcRequest.bind(this);
     this.request = this.request.bind(this);
 
-    // EIP-1193 connect, emitted in _initialize
+    // EIP-1193 connect, emitted in _initializeState
     this.on('connect', () => {
       this._state.isConnected = true;
     });
@@ -211,7 +211,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * @emits BaseProvider#_initialized
    * @emits BaseProvider#connect - If `initialState` is defined.
    */
-  protected _initialize(initialState?: {
+  protected _initializeState(initialState?: {
     accounts: string[];
     chainId: string;
     isUnlocked: boolean;

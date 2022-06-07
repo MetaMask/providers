@@ -107,23 +107,23 @@ export abstract class AbstractStreamProvider extends BaseProvider {
    * **MUST** be called by child classes.
    *
    * Calls `metamask_getProviderState` and passes the result to
-   * {@link BaseProvider._initialize}. Logs an error if getting initial state
+   * {@link BaseProvider._initializeState}. Logs an error if getting initial state
    * fails. Throws if called after initialization has completed.
    */
-  protected async _initializeAsync() {
-    let initialState: Parameters<BaseProvider['_initialize']>[0];
+  protected async _initializeStateAsync() {
+    let initialState: Parameters<BaseProvider['_initializeState']>[0];
 
     try {
       initialState = (await this.request({
         method: 'metamask_getProviderState',
-      })) as Parameters<BaseProvider['_initialize']>[0];
+      })) as Parameters<BaseProvider['_initializeState']>[0];
     } catch (error) {
       this._log.error(
         'MetaMask: Failed to get initial state. Please report this bug.',
         error,
       );
     }
-    this._initialize(initialState);
+    this._initializeState(initialState);
   }
 
   /**
@@ -158,10 +158,10 @@ export class StreamProvider extends AbstractStreamProvider {
    * **MUST** be called after instantiation to complete initialization.
    *
    * Calls `metamask_getProviderState` and passes the result to
-   * {@link BaseProvider._initialize}. Logs an error if getting initial state
+   * {@link BaseProvider._initializeState}. Logs an error if getting initial state
    * fails. Throws if called after initialization has completed.
    */
   async initialize() {
-    return this._initializeAsync();
+    return this._initializeStateAsync();
   }
 }

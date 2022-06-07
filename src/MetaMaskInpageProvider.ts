@@ -111,7 +111,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     // We shouldn't perform asynchronous work in the constructor, but at one
     // point we started doing so, and changing this class isn't worth it at
     // the time of writing.
-    this._initializeAsync();
+    this._initializeStateAsync();
 
     this.networkVersion = null;
     this.isMetaMask = true;
