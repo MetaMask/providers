@@ -26,7 +26,7 @@ export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
 type WarningEventName = keyof SentWarningsState['events'];
 
 export interface MetaMaskInpageProviderOptions
-  extends Omit<StreamProviderOptions, 'rpcMiddleware'> {
+  extends Partial<Omit<StreamProviderOptions, 'rpcMiddleware'>> {
   /**
    * Whether the provider should send page metadata.
    */
@@ -46,6 +46,11 @@ interface SentWarningsState {
     notification: boolean;
   };
 }
+
+/**
+ * The name of the stream consumed by {@link MetaMaskInpageProvider}.
+ */
+export const MetaMaskInpageProviderStreamName = 'metamask-provider';
 
 export class MetaMaskInpageProvider extends AbstractStreamProvider {
   protected _sentWarnings: SentWarningsState = {
@@ -90,7 +95,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   constructor(
     connectionStream: Duplex,
     {
-      jsonRpcStreamName,
+      jsonRpcStreamName = MetaMaskInpageProviderStreamName,
       logger = console,
       maxEventListeners,
       shouldSendMetadata,

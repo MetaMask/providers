@@ -1,6 +1,7 @@
 import PortStream from 'extension-port-stream';
 import { detect } from 'detect-browser';
 import { Runtime } from 'webextension-polyfill-ts';
+import { MetaMaskInpageProviderStreamName } from '../MetaMaskInpageProvider';
 import { StreamProvider } from '../StreamProvider';
 import { getDefaultExternalMiddleware } from '../utils';
 import config from './external-extension-config.json';
@@ -18,6 +19,7 @@ export function createExternalExtensionProvider() {
 
     const pluginStream = new PortStream(metamaskPort);
     provider = new StreamProvider(pluginStream, {
+      jsonRpcStreamName: MetaMaskInpageProviderStreamName,
       logger: console,
       rpcMiddleware: getDefaultExternalMiddleware(console),
     });

@@ -3,13 +3,20 @@ import { MockDuplexStream } from '../mocks/DuplexStream';
 import { StreamProvider } from './StreamProvider';
 import messages from './messages';
 
-const MOCK_ERROR_MESSAGE = 'Did you specify a mock return value?';
+const mockErrorMessage = 'Did you specify a mock return value?';
 
-function initializeProvider(
+const mockStreamName = 'mock-stream';
+
+function getStreamProvider(
   rpcMiddleware?: JsonRpcMiddleware<unknown, unknown>[],
 ) {
   const mockStream = new MockDuplexStream();
-  const streamProvider = new StreamProvider(mockStream, { rpcMiddleware });
+  const streamProvider = new StreamProvider(mockStream, {
+    jsonRpcStreamName: mockStreamName,
+    rpcMiddleware,
+  });
+  streamProvider.initialize();
+
   return [streamProvider, mockStream] as const;
 }
 
@@ -21,7 +28,9 @@ describe('StreamProvider', () => {
       const networkVersion = '1';
       const isUnlocked = true;
 
-      const streamProvider = new StreamProvider(new MockDuplexStream());
+      const streamProvider = new StreamProvider(new MockDuplexStream(), {
+        jsonRpcStreamName: mockStreamName,
+      });
 
       const requestMock = jest
         .spyOn(streamProvider, 'request')
@@ -54,14 +63,14 @@ describe('StreamProvider', () => {
       let streamProvider: StreamProvider;
       const mockRpcEngineResponse = jest
         .fn()
-        .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
+        .mockReturnValue([new Error(mockErrorMessage), undefined]);
 
       const setNextRpcEngineResponse = (err: Error | null = null, res = {}) => {
         mockRpcEngineResponse.mockReturnValueOnce([err, res]);
       };
 
       beforeEach(() => {
-        [streamProvider] = initializeProvider();
+        [streamProvider] = getStreamProvider();
         jest
           .spyOn(streamProvider as any, '_handleAccountsChanged')
           .mockImplementation();
@@ -111,14 +120,14 @@ describe('StreamProvider', () => {
       let streamProvider: StreamProvider;
       const mockRpcRequestResponse = jest
         .fn()
-        .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
+        .mockReturnValue([new Error(mockErrorMessage), undefined]);
 
       const setNextRpcRequestResponse = (err: any = null, res = {}) => {
         mockRpcRequestResponse.mockReturnValueOnce([err, res]);
       };
 
       beforeEach(() => {
-        [streamProvider] = initializeProvider();
+        [streamProvider] = getStreamProvider();
         jest
           .spyOn(streamProvider as any, '_rpcRequest')
           .mockImplementation(
@@ -224,14 +233,14 @@ describe('StreamProvider', () => {
       let streamProvider: StreamProvider;
       const mockRpcEngineResponse = jest
         .fn()
-        .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
+        .mockReturnValue([new Error(mockErrorMessage), undefined]);
 
       const setNextRpcEngineResponse = (err: Error | null = null, res = {}) => {
         mockRpcEngineResponse.mockReturnValueOnce([err, res]);
       };
 
       beforeEach(() => {
-        [streamProvider] = initializeProvider();
+        [streamProvider] = getStreamProvider();
         jest
           .spyOn(streamProvider as any, '_handleAccountsChanged')
           .mockImplementation();
@@ -344,8 +353,24 @@ describe('StreamProvider', () => {
 
     describe('events', () => {
       it('calls chainChanged when the chainId changes', async () => {
-        const [streamProvider, mockStream] = initializeProvider();
-        (streamProvider as any)._state.initialized = true;
+        const mockStream = new MockDuplexStream();
+        const streamProvider = new StreamProvider(mockStream, {
+          jsonRpcStreamName: mockStreamName,
+        });
+
+        const requestMock = jest
+          .spyOn(streamProvider, 'request')
+          .mockImplementationOnce(async () => {
+            return {
+              accounts: [],
+              chainId: '0x0',
+              isUnlocked: true,
+              networkVersion: '0',
+            };
+          });
+
+        await streamProvider.initialize();
+        expect(requestMock).toHaveBeenCalledTimes(1);
 
         await new Promise<void>((resolve) => {
           streamProvider.once('chainChanged', (newChainId) => {
@@ -354,7 +379,7 @@ describe('StreamProvider', () => {
           });
 
           mockStream.push({
-            name: 'metamask-provider',
+            name: mockStreamName,
             data: {
               jsonrpc: '2.0',
               method: 'metamask_chainChanged',

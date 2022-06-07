@@ -1,5 +1,8 @@
 import { MockDuplexStream } from '../mocks/DuplexStream';
-import { MetaMaskInpageProvider } from './MetaMaskInpageProvider';
+import {
+  MetaMaskInpageProviderStreamName,
+  MetaMaskInpageProvider,
+} from './MetaMaskInpageProvider';
 import messages from './messages';
 
 describe('MetaMaskInpageProvider: RPC', () => {
@@ -630,7 +633,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
         });
 
         mockStream.push({
-          name: 'metamask-provider',
+          name: MetaMaskInpageProviderStreamName,
           data: {
             jsonrpc: '2.0',
             method: 'metamask_chainChanged',
@@ -652,7 +655,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
         });
 
         mockStream.push({
-          name: 'metamask-provider',
+          name: MetaMaskInpageProviderStreamName,
           data: {
             jsonrpc: '2.0',
             method: 'metamask_chainChanged',

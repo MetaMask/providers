@@ -13,7 +13,7 @@ export interface StreamProviderOptions extends BaseProviderOptions {
   /**
    * The name of the stream used to connect to the wallet.
    */
-  jsonRpcStreamName?: string;
+  jsonRpcStreamName: string;
 }
 
 export interface JsonRpcConnection {
@@ -34,7 +34,6 @@ export abstract class AbstractStreamProvider extends BaseProvider {
    * @param connectionStream - A Node.js duplex stream
    * @param options - An options bag
    * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
-   * Default: metamask-provider
    * @param options.logger - The logging API to use. Default: console
    * @param options.maxEventListeners - The maximum number of event
    * listeners. Default: 100
@@ -42,11 +41,11 @@ export abstract class AbstractStreamProvider extends BaseProvider {
   constructor(
     connectionStream: Duplex,
     {
-      jsonRpcStreamName = 'metamask-provider',
+      jsonRpcStreamName,
       logger,
       maxEventListeners,
       rpcMiddleware,
-    }: StreamProviderOptions = {},
+    }: StreamProviderOptions,
   ) {
     super({ logger, maxEventListeners, rpcMiddleware });
 
