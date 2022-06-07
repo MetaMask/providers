@@ -298,7 +298,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
    *
    * @param isRecoverable - Whether the disconnection is recoverable.
    * @param errorMessage - A custom error message.
-   * @emits MetaMaskInpageProvider#disconnect
+   * @emits BaseProvider#disconnect
    */
   protected _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
     if (

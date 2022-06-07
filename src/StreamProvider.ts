@@ -131,7 +131,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
    * Called when connection is lost to critical streams. Emits an 'error' event
    * from the provider with the error message and stack if present.
    *
-   * @emits MetamaskInpageProvider#disconnect
+   * @emits BaseProvider#disconnect
    */
   private _handleStreamDisconnect(streamName: string, error: Error) {
     let warningMsg = `MetaMask: Lost connection to "${streamName}".`;
