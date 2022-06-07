@@ -16,14 +16,14 @@ module.exports = {
     '<rootDir>/**/src/**/*.ts',
     '!<rootDir>/**/src/**/*.test.ts',
   ],
-  coverageReporters: ['clover', 'json', 'lcov', 'text', 'json-summary'],
+  coverageReporters: ['html', 'json-summary', 'text'],
   coveragePathIgnorePatterns: ['/node_modules/', '/mocks/', '/test/'],
   coverageThreshold: {
     global: {
-      branches: 50.67,
-      functions: 50.63,
-      lines: 54.59,
-      statements: 54.76,
+      branches: 51.12,
+      functions: 48.24,
+      lines: 54.96,
+      statements: 55.12,
     },
   },
   projects: [

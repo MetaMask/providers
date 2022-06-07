@@ -7,7 +7,7 @@ import { createStreamMiddleware } from 'json-rpc-middleware-stream';
 import pump from 'pump';
 import messages from './messages';
 import { EMITTED_NOTIFICATIONS } from './utils';
-import BaseProvider, { BaseProviderOptions } from './BaseProvider';
+import { BaseProvider, BaseProviderOptions } from './BaseProvider';
 
 export interface StreamProviderOptions extends BaseProviderOptions {
   /**
@@ -23,10 +23,11 @@ export interface JsonRpcConnection {
 }
 
 /**
- * An EIP-1193 provider wired to a some duplex stream via a
- * `json-rpc-middleware-stream` JSON-RPC stream middleware.
+ * An abstract EIP-1193 provider wired to a some duplex stream via a
+ * `json-rpc-middleware-stream` JSON-RPC stream middleware. Implementers must
+ * directly call
  */
-export default class StreamProvider extends BaseProvider {
+export abstract class AbstractStreamProvider extends BaseProvider {
   protected _jsonRpcConnection: JsonRpcConnection;
 
   /**
@@ -77,9 +78,6 @@ export default class StreamProvider extends BaseProvider {
     // Wire up the JsonRpcEngine to the JSON-RPC connection stream
     this._rpcEngine.push(this._jsonRpcConnection.middleware);
 
-    // Set initial state
-    this._initializeAsync();
-
     // Handle JSON-RPC notifications
     this._jsonRpcConnection.events.on('notification', (payload) => {
       const { method, params } = payload;
@@ -107,11 +105,13 @@ export default class StreamProvider extends BaseProvider {
   //====================
 
   /**
-   * Constructor helper. Calls `metamask_getProviderState` and passes the result
-   * to {@link BaseProvider._initialize}. Logs an error if getting initial state
-   * fails.
+   * **MUST** be called by child classes.
+   *
+   * Calls `metamask_getProviderState` and passes the result to
+   * {@link BaseProvider._initialize}. Logs an error if getting initial state
+   * fails. Throws if called after initialization has completed.
    */
-  private async _initializeAsync() {
+  protected async _initializeAsync() {
     let initialState: Parameters<BaseProvider['_initialize']>[0];
 
     try {
@@ -145,5 +145,24 @@ export default class StreamProvider extends BaseProvider {
     }
 
     this._handleDisconnect(false, error ? error.message : undefined);
+  }
+}
+
+/**
+ * An EIP-1193 provider wired to a some duplex stream via a
+ * `json-rpc-middleware-stream` JSON-RPC stream middleware. Consumers must
+ * call {@link StreamProvider.initialize} after instantiation to complete
+ * initialization.
+ */
+export class StreamProvider extends AbstractStreamProvider {
+  /**
+   * **MUST** be called after instantiation to complete initialization.
+   *
+   * Calls `metamask_getProviderState` and passes the result to
+   * {@link BaseProvider._initialize}. Logs an error if getting initial state
+   * fails. Throws if called after initialization has completed.
+   */
+  async initialize() {
+    return this._initializeAsync();
   }
 }

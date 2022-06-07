@@ -63,7 +63,7 @@ export interface BaseProviderState {
  * 3. Ensure that the provider's state is synchronized with the wallet.
  * 4. Ensure that notifications are received and emitted as appropriate.
  */
-export default abstract class BaseProvider extends SafeEventEmitter {
+export abstract class BaseProvider extends SafeEventEmitter {
   protected readonly _log: ConsoleLike;
 
   protected _state: BaseProviderState;
@@ -202,6 +202,8 @@ export default abstract class BaseProvider extends SafeEventEmitter {
   //====================
 
   /**
+   * **MUST** be called by child classes.
+   *
    * Sets initial state if provided and marks this provider as initialized.
    * Throws if called more than once.
    *

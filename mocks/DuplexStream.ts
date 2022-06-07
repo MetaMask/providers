@@ -1,6 +1,6 @@
 import { Duplex } from 'stream';
 
-export default class DuplexStream extends Duplex {
+export class MockDuplexStream extends Duplex {
   constructor() {
     super({
       objectMode: true,

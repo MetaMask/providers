@@ -1,6 +1,6 @@
 import type { JsonRpcMiddleware } from 'json-rpc-engine';
-import MockDuplexStream from '../mocks/DuplexStream';
-import StreamProvider from './StreamProvider';
+import { MockDuplexStream } from '../mocks/DuplexStream';
+import { StreamProvider } from './StreamProvider';
 import messages from './messages';
 
 const MOCK_ERROR_MESSAGE = 'Did you specify a mock return value?';
@@ -21,8 +21,10 @@ describe('StreamProvider', () => {
       const networkVersion = '1';
       const isUnlocked = true;
 
+      const streamProvider = new StreamProvider(new MockDuplexStream());
+
       const requestMock = jest
-        .spyOn(StreamProvider.prototype, 'request')
+        .spyOn(streamProvider, 'request')
         .mockImplementationOnce(async () => {
           return {
             accounts,
@@ -32,16 +34,11 @@ describe('StreamProvider', () => {
           };
         });
 
-      const [streamProvider] = initializeProvider();
+      await streamProvider.initialize();
 
-      await new Promise<void>((resolve) => {
-        streamProvider.once('_initialized', () => {
-          expect(streamProvider.chainId).toBe(chainId);
-          expect(streamProvider.selectedAddress).toBe(accounts[0]);
-          expect(streamProvider.isConnected()).toBe(true);
-          resolve();
-        });
-      });
+      expect(streamProvider.chainId).toBe(chainId);
+      expect(streamProvider.selectedAddress).toBe(accounts[0]);
+      expect(streamProvider.isConnected()).toBe(true);
 
       expect(requestMock).toHaveBeenCalledTimes(1);
       expect(requestMock).toHaveBeenCalledWith({

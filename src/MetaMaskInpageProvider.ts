@@ -1,7 +1,7 @@
 import type { Duplex } from 'stream';
 import type { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
 import { ethErrors } from 'eth-rpc-errors';
-import sendSiteMetadata from './siteMetadata';
+import { sendSiteMetadata } from './siteMetadata';
 import messages from './messages';
 import {
   EMITTED_NOTIFICATIONS,
@@ -10,7 +10,10 @@ import {
   NOOP,
 } from './utils';
 import type { UnvalidatedJsonRpcRequest } from './BaseProvider';
-import StreamProvider, { StreamProviderOptions } from './StreamProvider';
+import {
+  AbstractStreamProvider,
+  StreamProviderOptions,
+} from './StreamProvider';
 
 export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
   method:
@@ -44,7 +47,7 @@ interface SentWarningsState {
   };
 }
 
-export default class MetaMaskInpageProvider extends StreamProvider {
+export class MetaMaskInpageProvider extends AbstractStreamProvider {
   protected _sentWarnings: SentWarningsState = {
     // methods
     enable: false,
@@ -99,6 +102,11 @@ export default class MetaMaskInpageProvider extends StreamProvider {
       maxEventListeners,
       rpcMiddleware: getDefaultExternalMiddleware(logger),
     });
+
+    // We shouldn't perform asynchronous work in the constructor, but at one
+    // point we started doing so, and changing this class isn't worth it at
+    // the time of writing.
+    this._initializeAsync();
 
     this.networkVersion = null;
     this.isMetaMask = true;

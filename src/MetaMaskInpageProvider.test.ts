@@ -1,5 +1,5 @@
-import MockDuplexStream from '../mocks/DuplexStream';
-import MetaMaskInpageProvider from './MetaMaskInpageProvider';
+import { MockDuplexStream } from '../mocks/DuplexStream';
+import { MetaMaskInpageProvider } from './MetaMaskInpageProvider';
 import messages from './messages';
 
 describe('MetaMaskInpageProvider: RPC', () => {

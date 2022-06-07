@@ -1,5 +1,5 @@
-import StreamProvider from '../StreamProvider';
-import createExternalExtensionProvider from './createExternalExtensionProvider';
+import { StreamProvider } from '../StreamProvider';
+import { createExternalExtensionProvider } from './createExternalExtensionProvider';
 
 describe('createExternalExtensionProvider', () => {
   beforeEach(() => {

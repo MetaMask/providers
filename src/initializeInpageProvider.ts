@@ -1,8 +1,9 @@
 import { Duplex } from 'stream';
-import MetaMaskInpageProvider, {
+import {
+  MetaMaskInpageProvider,
   MetaMaskInpageProviderOptions,
 } from './MetaMaskInpageProvider';
-import shimWeb3 from './shimWeb3';
+import { shimWeb3 } from './shimWeb3';
 
 interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
   /**
