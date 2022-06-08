@@ -6,6 +6,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.0.0]
+### Uncategorized
+- @lavamoat/allow-scripts@2.0.3 ([#211](https://github.com/MetaMask/providers/pull/211))
+- Move stream functionality from BaseProvider to new StreamProvider ([#209](https://github.com/MetaMask/providers/pull/209))
+- Standardize test file structure ([#208](https://github.com/MetaMask/providers/pull/208))
+- Bump @metamask/auto-changelog from 2.5.0 to 2.6.0 ([#206](https://github.com/MetaMask/providers/pull/206))
+- Bump ajv from 6.12.0 to 6.12.6 ([#202](https://github.com/MetaMask/providers/pull/202))
+- Bump minimist from 1.2.5 to 1.2.6 ([#201](https://github.com/MetaMask/providers/pull/201))
+- Bump tmpl from 1.0.4 to 1.0.5 ([#195](https://github.com/MetaMask/providers/pull/195))
+- Bump tar from 6.1.5 to 6.1.11 ([#193](https://github.com/MetaMask/providers/pull/193))
+- Bump path-parse from 1.0.6 to 1.0.7 ([#190](https://github.com/MetaMask/providers/pull/190))
+- Bump @metamask/auto-changelog from 2.4.0 to 2.5.0 ([#188](https://github.com/MetaMask/providers/pull/188))
+- Bump tar from 6.1.0 to 6.1.5 ([#189](https://github.com/MetaMask/providers/pull/189))
+- Update ESLint config to v7.0.1 ([#187](https://github.com/MetaMask/providers/pull/187))
+- Bump @metamask/eslint-config-jest from 6.0.0 to 7.0.0 ([#184](https://github.com/MetaMask/providers/pull/184))
+- Bump @metamask/eslint-config from 6.0.0 to 7.0.1 ([#183](https://github.com/MetaMask/providers/pull/183))
+- Bump @metamask/auto-changelog from 2.3.0 to 2.4.0 ([#181](https://github.com/MetaMask/providers/pull/181))
+- Add release automation GitHub Action workflows ([#179](https://github.com/MetaMask/providers/pull/179))
+- Fix repo standardization issues, update Jest config ([#180](https://github.com/MetaMask/providers/pull/180))
+- Add @lavamoat/allow-scripts ([#178](https://github.com/MetaMask/providers/pull/178))
+- Bump @metamask/object-multiplex from 1.1.0 to 1.2.0 ([#176](https://github.com/MetaMask/providers/pull/176))
+- Bump glob-parent from 5.1.1 to 5.1.2 ([#177](https://github.com/MetaMask/providers/pull/177))
+- Bump ws from 7.3.1 to 7.4.6 ([#175](https://github.com/MetaMask/providers/pull/175))
+- Fix 8.1.1 changelog, add publishConfig to package.json ([#173](https://github.com/MetaMask/providers/pull/173))
+
 ## [8.1.1] - 2021-05-12
 ### Changed
 - Rename package to `@metamask/providers` ([#168](https://github.com/MetaMask/providers/pull/168))
@@ -182,7 +207,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v8.1.1...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v9.0.0...HEAD
+[9.0.0]: https://github.com/MetaMask/providers/compare/v8.1.1...v9.0.0
 [8.1.1]: https://github.com/MetaMask/providers/compare/v8.1.0...v8.1.1
 [8.1.0]: https://github.com/MetaMask/providers/compare/v8.0.4...v8.1.0
 [8.0.4]: https://github.com/MetaMask/providers/compare/v8.0.3...v8.0.4
