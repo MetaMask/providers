@@ -5,6 +5,15 @@ import {
 } from './MetaMaskInpageProvider';
 import messages from './messages';
 
+/**
+ * For legacy purposes, MetaMaskInpageProvider retrieves state from the wallet
+ * in its constructor. This operation is asynchronous, and initiated via
+ * {@link MetaMaskInpageProvider._initializeStateAsync}. This helper function
+ * returns a provider initialized with the specified values.
+ *
+ * @param options - Options bag. See {@link MetaMaskInpageProvider._initializeState}.
+ * @returns A tuple of the initialized provider and its stream.
+ */
 async function getInitializedProvider({
   accounts = [],
   chainId = '0x0',
@@ -26,11 +35,13 @@ async function getInitializedProvider({
   const mockStream = new MockDuplexStream();
   const inpageProvider = new MetaMaskInpageProvider(mockStream);
 
+  // Relinquish control of the event loop to ensure that the mocked state is
+  // retrieved.
   await new Promise<void>((resolve) => setTimeout(() => resolve(), 1));
-  // Sanity check
-  expect(requestMock).toHaveBeenCalledTimes(1);
 
-  // Return the initialized provider and its stream
+  expect(requestMock).toHaveBeenCalledTimes(1); // Sanity check
+  requestMock.mockRestore(); // Get rid of the mock
+
   return [inpageProvider, mockStream] as const;
 }
 
