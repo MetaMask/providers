@@ -711,10 +711,6 @@ describe('MetaMaskInpageProvider: RPC', () => {
 
       const emitSpy = jest.spyOn(inpageProvider, 'emit');
 
-      inpageProvider.once('chainChanged', (newChainId) => {
-        expect(newChainId).toBe('0x1');
-      });
-
       await new Promise<void>((resolve) => {
         inpageProvider.once('disconnect', (error) => {
           expect((error as any).code).toBe(1013);
