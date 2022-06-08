@@ -1,5 +1,5 @@
-import BaseProvider from '../BaseProvider';
-import createExternalExtensionProvider from './createExternalExtensionProvider';
+import { StreamProvider } from '../StreamProvider';
+import { createExternalExtensionProvider } from './createExternalExtensionProvider';
 
 describe('createExternalExtensionProvider', () => {
   beforeEach(() => {
@@ -27,6 +27,6 @@ describe('createExternalExtensionProvider', () => {
 
   it('returns a MetaMaskInpageProvider', () => {
     const results = createExternalExtensionProvider();
-    expect(results).toBeInstanceOf(BaseProvider);
+    expect(results).toBeInstanceOf(StreamProvider);
   });
 });

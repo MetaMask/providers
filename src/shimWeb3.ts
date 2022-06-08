@@ -1,4 +1,4 @@
-import MetaMaskInpageProvider from './MetaMaskInpageProvider';
+import { MetaMaskInpageProvider } from './MetaMaskInpageProvider';
 import { ConsoleLike } from './utils';
 
 /**
@@ -8,7 +8,7 @@ import { ConsoleLike } from './utils';
  * @param provider - The provider to set as window.web3.currentProvider.
  * @param log - The logging API to use.
  */
-export default function shimWeb3(
+export function shimWeb3(
   provider: MetaMaskInpageProvider,
   log: ConsoleLike = console,
 ): void {

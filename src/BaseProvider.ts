@@ -1,29 +1,20 @@
-import { Duplex } from 'stream';
-import pump from 'pump';
+import SafeEventEmitter from '@metamask/safe-event-emitter';
+import { ethErrors, EthereumRpcError } from 'eth-rpc-errors';
+import dequal from 'fast-deep-equal';
 import {
   JsonRpcEngine,
-  createIdRemapMiddleware,
   JsonRpcRequest,
   JsonRpcId,
   JsonRpcVersion,
   JsonRpcSuccess,
   JsonRpcMiddleware,
 } from 'json-rpc-engine';
-import { createStreamMiddleware } from 'json-rpc-middleware-stream';
-import ObjectMultiplex from '@metamask/object-multiplex';
-import SafeEventEmitter from '@metamask/safe-event-emitter';
-import dequal from 'fast-deep-equal';
-import { ethErrors, EthereumRpcError } from 'eth-rpc-errors';
-import { duplex as isDuplex } from 'is-stream';
-
 import messages from './messages';
 import {
-  createErrorMiddleware,
-  EMITTED_NOTIFICATIONS,
   getRpcPromiseCallback,
-  logStreamDisconnectWarning,
   ConsoleLike,
   Maybe,
+  isValidChainId,
 } from './utils';
 
 export interface UnvalidatedJsonRpcRequest {
@@ -35,11 +26,6 @@ export interface UnvalidatedJsonRpcRequest {
 
 export interface BaseProviderOptions {
   /**
-   * The name of the stream used to connect to the wallet.
-   */
-  jsonRpcStreamName?: string;
-
-  /**
    * The logging API to use.
    */
   logger?: ConsoleLike;
@@ -48,6 +34,12 @@ export interface BaseProviderOptions {
    * The maximum number of event listeners.
    */
   maxEventListeners?: number;
+
+  /**
+   * `json-rpc-engine` middleware. The middleware will be inserted in the given
+   * order immediately after engine initialization.
+   */
+  rpcMiddleware?: JsonRpcMiddleware<unknown, unknown>[];
 }
 
 export interface RequestArguments {
@@ -66,20 +58,22 @@ export interface BaseProviderState {
   isPermanentlyDisconnected: boolean;
 }
 
-export interface JsonRpcConnection {
-  events: SafeEventEmitter;
-  middleware: JsonRpcMiddleware<unknown, unknown>;
-  stream: Duplex;
-}
-
-export default class BaseProvider extends SafeEventEmitter {
+/**
+ * An abstract class implementing the EIP-1193 interface. Implementers must:
+ *
+ * 1. At initialization, push a middleware to the internal `_rpcEngine` that
+ *    hands off requests to the server and receives responses in return.
+ * 2. At initialization, retrieve initial state and call
+ *    {@link BaseProvider._initializeState} **once**.
+ * 3. Ensure that the provider's state is synchronized with the wallet.
+ * 4. Ensure that notifications are received and emitted as appropriate.
+ */
+export abstract class BaseProvider extends SafeEventEmitter {
   protected readonly _log: ConsoleLike;
 
   protected _state: BaseProviderState;
 
   protected _rpcEngine: JsonRpcEngine;
-
-  protected _jsonRpcConnection: JsonRpcConnection;
 
   protected static _defaultState: BaseProviderState = {
     accounts: null,
@@ -103,106 +97,52 @@ export default class BaseProvider extends SafeEventEmitter {
   public selectedAddress: string | null;
 
   /**
-   * @param connectionStream - A Node.js duplex stream
    * @param options - An options bag
-   * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
-   * Default: metamask-provider
    * @param options.logger - The logging API to use. Default: console
    * @param options.maxEventListeners - The maximum number of event
    * listeners. Default: 100
    */
-  constructor(
-    connectionStream: Duplex,
-    {
-      jsonRpcStreamName = 'metamask-provider',
-      logger = console,
-      maxEventListeners = 100,
-    }: BaseProviderOptions = {},
-  ) {
+  constructor({
+    logger = console,
+    maxEventListeners = 100,
+    rpcMiddleware = [],
+  }: BaseProviderOptions = {}) {
     super();
-
-    if (!isDuplex(connectionStream)) {
-      throw new Error(messages.errors.invalidDuplexStream());
-    }
 
     this._log = logger;
 
     this.setMaxListeners(maxEventListeners);
 
-    // private state
+    // Private state
     this._state = {
       ...BaseProvider._defaultState,
     };
 
-    // public state
+    // Public state
     this.selectedAddress = null;
     this.chainId = null;
 
-    // bind functions (to prevent consumers from making unbound calls)
+    // Bind functions to prevent consumers from making unbound calls
     this._handleAccountsChanged = this._handleAccountsChanged.bind(this);
     this._handleConnect = this._handleConnect.bind(this);
     this._handleChainChanged = this._handleChainChanged.bind(this);
     this._handleDisconnect = this._handleDisconnect.bind(this);
-    this._handleStreamDisconnect = this._handleStreamDisconnect.bind(this);
     this._handleUnlockStateChanged = this._handleUnlockStateChanged.bind(this);
     this._rpcRequest = this._rpcRequest.bind(this);
     this.request = this.request.bind(this);
 
-    // setup connectionStream multiplexing
-    const mux = new ObjectMultiplex();
-    pump(
-      connectionStream,
-      mux as unknown as Duplex,
-      connectionStream,
-      this._handleStreamDisconnect.bind(this, 'MetaMask'),
-    );
-
-    // setup own event listeners
-
-    // EIP-1193 connect
+    // EIP-1193 connect, emitted in _initializeState
     this.on('connect', () => {
       this._state.isConnected = true;
     });
 
-    // setup RPC connection
-
-    this._jsonRpcConnection = createStreamMiddleware();
-    pump(
-      this._jsonRpcConnection.stream,
-      mux.createStream(jsonRpcStreamName) as unknown as Duplex,
-      this._jsonRpcConnection.stream,
-      this._handleStreamDisconnect.bind(this, 'MetaMask RpcProvider'),
-    );
-
-    // handle RPC requests via dapp-side rpc engine
+    // Handle RPC requests via dapp-side RPC engine.
+    //
+    // ATTN: Implementers must push a middleware that hands off requests to
+    // the server.
     const rpcEngine = new JsonRpcEngine();
-    rpcEngine.push(createIdRemapMiddleware());
-    rpcEngine.push(createErrorMiddleware(this._log));
-    rpcEngine.push(this._jsonRpcConnection.middleware);
+    rpcMiddleware.forEach((middleware) => rpcEngine.push(middleware));
     this._rpcEngine = rpcEngine;
-
-    this._initializeState();
-
-    // handle JSON-RPC notifications
-    this._jsonRpcConnection.events.on('notification', (payload) => {
-      const { method, params } = payload;
-      if (method === 'metamask_accountsChanged') {
-        this._handleAccountsChanged(params);
-      } else if (method === 'metamask_unlockStateChanged') {
-        this._handleUnlockStateChanged(params);
-      } else if (method === 'metamask_chainChanged') {
-        this._handleChainChanged(params);
-      } else if (EMITTED_NOTIFICATIONS.includes(method)) {
-        this.emit('message', {
-          type: method,
-          data: params,
-        });
-      } else if (method === 'METAMASK_STREAM_FAILURE') {
-        connectionStream.destroy(
-          new Error(messages.errors.permanentlyDisconnected()),
-        );
-      }
-    });
   }
 
   //====================
@@ -267,37 +207,43 @@ export default class BaseProvider extends SafeEventEmitter {
   //====================
 
   /**
-   * Constructor helper.
-   * Populates initial state by calling 'metamask_getProviderState' and emits
-   * necessary events.
+   * **MUST** be called by child classes.
+   *
+   * Sets initial state if provided and marks this provider as initialized.
+   * Throws if called more than once.
+   *
+   * Permits the `networkVersion` field in the parameter object for
+   * compatibility with child classes that use this value.
+   *
+   * @param initialState - The provider's initial state.
+   * @emits BaseProvider#_initialized
+   * @emits BaseProvider#connect - If `initialState` is defined.
    */
-  private async _initializeState() {
-    try {
-      const { accounts, chainId, isUnlocked, networkVersion } =
-        (await this.request({
-          method: 'metamask_getProviderState',
-        })) as {
-          accounts: string[];
-          chainId: string;
-          isUnlocked: boolean;
-          networkVersion: string;
-        };
+  protected _initializeState(initialState?: {
+    accounts: string[];
+    chainId: string;
+    isUnlocked: boolean;
+    networkVersion?: string;
+  }) {
+    if (this._state.initialized === true) {
+      throw new Error('Provider already initialized.');
+    }
 
-      // indicate that we've connected, for EIP-1193 compliance
+    if (initialState) {
+      const { accounts, chainId, isUnlocked, networkVersion } = initialState;
+
+      // EIP-1193 connect
       this.emit('connect', { chainId });
 
       this._handleChainChanged({ chainId, networkVersion });
       this._handleUnlockStateChanged({ accounts, isUnlocked });
       this._handleAccountsChanged(accounts);
-    } catch (error) {
-      this._log.error(
-        'MetaMask: Failed to get initial state. Please report this bug.',
-        error,
-      );
-    } finally {
-      this._state.initialized = true;
-      this.emit('_initialized');
     }
+
+    // Mark provider as initialized regardless of whether initial state was
+    // retrieved.
+    this._state.initialized = true;
+    this.emit('_initialized');
   }
 
   /**
@@ -360,7 +306,7 @@ export default class BaseProvider extends SafeEventEmitter {
    *
    * @param isRecoverable - Whether the disconnection is recoverable.
    * @param errorMessage - A custom error message.
-   * @emits MetaMaskInpageProvider#disconnect
+   * @emits BaseProvider#disconnect
    */
   protected _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
     if (
@@ -394,54 +340,31 @@ export default class BaseProvider extends SafeEventEmitter {
   }
 
   /**
-   * Called when connection is lost to critical streams.
+   * Upon receipt of a new `chainId`, emits the corresponding event and sets
+   * and sets relevant public state. Does nothing if the given `chainId` is
+   * equivalent to the existing value.
    *
-   * @emits MetamaskInpageProvider#disconnect
-   */
-  protected _handleStreamDisconnect(streamName: string, error: Error) {
-    logStreamDisconnectWarning(this._log, streamName, error, this);
-    this._handleDisconnect(false, error ? error.message : undefined);
-  }
-
-  /**
-   * Upon receipt of a new chainId and networkVersion, emits corresponding
-   * events and sets relevant public state.
-   * Does nothing if neither the chainId nor the networkVersion are different
-   * from existing values.
+   * Permits the `networkVersion` field in the parameter object for
+   * compatibility with child classes that use this value.
    *
-   * @emits MetamaskInpageProvider#chainChanged
+   * @emits BaseProvider#chainChanged
    * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
-   * @param networkInfo.networkVersion - The latest network ID.
    */
   protected _handleChainChanged({
     chainId,
-    networkVersion,
   }: { chainId?: string; networkVersion?: string } = {}) {
-    if (
-      !chainId ||
-      typeof chainId !== 'string' ||
-      !chainId.startsWith('0x') ||
-      !networkVersion ||
-      typeof networkVersion !== 'string'
-    ) {
-      this._log.error(
-        'MetaMask: Received invalid network parameters. Please report this bug.',
-        { chainId, networkVersion },
-      );
+    if (!isValidChainId(chainId)) {
+      this._log.error(messages.errors.invalidNetworkParams(), { chainId });
       return;
     }
 
-    if (networkVersion === 'loading') {
-      this._handleDisconnect(true);
-    } else {
-      this._handleConnect(chainId);
+    this._handleConnect(chainId);
 
-      if (chainId !== this.chainId) {
-        this.chainId = chainId;
-        if (this._state.initialized) {
-          this.emit('chainChanged', this.chainId);
-        }
+    if (chainId !== this.chainId) {
+      this.chainId = chainId;
+      if (this._state.initialized) {
+        this.emit('chainChanged', this.chainId);
       }
     }
   }

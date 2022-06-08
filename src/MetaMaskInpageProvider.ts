@@ -1,13 +1,19 @@
-import { Duplex } from 'stream';
-import { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
+import type { Duplex } from 'stream';
+import type { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
 import { ethErrors } from 'eth-rpc-errors';
-import sendSiteMetadata from './siteMetadata';
+import { sendSiteMetadata } from './siteMetadata';
 import messages from './messages';
-import { EMITTED_NOTIFICATIONS, getRpcPromiseCallback, NOOP } from './utils';
-import BaseProvider, {
-  BaseProviderOptions,
-  UnvalidatedJsonRpcRequest,
-} from './BaseProvider';
+import {
+  EMITTED_NOTIFICATIONS,
+  getDefaultExternalMiddleware,
+  getRpcPromiseCallback,
+  NOOP,
+} from './utils';
+import type { UnvalidatedJsonRpcRequest } from './BaseProvider';
+import {
+  AbstractStreamProvider,
+  StreamProviderOptions,
+} from './StreamProvider';
 
 export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
   method:
@@ -19,7 +25,8 @@ export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
 
 type WarningEventName = keyof SentWarningsState['events'];
 
-export interface MetaMaskInpageProviderOptions extends BaseProviderOptions {
+export interface MetaMaskInpageProviderOptions
+  extends Partial<Omit<StreamProviderOptions, 'rpcMiddleware'>> {
   /**
    * Whether the provider should send page metadata.
    */
@@ -40,7 +47,12 @@ interface SentWarningsState {
   };
 }
 
-export default class MetaMaskInpageProvider extends BaseProvider {
+/**
+ * The name of the stream consumed by {@link MetaMaskInpageProvider}.
+ */
+export const MetaMaskInpageProviderStreamName = 'metamask-provider';
+
+export class MetaMaskInpageProvider extends AbstractStreamProvider {
   protected _sentWarnings: SentWarningsState = {
     // methods
     enable: false,
@@ -83,13 +95,23 @@ export default class MetaMaskInpageProvider extends BaseProvider {
   constructor(
     connectionStream: Duplex,
     {
-      jsonRpcStreamName = 'metamask-provider',
+      jsonRpcStreamName = MetaMaskInpageProviderStreamName,
       logger = console,
-      maxEventListeners = 100,
-      shouldSendMetadata = true,
+      maxEventListeners,
+      shouldSendMetadata,
     }: MetaMaskInpageProviderOptions = {},
   ) {
-    super(connectionStream, { jsonRpcStreamName, logger, maxEventListeners });
+    super(connectionStream, {
+      jsonRpcStreamName,
+      logger,
+      maxEventListeners,
+      rpcMiddleware: getDefaultExternalMiddleware(logger),
+    });
+
+    // We shouldn't perform asynchronous work in the constructor, but at one
+    // point we started doing so, and changing this class isn't worth it at
+    // the time of writing.
+    this._initializeStateAsync();
 
     this.networkVersion = null;
     this.isMetaMask = true;
@@ -139,7 +161,7 @@ export default class MetaMaskInpageProvider extends BaseProvider {
    * Submits an RPC request per the given JSON-RPC request object.
    *
    * @param payload - The RPC request object.
-   * @param cb - The callback function.
+   * @param callback - The callback function.
    */
   sendAsync(
     payload: JsonRpcRequest<unknown>,
@@ -195,7 +217,7 @@ export default class MetaMaskInpageProvider extends BaseProvider {
    *
    * @param isRecoverable - Whether the disconnection is recoverable.
    * @param errorMessage - A custom error message.
-   * @emits MetaMaskInpageProvider#disconnect
+   * @emits BaseProvider#disconnect
    */
   protected _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
     super._handleDisconnect(isRecoverable, errorMessage);
@@ -399,11 +421,9 @@ export default class MetaMaskInpageProvider extends BaseProvider {
 
   /**
    * Upon receipt of a new chainId and networkVersion, emits corresponding
-   * events and sets relevant public state.
-   * Does nothing if neither the chainId nor the networkVersion are different
-   * from existing values.
+   * events and sets relevant public state. Does nothing if neither the chainId
+   * nor the networkVersion are different from existing values.
    *
-   * @emits MetamaskInpageProvider#chainChanged
    * @emits MetamaskInpageProvider#networkChanged
    * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
@@ -413,14 +433,12 @@ export default class MetaMaskInpageProvider extends BaseProvider {
     chainId,
     networkVersion,
   }: { chainId?: string; networkVersion?: string } = {}) {
+    // This will validate the params and disconnect the provider if the
+    // networkVersion is 'loading'.
     super._handleChainChanged({ chainId, networkVersion });
 
-    if (
-      networkVersion &&
-      networkVersion !== 'loading' &&
-      networkVersion !== this.networkVersion
-    ) {
-      this.networkVersion = networkVersion;
+    if (this._state.isConnected && networkVersion !== this.networkVersion) {
+      this.networkVersion = networkVersion as string;
       if (this._state.initialized) {
         this.emit('networkChanged', this.networkVersion);
       }

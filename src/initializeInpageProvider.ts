@@ -1,8 +1,9 @@
 import { Duplex } from 'stream';
-import MetaMaskInpageProvider, {
+import {
+  MetaMaskInpageProvider,
   MetaMaskInpageProviderOptions,
 } from './MetaMaskInpageProvider';
-import shimWeb3 from './shimWeb3';
+import { shimWeb3 } from './shimWeb3';
 
 interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
   /**
@@ -42,27 +43,27 @@ export function initializeProvider({
   shouldSetOnWindow = true,
   shouldShimWeb3 = false,
 }: InitializeProviderOptions): MetaMaskInpageProvider {
-  let provider = new MetaMaskInpageProvider(connectionStream, {
+  const provider = new MetaMaskInpageProvider(connectionStream, {
     jsonRpcStreamName,
     logger,
     maxEventListeners,
     shouldSendMetadata,
   });
 
-  provider = new Proxy(provider, {
+  const proxiedProvider = new Proxy(provider, {
     // some common libraries, e.g. web3@1.x, mess with our API
     deleteProperty: () => true,
   });
 
   if (shouldSetOnWindow) {
-    setGlobalProvider(provider);
+    setGlobalProvider(proxiedProvider);
   }
 
   if (shouldShimWeb3) {
-    shimWeb3(provider, logger);
+    shimWeb3(proxiedProvider, logger);
   }
 
-  return provider;
+  return proxiedProvider;
 }
 
 /**

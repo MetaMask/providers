@@ -8,16 +8,30 @@ const baseConfig = {
   // original implementations, between each test. It does not affect mocked
   // modules.
   restoreMocks: true,
-  testTimeout: 2500,
 };
 
 module.exports = {
+  collectCoverage: true,
+  collectCoverageFrom: [
+    '<rootDir>/**/src/**/*.ts',
+    '!<rootDir>/**/src/**/*.test.ts',
+  ],
+  coverageReporters: ['html', 'json-summary', 'text'],
+  coveragePathIgnorePatterns: ['/node_modules/', '/mocks/', '/test/'],
+  coverageThreshold: {
+    global: {
+      branches: 56.19,
+      functions: 53.33,
+      lines: 58.44,
+      statements: 58.73,
+    },
+  },
   projects: [
     {
       ...baseConfig,
-      displayName: 'BaseProvider',
+      displayName: 'StreamProvider',
       testEnvironment: 'node',
-      testMatch: ['**/BaseProvider.test.ts'],
+      testMatch: ['**/StreamProvider.test.ts', '**/utils.test.ts'],
     },
     {
       ...baseConfig,
@@ -30,18 +44,6 @@ module.exports = {
       setupFilesAfterEnv: ['./jest.setup.js'],
     },
   ],
-  collectCoverage: true,
-  collectCoverageFrom: ['./src/**.ts'],
-  coverageReporters: ['text', 'html'],
-  coveragePathIgnorePatterns: ['/node_modules/', '/mocks/'],
-  // TODO: Require coverage when we're closer to home.
-  // coverageThreshold: {
-  //   global: {
-  //     branches: 100,
-  //     functions: 100,
-  //     lines: 100,
-  //     statements: 100,
-  //   },
-  // },
   silent: true,
+  testTimeout: 2500,
 };

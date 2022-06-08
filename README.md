@@ -4,7 +4,9 @@ The Ethereum provider object injected by MetaMask into various environments.
 Contains a lot of implementation details specific to MetaMask, and is probably
 not suitable for out-of-the-box use with other wallets.
 
-The `BaseProvider` implements the Ethereum JavaScript provider specification, [EIP-1193](https://eips.ethereum.org/EIPS/eip-1193). `MetamaskInpageProvider` implements [EIP-1193](https://eips.ethereum.org/EIPS/eip-1193) and legacy interfaces.
+The `BaseProvider` implements the Ethereum JavaScript provider specification ([EIP-1193]), but must be modified by a sub-class in order to function.
+`StreamProvider` is such a sub-class, which synchronizes its state and marshals JSON-RPC messages via a duplex stream.
+`MetamaskInpageProvider` further extends `StreamProvider` to support legacy provider interfaces in addition to [EIP-1193], and is used to instantiate the object injected by MetaMask into web pages as `window.ethereum`.
 
 ## Usage
 
@@ -65,3 +67,5 @@ The project follows the same release process as the other libraries in the MetaM
 6. Once approved, the PR is squashed & merged
 7. The commit on the base branch is tagged
 8. The tag can be published as needed
+
+[eip-1193]: https://eips.ethereum.org/EIPS/eip-1193

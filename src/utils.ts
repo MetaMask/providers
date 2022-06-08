@@ -1,5 +1,8 @@
-import { EventEmitter } from 'events';
-import { JsonRpcMiddleware, PendingJsonRpcResponse } from 'json-rpc-engine';
+import {
+  createIdRemapMiddleware,
+  JsonRpcMiddleware,
+  PendingJsonRpcResponse,
+} from 'json-rpc-engine';
 import { ethErrors } from 'eth-rpc-errors';
 
 export type Maybe<T> = Partial<T> | null | undefined;
@@ -9,15 +12,33 @@ export type ConsoleLike = Pick<
   'log' | 'warn' | 'error' | 'debug' | 'info' | 'trace'
 >;
 
-// utility functions
+// Constants
+
+export const EMITTED_NOTIFICATIONS = Object.freeze([
+  'eth_subscription', // per eth-json-rpc-filters/subscriptionManager
+]);
+
+// Utility functions
+
+/**
+ * Gets the default middleware for external providers, consisting of an ID
+ * remapping middleware and an error middleware.
+ *
+ * @param logger - The logger to use in the error middleware.
+ * @returns An array of json-rpc-engine middleware functions.
+ */
+export const getDefaultExternalMiddleware = (logger: ConsoleLike = console) => [
+  createIdRemapMiddleware(),
+  createErrorMiddleware(logger),
+];
 
 /**
  * json-rpc-engine middleware that logs RPC errors and and validates req.method.
  *
  * @param log - The logging API to use.
- * @returns  json-rpc-engine middleware function
+ * @returns A json-rpc-engine middleware function.
  */
-export function createErrorMiddleware(
+function createErrorMiddleware(
   log: ConsoleLike,
 ): JsonRpcMiddleware<unknown, unknown> {
   return (req, res, next) => {
@@ -58,34 +79,25 @@ export const getRpcPromiseCallback =
   };
 
 /**
- * Logs a stream disconnection error. Emits an 'error' if given an
- * EventEmitter that has listeners for the 'error' event.
+ * Checks whether the given chain ID is valid, meaning if it is non-empty,
+ * '0x'-prefixed string.
  *
- * @param log - The logging API to use.
- * @param remoteLabel - The label of the disconnected stream.
- * @param error - The associated error to log.
- * @param emitter - The logging API to use.
+ * @param chainId - The chain ID to validate.
+ * @returns Whether the given chain ID is valid.
  */
-export function logStreamDisconnectWarning(
-  log: ConsoleLike,
-  remoteLabel: string,
-  error: Error,
-  emitter: EventEmitter,
-): void {
-  let warningMsg = `MetaMask: Lost connection to "${remoteLabel}".`;
-  if (error?.stack) {
-    warningMsg += `\n${error.stack}`;
-  }
-  log.warn(warningMsg);
-  if (emitter && emitter.listenerCount('error') > 0) {
-    emitter.emit('error', warningMsg);
-  }
-}
+export const isValidChainId = (chainId: unknown): chainId is string =>
+  Boolean(chainId) && typeof chainId === 'string' && chainId.startsWith('0x');
+
+/**
+ * Checks whether the given network version is valid, meaning if it is non-empty
+ * string.
+ *
+ * @param networkVersion - The network version to validate.
+ * @returns Whether the given network version is valid.
+ */
+export const isValidNetworkVersion = (
+  networkVersion: unknown,
+): networkVersion is string =>
+  Boolean(networkVersion) && typeof networkVersion === 'string';
 
 export const NOOP = () => undefined;
-
-// constants
-
-export const EMITTED_NOTIFICATIONS = [
-  'eth_subscription', // per eth-json-rpc-filters/subscriptionManager
-];
