@@ -433,7 +433,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     chainId,
     networkVersion,
   }: { chainId?: string; networkVersion?: string } = {}) {
-    // This will validate the params and disonnect the provider if the
+    // This will validate the params and disconnect the provider if the
     // networkVersion is 'loading'.
     super._handleChainChanged({ chainId, networkVersion });
 
