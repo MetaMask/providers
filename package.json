@@ -55,7 +55,7 @@
     "webextension-polyfill-ts": "^0.25.0"
   },
   "devDependencies": {
-    "@lavamoat/allow-scripts": "^1.0.6",
+    "@lavamoat/allow-scripts": "^2.0.3",
     "@metamask/auto-changelog": "^2.3.0",
     "@metamask/eslint-config": "^7.0.1",
     "@metamask/eslint-config-jest": "^7.0.0",
@@ -82,8 +82,6 @@
     "typescript": "^4.3.5"
   },
   "lavamoat": {
-    "allowScripts": {
-      "@lavamoat/preinstall-always-fail": false
-    }
+    "allowScripts": {}
   }
 }
