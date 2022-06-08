@@ -2,6 +2,51 @@ import MockDuplexStream from '../mocks/DuplexStream';
 import MetaMaskInpageProvider from './MetaMaskInpageProvider';
 import messages from './messages';
 
+/**
+ * For legacy purposes, MetaMaskInpageProvider retrieves state from the wallet
+ * in its constructor. This operation is asynchronous, and initiated via
+ * {@link MetaMaskInpageProvider._initializeStateAsync}. This helper function
+ * returns a provider initialized with the specified values.
+ *
+ * @param options - Options bag. See {@link MetaMaskInpageProvider._initializeState}.
+ * @returns A tuple of the initialized provider and its stream.
+ */
+async function getInitializedProvider({
+  accounts = [],
+  chainId = '0x0',
+  isUnlocked = true,
+  networkVersion = '0',
+}: {
+  accounts?: string[];
+  chainId?: string;
+  isUnlocked?: boolean;
+  networkVersion?: string;
+} = {}) {
+  // This will be called via the constructor
+  const requestMock = jest
+    .spyOn(MetaMaskInpageProvider.prototype, 'request')
+    .mockImplementationOnce(async () => {
+      return {
+        accounts,
+        chainId,
+        isUnlocked,
+        networkVersion,
+      };
+    });
+
+  const mockStream = new MockDuplexStream();
+  const inpageProvider = new MetaMaskInpageProvider(mockStream);
+
+  // Relinquish control of the event loop to ensure that the mocked state is
+  // retrieved.
+  await new Promise<void>((resolve) => setTimeout(() => resolve(), 1));
+
+  expect(requestMock).toHaveBeenCalledTimes(1); // Sanity check
+  requestMock.mockRestore(); // Get rid of the mock
+
+  return [inpageProvider, mockStream] as const;
+}
+
 describe('MetaMaskInpageProvider: RPC', () => {
   const MOCK_ERROR_MESSAGE = 'Did you specify a mock return value?';
 
@@ -618,13 +663,11 @@ describe('MetaMaskInpageProvider: RPC', () => {
   });
 
   describe('provider events', () => {
-    it('calls chainChanged when it chainId changes ', async () => {
-      const mockStream = new MockDuplexStream();
-      const inpageProvider = new MetaMaskInpageProvider(mockStream);
-      (inpageProvider as any)._state.initialized = true;
+    it('calls chainChanged when receiving a new chainId ', async () => {
+      const [inpageProvider, mockStream] = await getInitializedProvider();
 
       await new Promise((resolve) => {
-        inpageProvider.on('chainChanged', (newChainId) => {
+        inpageProvider.once('chainChanged', (newChainId) => {
           expect(newChainId).toBe('0x1');
           resolve(undefined);
         });
@@ -634,20 +677,18 @@ describe('MetaMaskInpageProvider: RPC', () => {
           data: {
             jsonrpc: '2.0',
             method: 'metamask_chainChanged',
-            params: { chainId: '0x1', networkVersion: '0x1' },
+            params: { chainId: '0x1', networkVersion: '1' },
           },
         });
       });
     });
 
-    it('calls networkChanged when it networkVersion changes ', async () => {
-      const mockStream = new MockDuplexStream();
-      const inpageProvider = new MetaMaskInpageProvider(mockStream);
-      (inpageProvider as any)._state.initialized = true;
+    it('calls networkChanged when receiving a new networkVersion ', async () => {
+      const [inpageProvider, mockStream] = await getInitializedProvider();
 
       await new Promise((resolve) => {
-        inpageProvider.on('networkChanged', (newNetworkId) => {
-          expect(newNetworkId).toBe('0x1');
+        inpageProvider.once('networkChanged', (newNetworkId) => {
+          expect(newNetworkId).toBe('1');
           resolve(undefined);
         });
 
@@ -656,10 +697,78 @@ describe('MetaMaskInpageProvider: RPC', () => {
           data: {
             jsonrpc: '2.0',
             method: 'metamask_chainChanged',
-            params: { chainId: '0x1', networkVersion: '0x1' },
+            params: { chainId: '0x1', networkVersion: '1' },
           },
         });
       });
+    });
+
+    it('handles chain changes with intermittent disconnection', async () => {
+      const [inpageProvider, mockStream] = await getInitializedProvider();
+
+      // We check this mostly for the readability of this test.
+      expect(inpageProvider.isConnected()).toBe(true);
+      expect(inpageProvider.chainId).toBe('0x0');
+      expect(inpageProvider.networkVersion).toBe('0');
+
+      const emitSpy = jest.spyOn(inpageProvider, 'emit');
+
+      inpageProvider.once('chainChanged', (newChainId) => {
+        expect(newChainId).toBe('0x1');
+      });
+
+      await new Promise<void>((resolve) => {
+        inpageProvider.once('disconnect', (error) => {
+          expect((error as any).code).toBe(1013);
+          resolve();
+        });
+
+        mockStream.push({
+          name: 'metamask-provider',
+          data: {
+            jsonrpc: '2.0',
+            method: 'metamask_chainChanged',
+            // A "loading" networkVersion indicates the network is changing.
+            // Although the chainId is different, chainChanged should not be
+            // emitted in this case.
+            params: { chainId: '0x1', networkVersion: 'loading' },
+          },
+        });
+      });
+
+      // Only once, for "disconnect".
+      expect(emitSpy).toHaveBeenCalledTimes(1);
+      emitSpy.mockClear(); // Clear the mock to avoid keeping a count.
+
+      expect(inpageProvider.isConnected()).toBe(false);
+      // These should be unchanged.
+      expect(inpageProvider.chainId).toBe('0x0');
+      expect(inpageProvider.networkVersion).toBe('0');
+
+      await new Promise<void>((resolve) => {
+        inpageProvider.once('chainChanged', (newChainId) => {
+          expect(newChainId).toBe('0x1');
+          resolve();
+        });
+
+        mockStream.push({
+          name: 'metamask-provider',
+          data: {
+            jsonrpc: '2.0',
+            method: 'metamask_chainChanged',
+            params: { chainId: '0x1', networkVersion: '1' },
+          },
+        });
+      });
+
+      expect(emitSpy).toHaveBeenCalledTimes(3);
+      expect(emitSpy).toHaveBeenNthCalledWith(1, 'connect', { chainId: '0x1' });
+      expect(emitSpy).toHaveBeenCalledWith('chainChanged', '0x1');
+      expect(emitSpy).toHaveBeenCalledWith('networkChanged', '1');
+
+      expect(inpageProvider.isConnected()).toBe(true);
+      expect(inpageProvider.chainId).toBe('0x1');
+      expect(inpageProvider.networkVersion).toBe('1');
     });
   });
 });
@@ -729,6 +838,30 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
             logger: customLogger,
           }),
       ).not.toThrow();
+    });
+
+    it('gets initial state', async () => {
+      // This will be called via the constructor
+      const requestMock = jest
+        .spyOn(MetaMaskInpageProvider.prototype, 'request')
+        .mockImplementationOnce(async () => {
+          return {
+            accounts: ['0xabc'],
+            chainId: '0x0',
+            isUnlocked: true,
+            networkVersion: '0',
+          };
+        });
+
+      const mockStream = new MockDuplexStream();
+      const inpageProvider = new MetaMaskInpageProvider(mockStream);
+
+      await new Promise<void>((resolve) => setTimeout(() => resolve(), 1));
+      expect(requestMock).toHaveBeenCalledTimes(1);
+      expect(inpageProvider.chainId).toBe('0x0');
+      expect(inpageProvider.networkVersion).toBe('0');
+      expect(inpageProvider.selectedAddress).toBe('0xabc');
+      expect(inpageProvider.isConnected()).toBe(true);
     });
   });
 
