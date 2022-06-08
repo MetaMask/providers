@@ -7,8 +7,6 @@ import {
   EMITTED_NOTIFICATIONS,
   getDefaultExternalMiddleware,
   getRpcPromiseCallback,
-  isValidChainId,
-  isValidNetworkVersion,
   NOOP,
 } from './utils';
 import type { UnvalidatedJsonRpcRequest } from './BaseProvider';
@@ -426,7 +424,6 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * events and sets relevant public state. Does nothing if neither the chainId
    * nor the networkVersion are different from existing values.
    *
-   * @emits BaseProvider#chainChanged
    * @emits MetamaskInpageProvider#networkChanged
    * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
@@ -436,20 +433,12 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     chainId,
     networkVersion,
   }: { chainId?: string; networkVersion?: string } = {}) {
-    if (!isValidChainId(chainId) || !isValidNetworkVersion(networkVersion)) {
-      this._log.error(messages.errors.invalidNetworkParams(), {
-        chainId,
-        networkVersion,
-      });
-      return;
-    }
+    // This will validate the params and disonnect the provider if the
+    // networkVersion is 'loading'.
+    super._handleChainChanged({ chainId, networkVersion });
 
-    if (networkVersion === 'loading') {
-      this._handleDisconnect(true);
-    } else if (networkVersion !== this.networkVersion) {
-      super._handleChainChanged({ chainId });
-
-      this.networkVersion = networkVersion;
+    if (this._state.isConnected && networkVersion !== this.networkVersion) {
+      this.networkVersion = networkVersion as string;
       if (this._state.initialized) {
         this.emit('networkChanged', this.networkVersion);
       }

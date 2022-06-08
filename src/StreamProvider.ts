@@ -6,7 +6,11 @@ import type { JsonRpcMiddleware } from 'json-rpc-engine';
 import { createStreamMiddleware } from 'json-rpc-middleware-stream';
 import pump from 'pump';
 import messages from './messages';
-import { EMITTED_NOTIFICATIONS } from './utils';
+import {
+  EMITTED_NOTIFICATIONS,
+  isValidChainId,
+  isValidNetworkVersion,
+} from './utils';
 import { BaseProvider, BaseProviderOptions } from './BaseProvider';
 
 export interface StreamProviderOptions extends BaseProviderOptions {
@@ -144,6 +148,39 @@ export abstract class AbstractStreamProvider extends BaseProvider {
     }
 
     this._handleDisconnect(false, error ? error.message : undefined);
+  }
+
+  /**
+   * Upon receipt of a new chainId and networkVersion, emits corresponding
+   * events and sets relevant public state. This class does not have a
+   * `networkVersion` property, but we rely on receiving a `networkVersion`
+   * with the value of `loading` to detect when the network is changing and
+   * a recoverable `disconnect` even has occurred. Child classes that use the
+   * `networkVersion` for other purposes must implement additional handling
+   * therefore.
+   *
+   * @emits BaseProvider#chainChanged
+   * @param networkInfo - An object with network info.
+   * @param networkInfo.chainId - The latest chain ID.
+   * @param networkInfo.networkVersion - The latest network ID.
+   */
+  protected _handleChainChanged({
+    chainId,
+    networkVersion,
+  }: { chainId?: string; networkVersion?: string } = {}) {
+    if (!isValidChainId(chainId) || !isValidNetworkVersion(networkVersion)) {
+      this._log.error(messages.errors.invalidNetworkParams(), {
+        chainId,
+        networkVersion,
+      });
+      return;
+    }
+
+    if (networkVersion === 'loading') {
+      this._handleDisconnect(true);
+    } else {
+      super._handleChainChanged({ chainId });
+    }
   }
 }
 
