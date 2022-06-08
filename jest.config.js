@@ -20,10 +20,10 @@ module.exports = {
   coveragePathIgnorePatterns: ['/node_modules/', '/mocks/', '/test/'],
   coverageThreshold: {
     global: {
-      branches: 51.35,
-      functions: 47.67,
-      lines: 55.05,
-      statements: 55.21,
+      branches: 55.61,
+      functions: 52.81,
+      lines: 58.33,
+      statements: 58.63,
     },
   },
   projects: [
@@ -31,7 +31,7 @@ module.exports = {
       ...baseConfig,
       displayName: 'StreamProvider',
       testEnvironment: 'node',
-      testMatch: ['**/StreamProvider.test.ts'],
+      testMatch: ['**/StreamProvider.test.ts', '**/utils.test.ts'],
     },
     {
       ...baseConfig,

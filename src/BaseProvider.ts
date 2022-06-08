@@ -10,7 +10,12 @@ import {
   JsonRpcMiddleware,
 } from 'json-rpc-engine';
 import messages from './messages';
-import { getRpcPromiseCallback, ConsoleLike, Maybe } from './utils';
+import {
+  getRpcPromiseCallback,
+  ConsoleLike,
+  Maybe,
+  isValidChainId,
+} from './utils';
 
 export interface UnvalidatedJsonRpcRequest {
   id?: JsonRpcId;
@@ -207,6 +212,9 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * Sets initial state if provided and marks this provider as initialized.
    * Throws if called more than once.
    *
+   * Permits the `networkVersion` field in the parameter object for
+   * compatibility with child classes that use this value.
+   *
    * @param initialState - The provider's initial state.
    * @emits BaseProvider#_initialized
    * @emits BaseProvider#connect - If `initialState` is defined.
@@ -215,7 +223,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     accounts: string[];
     chainId: string;
     isUnlocked: boolean;
-    networkVersion: string;
+    networkVersion?: string;
   }) {
     if (this._state.initialized === true) {
       throw new Error('Provider already initialized.');
@@ -332,44 +340,31 @@ export abstract class BaseProvider extends SafeEventEmitter {
   }
 
   /**
-   * Upon receipt of a new chainId and networkVersion, emits corresponding
-   * events and sets relevant public state.
-   * Does nothing if neither the chainId nor the networkVersion are different
-   * from existing values.
+   * Upon receipt of a new `chainId`, emits the corresponding event and sets
+   * and sets relevant public state. Does nothing if the given `chainId` is
+   * equivalent to the existing value.
    *
-   * @emits MetamaskInpageProvider#chainChanged
+   * Permits the `networkVersion` field in the parameter object for
+   * compatibility with child classes that use this value.
+   *
+   * @emits BaseProvider#chainChanged
    * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
-   * @param networkInfo.networkVersion - The latest network ID.
    */
   protected _handleChainChanged({
     chainId,
-    networkVersion,
   }: { chainId?: string; networkVersion?: string } = {}) {
-    if (
-      !chainId ||
-      typeof chainId !== 'string' ||
-      !chainId.startsWith('0x') ||
-      !networkVersion ||
-      typeof networkVersion !== 'string'
-    ) {
-      this._log.error(
-        'MetaMask: Received invalid network parameters. Please report this bug.',
-        { chainId, networkVersion },
-      );
+    if (!isValidChainId(chainId)) {
+      this._log.error(messages.errors.invalidNetworkParams(), { chainId });
       return;
     }
 
-    if (networkVersion === 'loading') {
-      this._handleDisconnect(true);
-    } else {
-      this._handleConnect(chainId);
+    this._handleConnect(chainId);
 
-      if (chainId !== this.chainId) {
-        this.chainId = chainId;
-        if (this._state.initialized) {
-          this.emit('chainChanged', this.chainId);
-        }
+    if (chainId !== this.chainId) {
+      this.chainId = chainId;
+      if (this._state.initialized) {
+        this.emit('chainChanged', this.chainId);
       }
     }
   }
