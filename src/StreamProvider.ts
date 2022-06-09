@@ -29,7 +29,8 @@ export interface JsonRpcConnection {
 /**
  * An abstract EIP-1193 provider wired to some duplex stream via a
  * `json-rpc-middleware-stream` JSON-RPC stream middleware. Implementers must
- * directly call
+ * call {@link AbstractStreamProvider._initializeStateAsync} after instantiation
+ * to initialize the provider's state.
  */
 export abstract class AbstractStreamProvider extends BaseProvider {
   protected _jsonRpcConnection: JsonRpcConnection;
