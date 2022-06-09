@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.0.0]
+### Changed
+- **BREAKING:** Move stream functionality from `BaseProvider` to new `StreamProvider` ([#209](https://github.com/MetaMask/providers/pull/209))
+  - `BaseProvider` is now a transport-agnostic abstract class. `StreamProvider` accepts a stream and relies on MetaMask's internal JSON-RPC API for its behavior. See the `StreamProvider` class for more details.
+  - `MetaMaskInpageProvider` should be completely unaffected except that its prototype chain now includes a class named `AbstractStreamProvider`.
+
 ## [8.1.1] - 2021-05-12
 ### Changed
 - Rename package to `@metamask/providers` ([#168](https://github.com/MetaMask/providers/pull/168))
@@ -42,14 +48,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `initializeWeb3` now has a `shouldShimWeb3` argument, which causes the shim to be set as `window.web3` if `true`.
 
 ### Changed
-- **(BREAKING)** Rename `initProvider` export to `initializeProvider` ([#114](https://github.com/MetaMask/providers/pull/114))
-- **(BREAKING)** Replace `ethereum.publicConfigStore` with new set of JSON-RPC notifications ([#109](https://github.com/MetaMask/providers/pull/109))
+- **BREAKING:** Rename `initProvider` export to `initializeProvider` ([#114](https://github.com/MetaMask/providers/pull/114))
+- **BREAKING:** Replace `ethereum.publicConfigStore` with new set of JSON-RPC notifications ([#109](https://github.com/MetaMask/providers/pull/109))
 
 ### Removed
-- **(BREAKING)** Remove `_metamask.isEnabled` and `_metamask.isApproved` ([#112](https://github.com/MetaMask/providers/pull/112))
-- **(BREAKING)** Remove the `chainIdChanged` event ([#111](https://github.com/MetaMask/providers/pull/111))
-- **(BREAKING)** Remove `ethereum.publicConfigStore` ([#109](https://github.com/MetaMask/providers/pull/109))
-- **(BREAKING)** Remove `web3.js`-related functionality ([#106](https://github.com/MetaMask/providers/pull/106))
+- **BREAKING:** Remove `_metamask.isEnabled` and `_metamask.isApproved` ([#112](https://github.com/MetaMask/providers/pull/112))
+- **BREAKING:** Remove the `chainIdChanged` event ([#111](https://github.com/MetaMask/providers/pull/111))
+- **BREAKING:** Remove `ethereum.publicConfigStore` ([#109](https://github.com/MetaMask/providers/pull/109))
+- **BREAKING:** Remove `web3.js`-related functionality ([#106](https://github.com/MetaMask/providers/pull/106))
   - This functionality caused the page to reload if there was a `web3.js` instance at `window.web3`, and kept `web3.eth.defaultAccount` in sync with `ethereum.selectedAddress`.
   - This functionality is replicated in [@metamask/legacy-web3](https://www.npmjs.com/package/@metamask/legacy-web3).
 
@@ -68,7 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [7.0.0] - 2020-09-08
 ### Changed
-- **(BREAKING)** Changed casing of `Metamask` in all exports to `MetaMask`
+- **BREAKING:** Changed casing of `Metamask` in all exports to `MetaMask`
   - A brand is a brand ¯\\\_(ツ)\_/¯
 
 ## [6.3.0] - 2020-09-04
@@ -122,7 +128,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     This assumption was incorrect, and the event is now restored.
 
 ### Changed
-- **(BREAKING)** Restore the `notification` event value to its pre-`4.0.0` state
+- **BREAKING:** Restore the `notification` event value to its pre-`4.0.0` state
   - Prior to `4.0.0` this event was emitted by code in the MetaMask extension.
     Its value was inadvertently changed when it was moved to this package.
 
@@ -171,18 +177,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Helper methods for initializing the provider ([#31](https://github.com/MetaMask/providers/pull/31))
 
 ### Changed
-- **(BREAKING)** Use named instead of default exports ([#31](https://github.com/MetaMask/providers/pull/31))
-- **(BREAKING)** `MetaMaskInpage` constructor now takes a `connectionStream` and an
+- **BREAKING:** Use named instead of default exports ([#31](https://github.com/MetaMask/providers/pull/31))
+- **BREAKING:** `MetaMaskInpage` constructor now takes a `connectionStream` and an
   options object ([#31](https://github.com/MetaMask/providers/pull/31))
-- **(BREAKING)** `_metamask.sendBatch` -> `_metamask.requestBatch` ([#30](https://github.com/MetaMask/providers/pull/30))
-- **(BREAKING)** Revert `send` to match provider in v7.7.8 of `metamask-extension` ([#29](https://github.com/MetaMask/providers/pull/29))
+- **BREAKING:** `_metamask.sendBatch` -> `_metamask.requestBatch` ([#30](https://github.com/MetaMask/providers/pull/30))
+- **BREAKING:** Revert `send` to match provider in v7.7.8 of `metamask-extension` ([#29](https://github.com/MetaMask/providers/pull/29))
 - The `connect` event now emits with a `ProviderConnectInfo` object per EIP 1193 ([#30](https://github.com/MetaMask/providers/pull/30))
 - Deprecated the `send` method ([#30](https://github.com/MetaMask/providers/pull/30))
 - Deprecated the events `close`, `networkChanged`, and `notification`, and
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v8.1.1...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v9.0.0...HEAD
+[9.0.0]: https://github.com/MetaMask/providers/compare/v8.1.1...v9.0.0
 [8.1.1]: https://github.com/MetaMask/providers/compare/v8.1.0...v8.1.1
 [8.1.0]: https://github.com/MetaMask/providers/compare/v8.0.4...v8.1.0
 [8.0.4]: https://github.com/MetaMask/providers/compare/v8.0.3...v8.0.4

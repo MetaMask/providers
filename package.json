@@ -1,6 +1,6 @@
 {
   "name": "@metamask/providers",
-  "version": "8.1.1",
+  "version": "9.0.0",
   "description": "A JavaScript Ethereum provider that connects to the wallet over a stream.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
