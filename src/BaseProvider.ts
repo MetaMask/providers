@@ -131,11 +131,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
     this._rpcRequest = this._rpcRequest.bind(this);
     this.request = this.request.bind(this);
 
-    // EIP-1193 connect, emitted in _initializeState
-    this.on('connect', () => {
-      this._state.isConnected = true;
-    });
-
     // Handle RPC requests via dapp-side RPC engine.
     //
     // ATTN: Implementers must push a middleware that hands off requests to
@@ -233,8 +228,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
       const { accounts, chainId, isUnlocked, networkVersion } = initialState;
 
       // EIP-1193 connect
-      this.emit('connect', { chainId });
-
+      this._handleConnect(chainId);
       this._handleChainChanged({ chainId, networkVersion });
       this._handleUnlockStateChanged({ accounts, isUnlocked });
       this._handleAccountsChanged(accounts);
