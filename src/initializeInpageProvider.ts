@@ -17,6 +17,11 @@ interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
   shouldSetOnWindow?: boolean;
 
   /**
+   * Whether the provider should be set as window.ethereum within windows that are not the top window.
+   */
+  shouldSetOnFrames?: boolean;
+
+  /**
    * Whether the window.web3 shim should be set.
    */
   shouldShimWeb3?: boolean;
@@ -41,6 +46,7 @@ export function initializeProvider({
   maxEventListeners = 100,
   shouldSendMetadata = true,
   shouldSetOnWindow = true,
+  shouldSetOnFrames = false,
   shouldShimWeb3 = false,
 }: InitializeProviderOptions): MetaMaskInpageProvider {
   const provider = new MetaMaskInpageProvider(connectionStream, {
@@ -56,7 +62,7 @@ export function initializeProvider({
   });
 
   if (shouldSetOnWindow) {
-    setGlobalProvider(proxiedProvider);
+    setGlobalProvider(proxiedProvider, shouldSetOnFrames);
   }
 
   if (shouldShimWeb3) {
@@ -71,10 +77,15 @@ export function initializeProvider({
  * 'ethereum#initialized' event on window.
  *
  * @param providerInstance - The provider instance.
+ * @param shouldSetOnFrames - Whether the provider should be set as window.ethereum within windows that are not the top window.
  */
 export function setGlobalProvider(
   providerInstance: MetaMaskInpageProvider,
+  shouldSetOnFrames: boolean,
 ): void {
+  if (!shouldSetOnFrames && window !== top) {
+    return;
+  }
   (window as Record<string, any>).ethereum = providerInstance;
   window.dispatchEvent(new Event('ethereum#initialized'));
 }
