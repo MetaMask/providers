@@ -61,8 +61,8 @@ export function initializeProvider({
     deleteProperty: () => true,
   });
 
-  if (shouldSetOnWindow) {
-    setGlobalProvider(proxiedProvider, shouldSetOnFrames);
+  if (shouldSetOnWindow && (shouldSetOnFrames || window === top)) {
+    setGlobalProvider(proxiedProvider);
   }
 
   if (shouldShimWeb3) {
@@ -77,14 +77,10 @@ export function initializeProvider({
  * 'ethereum#initialized' event on window.
  *
  * @param providerInstance - The provider instance.
- * @param shouldSetOnFrames - Whether the provider should be set as window.ethereum within windows that are not the top window.
  */
 export function setGlobalProvider(
   providerInstance: MetaMaskInpageProvider,
-  shouldSetOnFrames: boolean,
 ): void {
-  if (shouldSetOnFrames || window === top) {
-    (window as Record<string, any>).ethereum = providerInstance;
-    window.dispatchEvent(new Event('ethereum#initialized'));
-  }
+  (window as Record<string, any>).ethereum = providerInstance;
+  window.dispatchEvent(new Event('ethereum#initialized'));
 }
