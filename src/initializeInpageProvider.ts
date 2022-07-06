@@ -83,9 +83,8 @@ export function setGlobalProvider(
   providerInstance: MetaMaskInpageProvider,
   shouldSetOnFrames: boolean,
 ): void {
-  if (!shouldSetOnFrames && window !== top) {
-    return;
+  if (shouldSetOnFrames || window === top) {
+    (window as Record<string, any>).ethereum = providerInstance;
+    window.dispatchEvent(new Event('ethereum#initialized'));
   }
-  (window as Record<string, any>).ethereum = providerInstance;
-  window.dispatchEvent(new Event('ethereum#initialized'));
 }
