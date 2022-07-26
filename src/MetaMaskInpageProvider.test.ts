@@ -64,34 +64,27 @@ async function getInitializedProvider({
     callback: (data: JsonRpcRequest<unknown>) => void;
   }[];
 } = {}): Promise<InitializedProviderDetails> {
-  let isInitialized = false;
   const onWrite = jest.fn();
   const connectionStream = new MockConnectionStream((name, data) => {
-    if (!isInitialized) {
-      if (
-        name === 'metamask-provider' &&
-        data.method === 'metamask_getProviderState'
-      ) {
-        isInitialized = true;
-        // Wrap in `setImmediate` to ensure a reply is recieved by the provider
-        // after the provider has processed the request, to ensure that the
-        // provider recognizes the id.
-        setImmediate(() =>
-          connectionStream.reply('metamask-provider', {
-            id: onWrite.mock.calls[0][1].id,
-            jsonrpc: '2.0',
-            result: {
-              accounts,
-              chainId,
-              isUnlocked,
-              networkVersion,
-            },
-          }),
-        );
-      } else {
-        // Ignore other messages before initialization
-        return;
-      }
+    if (
+      name === 'metamask-provider' &&
+      data.method === 'metamask_getProviderState'
+    ) {
+      // Wrap in `setImmediate` to ensure a reply is recieved by the provider
+      // after the provider has processed the request, to ensure that the
+      // provider recognizes the id.
+      setImmediate(() =>
+        connectionStream.reply('metamask-provider', {
+          id: onWrite.mock.calls[0][1].id,
+          jsonrpc: '2.0',
+          result: {
+            accounts,
+            chainId,
+            isUnlocked,
+            networkVersion,
+          },
+        }),
+      );
     }
     for (const { substream, method, callback } of onMethodCalled) {
       if (name === substream && data.method === method) {
