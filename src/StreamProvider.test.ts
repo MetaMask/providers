@@ -1,5 +1,5 @@
 import type { JsonRpcMiddleware } from 'json-rpc-engine';
-import { MockDuplexStream } from '../mocks/DuplexStream';
+import { MockConnectionStream } from '../test/mocks/MockConnectionStream';
 import { StreamProvider } from './StreamProvider';
 import messages from './messages';
 
@@ -10,7 +10,7 @@ const mockStreamName = 'mock-stream';
 function getStreamProvider(
   rpcMiddleware?: JsonRpcMiddleware<unknown, unknown>[],
 ) {
-  const mockStream = new MockDuplexStream();
+  const mockStream = new MockConnectionStream();
   const streamProvider = new StreamProvider(mockStream, {
     jsonRpcStreamName: mockStreamName,
     rpcMiddleware,
@@ -28,7 +28,7 @@ describe('StreamProvider', () => {
       const networkVersion = '1';
       const isUnlocked = true;
 
-      const streamProvider = new StreamProvider(new MockDuplexStream(), {
+      const streamProvider = new StreamProvider(new MockConnectionStream(), {
         jsonRpcStreamName: mockStreamName,
       });
 
@@ -353,7 +353,7 @@ describe('StreamProvider', () => {
 
     describe('events', () => {
       it('calls chainChanged when the chainId changes', async () => {
-        const mockStream = new MockDuplexStream();
+        const mockStream = new MockConnectionStream();
         const streamProvider = new StreamProvider(mockStream, {
           jsonRpcStreamName: mockStreamName,
         });
@@ -378,19 +378,16 @@ describe('StreamProvider', () => {
             resolve();
           });
 
-          mockStream.push({
-            name: mockStreamName,
-            data: {
-              jsonrpc: '2.0',
-              method: 'metamask_chainChanged',
-              params: { chainId: '0x1', networkVersion: '0x1' },
-            },
+          mockStream.notify(mockStreamName, {
+            jsonrpc: '2.0',
+            method: 'metamask_chainChanged',
+            params: { chainId: '0x1', networkVersion: '0x1' },
           });
         });
       });
 
       it('handles chain changes with intermittent disconnection', async () => {
-        const mockStream = new MockDuplexStream();
+        const mockStream = new MockConnectionStream();
         const streamProvider = new StreamProvider(mockStream, {
           jsonRpcStreamName: mockStreamName,
         });
@@ -421,16 +418,13 @@ describe('StreamProvider', () => {
             resolve();
           });
 
-          mockStream.push({
-            name: mockStreamName,
-            data: {
-              jsonrpc: '2.0',
-              method: 'metamask_chainChanged',
-              // A "loading" networkVersion indicates the network is changing.
-              // Although the chainId is different, chainChanged should not be
-              // emitted in this case.
-              params: { chainId: '0x1', networkVersion: 'loading' },
-            },
+          mockStream.notify(mockStreamName, {
+            jsonrpc: '2.0',
+            method: 'metamask_chainChanged',
+            // A "loading" networkVersion indicates the network is changing.
+            // Although the chainId is different, chainChanged should not be
+            // emitted in this case.
+            params: { chainId: '0x1', networkVersion: 'loading' },
           });
         });
 
@@ -448,15 +442,12 @@ describe('StreamProvider', () => {
             resolve();
           });
 
-          mockStream.push({
-            name: mockStreamName,
-            data: {
-              jsonrpc: '2.0',
-              method: 'metamask_chainChanged',
-              // The networkVersion will be ignored here, we're just setting it
-              // to something other than 'loading'.
-              params: { chainId: '0x1', networkVersion: '1' },
-            },
+          mockStream.notify(mockStreamName, {
+            jsonrpc: '2.0',
+            method: 'metamask_chainChanged',
+            // The networkVersion will be ignored here, we're just setting it
+            // to something other than 'loading'.
+            params: { chainId: '0x1', networkVersion: '1' },
           });
         });
 

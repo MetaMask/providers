@@ -1,4 +1,5 @@
-import { MockDuplexStream } from '../mocks/DuplexStream';
+import { JsonRpcRequest } from 'json-rpc-engine';
+import { MockConnectionStream } from '../test/mocks/MockConnectionStream';
 import {
   MetaMaskInpageProviderStreamName,
   MetaMaskInpageProvider,
@@ -6,50 +7,109 @@ import {
 import messages from './messages';
 
 /**
+ * A fully initialized inpage provider, and additional mocks to help
+ * test the provider.
+ */
+interface InitializedProviderDetails {
+  /** The initialized provider, created using a mocked connection stream. */
+  provider: MetaMaskInpageProvider;
+  /** The mock connection stream used to create the provider. */
+  connectionStream: MockConnectionStream;
+  /** A mock function that can be used to inspect what gets written to the
+   * mock connection Stream.
+   */
+  onWrite: ReturnType<typeof jest.fn>;
+}
+
+/**
  * For legacy purposes, MetaMaskInpageProvider retrieves state from the wallet
  * in its constructor. This operation is asynchronous, and initiated via
  * {@link MetaMaskInpageProvider._initializeStateAsync}. This helper function
  * returns a provider initialized with the specified values.
  *
- * @param options - Options bag. See {@link MetaMaskInpageProvider._initializeState}.
- * @returns A tuple of the initialized provider and its stream.
+ * The mock connection stream used to create the provider is also returned.
+ * This stream is setup initially just to respond to the
+ * `metamask_getProviderState` method. Further responses can be setup via the
+ * `onMethodCalled` configuration, or sent using the connection stream
+ * directly.
+ *
+ * @param options - Options bag.
+ * @param options.initialState - The initial provider state returned on
+ * initialization.  See {@link MetaMaskInpageProvider._initializeState}.
+ * @param options.onMethodCalled - A set of configuration objects for adding
+ * method-specific callbacks.
+ * @param options.onMethodCalled[].substream - The substream of the method that
+ * the callback is for.
+ * @param options.onMethodCalled[].method - The name of the method that the
+ * callback is for.
+ * @param options.onMethodCalled[].callback - The method callback.
+ * @returns The initialized provider, its stream, and an "onWrite" stub that
+ * can be used to inspect message sent by the provider.
  */
 async function getInitializedProvider({
-  accounts = [],
-  chainId = '0x0',
-  isUnlocked = true,
-  networkVersion = '0',
-}: Partial<Parameters<MetaMaskInpageProvider['_initializeState']>[0]> = {}) {
-  // This will be called via the constructor
-  const requestMock = jest
-    .spyOn(MetaMaskInpageProvider.prototype, 'request')
-    .mockImplementationOnce(async () => {
-      return {
-        accounts,
-        chainId,
-        isUnlocked,
-        networkVersion,
-      };
-    });
+  initialState: {
+    accounts = [],
+    chainId = '0x0',
+    isUnlocked = true,
+    networkVersion = '0',
+  } = {},
+  onMethodCalled = [],
+}: {
+  initialState?: Partial<
+    Parameters<MetaMaskInpageProvider['_initializeState']>[0]
+  >;
+  onMethodCalled?: {
+    substream: string;
+    method: string;
+    callback: (data: JsonRpcRequest<unknown>) => void;
+  }[];
+} = {}): Promise<InitializedProviderDetails> {
+  const onWrite = jest.fn();
+  const connectionStream = new MockConnectionStream((name, data) => {
+    if (
+      name === 'metamask-provider' &&
+      data.method === 'metamask_getProviderState'
+    ) {
+      // Wrap in `setImmediate` to ensure a reply is recieved by the provider
+      // after the provider has processed the request, to ensure that the
+      // provider recognizes the id.
+      setImmediate(() =>
+        connectionStream.reply('metamask-provider', {
+          id: onWrite.mock.calls[0][1].id,
+          jsonrpc: '2.0',
+          result: {
+            accounts,
+            chainId,
+            isUnlocked,
+            networkVersion,
+          },
+        }),
+      );
+    }
+    for (const { substream, method, callback } of onMethodCalled) {
+      if (name === substream && data.method === method) {
+        // Wrap in `setImmediate` to ensure a reply is recieved by the provider
+        // after the provider has processed the request, to ensure that the
+        // provider recognizes the id.
+        setImmediate(() => callback(data));
+      }
+    }
+    onWrite(name, data);
+  });
 
-  const mockStream = new MockDuplexStream();
-  const inpageProvider = new MetaMaskInpageProvider(mockStream);
+  const provider = new MetaMaskInpageProvider(connectionStream);
+  await new Promise<void>((resolve: () => void) => {
+    provider.on('_initialized', resolve);
+  });
 
-  // Relinquish control of the event loop to ensure that the mocked state is
-  // retrieved.
-  await new Promise<void>((resolve) => setTimeout(() => resolve(), 1));
-
-  expect(requestMock).toHaveBeenCalledTimes(1); // Sanity check
-  requestMock.mockRestore(); // Get rid of the mock
-
-  return [inpageProvider, mockStream] as const;
+  return { provider, connectionStream, onWrite };
 }
 
 describe('MetaMaskInpageProvider: RPC', () => {
   const MOCK_ERROR_MESSAGE = 'Did you specify a mock return value?';
 
   function initializeProvider() {
-    const mockStream = new MockDuplexStream();
+    const mockStream = new MockConnectionStream();
     const provider: any | MetaMaskInpageProvider = new MetaMaskInpageProvider(
       mockStream,
     );
@@ -662,71 +722,62 @@ describe('MetaMaskInpageProvider: RPC', () => {
 
   describe('provider events', () => {
     it('calls chainChanged when receiving a new chainId ', async () => {
-      const [inpageProvider, mockStream] = await getInitializedProvider();
+      const { provider, connectionStream } = await getInitializedProvider();
 
       await new Promise((resolve) => {
-        inpageProvider.once('chainChanged', (newChainId) => {
+        provider.once('chainChanged', (newChainId) => {
           expect(newChainId).toBe('0x1');
           resolve(undefined);
         });
 
-        mockStream.push({
-          name: MetaMaskInpageProviderStreamName,
-          data: {
-            jsonrpc: '2.0',
-            method: 'metamask_chainChanged',
-            params: { chainId: '0x1', networkVersion: '1' },
-          },
+        connectionStream.notify(MetaMaskInpageProviderStreamName, {
+          jsonrpc: '2.0',
+          method: 'metamask_chainChanged',
+          params: { chainId: '0x1', networkVersion: '1' },
         });
       });
     });
 
     it('calls networkChanged when receiving a new networkVersion ', async () => {
-      const [inpageProvider, mockStream] = await getInitializedProvider();
+      const { provider, connectionStream } = await getInitializedProvider();
 
       await new Promise((resolve) => {
-        inpageProvider.once('networkChanged', (newNetworkId) => {
+        provider.once('networkChanged', (newNetworkId) => {
           expect(newNetworkId).toBe('1');
           resolve(undefined);
         });
 
-        mockStream.push({
-          name: MetaMaskInpageProviderStreamName,
-          data: {
-            jsonrpc: '2.0',
-            method: 'metamask_chainChanged',
-            params: { chainId: '0x1', networkVersion: '1' },
-          },
+        connectionStream.notify(MetaMaskInpageProviderStreamName, {
+          jsonrpc: '2.0',
+          method: 'metamask_chainChanged',
+          params: { chainId: '0x1', networkVersion: '1' },
         });
       });
     });
 
     it('handles chain changes with intermittent disconnection', async () => {
-      const [inpageProvider, mockStream] = await getInitializedProvider();
+      const { provider, connectionStream } = await getInitializedProvider();
 
       // We check this mostly for the readability of this test.
-      expect(inpageProvider.isConnected()).toBe(true);
-      expect(inpageProvider.chainId).toBe('0x0');
-      expect(inpageProvider.networkVersion).toBe('0');
+      expect(provider.isConnected()).toBe(true);
+      expect(provider.chainId).toBe('0x0');
+      expect(provider.networkVersion).toBe('0');
 
-      const emitSpy = jest.spyOn(inpageProvider, 'emit');
+      const emitSpy = jest.spyOn(provider, 'emit');
 
       await new Promise<void>((resolve) => {
-        inpageProvider.once('disconnect', (error) => {
+        provider.once('disconnect', (error) => {
           expect((error as any).code).toBe(1013);
           resolve();
         });
 
-        mockStream.push({
-          name: MetaMaskInpageProviderStreamName,
-          data: {
-            jsonrpc: '2.0',
-            method: 'metamask_chainChanged',
-            // A "loading" networkVersion indicates the network is changing.
-            // Although the chainId is different, chainChanged should not be
-            // emitted in this case.
-            params: { chainId: '0x1', networkVersion: 'loading' },
-          },
+        connectionStream.notify(MetaMaskInpageProviderStreamName, {
+          jsonrpc: '2.0',
+          method: 'metamask_chainChanged',
+          // A "loading" networkVersion indicates the network is changing.
+          // Although the chainId is different, chainChanged should not be
+          // emitted in this case.
+          params: { chainId: '0x1', networkVersion: 'loading' },
         });
       });
 
@@ -734,24 +785,21 @@ describe('MetaMaskInpageProvider: RPC', () => {
       expect(emitSpy).toHaveBeenCalledTimes(1);
       emitSpy.mockClear(); // Clear the mock to avoid keeping a count.
 
-      expect(inpageProvider.isConnected()).toBe(false);
+      expect(provider.isConnected()).toBe(false);
       // These should be unchanged.
-      expect(inpageProvider.chainId).toBe('0x0');
-      expect(inpageProvider.networkVersion).toBe('0');
+      expect(provider.chainId).toBe('0x0');
+      expect(provider.networkVersion).toBe('0');
 
       await new Promise<void>((resolve) => {
-        inpageProvider.once('chainChanged', (newChainId) => {
+        provider.once('chainChanged', (newChainId) => {
           expect(newChainId).toBe('0x1');
           resolve();
         });
 
-        mockStream.push({
-          name: MetaMaskInpageProviderStreamName,
-          data: {
-            jsonrpc: '2.0',
-            method: 'metamask_chainChanged',
-            params: { chainId: '0x1', networkVersion: '1' },
-          },
+        connectionStream.notify(MetaMaskInpageProviderStreamName, {
+          jsonrpc: '2.0',
+          method: 'metamask_chainChanged',
+          params: { chainId: '0x1', networkVersion: '1' },
         });
       });
 
@@ -760,9 +808,9 @@ describe('MetaMaskInpageProvider: RPC', () => {
       expect(emitSpy).toHaveBeenCalledWith('chainChanged', '0x1');
       expect(emitSpy).toHaveBeenCalledWith('networkChanged', '1');
 
-      expect(inpageProvider.isConnected()).toBe(true);
-      expect(inpageProvider.chainId).toBe('0x1');
-      expect(inpageProvider.networkVersion).toBe('1');
+      expect(provider.isConnected()).toBe(true);
+      expect(provider.chainId).toBe('0x1');
+      expect(provider.networkVersion).toBe('1');
     });
   });
 });
@@ -771,12 +819,12 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
   describe('constructor', () => {
     it('succeeds if stream is provided', () => {
       expect(
-        () => new MetaMaskInpageProvider(new MockDuplexStream()),
+        () => new MetaMaskInpageProvider(new MockConnectionStream()),
       ).not.toThrow();
     });
 
     it('succeeds if stream and valid options are provided', () => {
-      const stream = new MockDuplexStream();
+      const stream = new MockConnectionStream();
 
       expect(
         () =>
@@ -816,7 +864,7 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
     });
 
     it('accepts valid custom logger', () => {
-      const stream = new MockDuplexStream();
+      const stream = new MockConnectionStream();
       const customLogger = {
         debug: console.debug,
         error: console.error,
@@ -847,7 +895,7 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
           };
         });
 
-      const mockStream = new MockDuplexStream();
+      const mockStream = new MockConnectionStream();
       const inpageProvider = new MetaMaskInpageProvider(mockStream);
 
       await new Promise<void>((resolve) => setTimeout(() => resolve(), 1));
@@ -861,7 +909,9 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
 
   describe('isConnected', () => {
     it('returns isConnected state', () => {
-      const provider: any = new MetaMaskInpageProvider(new MockDuplexStream());
+      const provider: any = new MetaMaskInpageProvider(
+        new MockConnectionStream(),
+      );
       provider.autoRefreshOnNetworkChange = false;
 
       expect(provider.isConnected()).toBe(false);
@@ -873,6 +923,14 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
       provider._state.isConnected = false;
 
       expect(provider.isConnected()).toBe(false);
+    });
+  });
+
+  describe('isMetaMask', () => {
+    it('should be set to "true"', async () => {
+      const { provider } = await getInitializedProvider();
+
+      expect(provider.isMetaMask).toBe(true);
     });
   });
 });
