@@ -1,6 +1,5 @@
 import { JsonRpcRequest } from 'json-rpc-engine';
 import { MockConnectionStream } from '../test/mocks/MockConnectionStream';
-import { getDeconstructedPromise } from '../test/get-deconstructed-promise';
 import {
   MetaMaskInpageProviderStreamName,
   MetaMaskInpageProvider,
@@ -85,11 +84,9 @@ async function getInitializedProvider({
   });
 
   const provider = new MetaMaskInpageProvider(connectionStream);
-  const { resolve: resolveInitialized, promise: waitForInitialization } =
-    getDeconstructedPromise();
-  provider.on('_initialized', resolveInitialized);
-
-  await waitForInitialization;
+  await new Promise<void>((resolve: () => void) => {
+    provider.on('_initialized', resolve);
+  });
 
   return [provider, connectionStream, onWrite] as const;
 }
