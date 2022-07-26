@@ -4,6 +4,7 @@ import {
   PendingJsonRpcResponse,
 } from 'json-rpc-engine';
 import { ethErrors } from 'eth-rpc-errors';
+import { createRpcWarningMiddleware } from './middleware/createRpcWarningMiddleware';
 
 export type Maybe<T> = Partial<T> | null | undefined;
 
@@ -30,6 +31,7 @@ export const EMITTED_NOTIFICATIONS = Object.freeze([
 export const getDefaultExternalMiddleware = (logger: ConsoleLike = console) => [
   createIdRemapMiddleware(),
   createErrorMiddleware(logger),
+  createRpcWarningMiddleware(logger),
 ];
 
 /**

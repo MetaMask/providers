@@ -813,6 +813,128 @@ describe('MetaMaskInpageProvider: RPC', () => {
       expect(provider.networkVersion).toBe('1');
     });
   });
+
+  describe('warnings', () => {
+    describe('rpc methods', () => {
+      const warnings = [
+        {
+          method: 'eth_decrypt',
+          warning: messages.warnings.rpc.ethDecryptDeprecation,
+        },
+        {
+          method: 'eth_getEncryptionPublicKey',
+          warning: messages.warnings.rpc.ethGetEncryptionPublicKeyDeprecation,
+        },
+      ];
+
+      for (const { method, warning } of warnings) {
+        describe(method, () => {
+          it('should warn the first time the method is called', async () => {
+            const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
+            const { provider, connectionStream } = await getInitializedProvider(
+              {
+                onMethodCalled: [
+                  {
+                    substream: 'metamask-provider',
+                    method,
+                    callback: ({ id }) => {
+                      connectionStream.reply('metamask-provider', {
+                        id,
+                        jsonrpc: '2.0',
+                        result: null,
+                      });
+                    },
+                  },
+                ],
+              },
+            );
+
+            await provider.request({ method });
+
+            expect(consoleWarnSpy).toHaveBeenCalledWith(warning);
+            expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+          });
+
+          it('should not warn the second time the method is called', async () => {
+            const { provider, connectionStream } = await getInitializedProvider(
+              {
+                onMethodCalled: [
+                  {
+                    substream: 'metamask-provider',
+                    method,
+                    callback: ({ id }) => {
+                      connectionStream.reply('metamask-provider', {
+                        id,
+                        jsonrpc: '2.0',
+                        result: null,
+                      });
+                    },
+                  },
+                ],
+              },
+            );
+            const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
+
+            await provider.request({ method });
+            await provider.request({ method });
+
+            expect(consoleWarnSpy).toHaveBeenCalledWith(warning);
+            expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+          });
+
+          it('should allow the method to succeed', async () => {
+            const { provider, connectionStream } = await getInitializedProvider(
+              {
+                onMethodCalled: [
+                  {
+                    substream: 'metamask-provider',
+                    method,
+                    callback: ({ id }) => {
+                      connectionStream.reply('metamask-provider', {
+                        id,
+                        jsonrpc: '2.0',
+                        result: 'success!',
+                      });
+                    },
+                  },
+                ],
+              },
+            );
+
+            const response = await provider.request({ method });
+            expect(response).toBe('success!');
+          });
+
+          it('should allow the method to fail', async () => {
+            const { provider, connectionStream } = await getInitializedProvider(
+              {
+                onMethodCalled: [
+                  {
+                    substream: 'metamask-provider',
+                    method,
+                    callback: ({ id }) => {
+                      connectionStream.reply('metamask-provider', {
+                        id,
+                        jsonrpc: '2.0',
+                        error: { code: 0, message: 'failure!' },
+                      });
+                    },
+                  },
+                ],
+              },
+            );
+
+            await expect(() =>
+              provider.request({ method }),
+            ).rejects.toMatchObject({
+              code: 0,
+              message: 'failure!',
+            });
+          });
+        });
+      }
+    });
+  });
 });
 
 describe('MetaMaskInpageProvider: Miscellanea', () => {
