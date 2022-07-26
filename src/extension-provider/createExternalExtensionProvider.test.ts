@@ -4,6 +4,7 @@ import { createExternalExtensionProvider } from './createExternalExtensionProvid
 
 describe('createExternalExtensionProvider', () => {
   it('can be called and not throw', () => {
+    // `global.chrome.runtime` mock setup by `jest-chrome` in `jest.setup.js`
     (global.chrome.runtime.connect as any).mockImplementation(() => {
       return new MockPort();
     });
@@ -11,6 +12,7 @@ describe('createExternalExtensionProvider', () => {
   });
 
   it('calls connect', () => {
+    // `global.chrome.runtime` mock setup by `jest-chrome` in `jest.setup.js`
     (global.chrome.runtime.connect as any).mockImplementation(() => {
       return new MockPort();
     });
@@ -19,6 +21,7 @@ describe('createExternalExtensionProvider', () => {
   });
 
   it('returns a stream provider', () => {
+    // `global.chrome.runtime` mock setup by `jest-chrome` in `jest.setup.js`
     (global.chrome.runtime.connect as any).mockImplementation(() => {
       return new MockPort();
     });
