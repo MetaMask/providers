@@ -159,7 +159,7 @@ export default class BaseProvider extends SafeEventEmitter {
     rpcEngine.push(this._jsonRpcConnection.middleware);
     this._rpcEngine = rpcEngine;
 
-    this._initializeState();
+    // this._initializeState();
 
     // handle JSON-RPC notifications
     this._jsonRpcConnection.events.on('notification', (payload) => {
