@@ -7,12 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [9.1.0]
-### Uncategorized
+### Added
 - Add deprecation warning for encryption methods ([#218](https://github.com/MetaMask/providers/pull/218))
-- Improve unit tests ([#219](https://github.com/MetaMask/providers/pull/219))
-- Bump @metamask/auto-changelog from 2.6.0 to 2.6.1 ([#215](https://github.com/MetaMask/providers/pull/215))
-- Bump jsdom from 16.4.0 to 16.7.0 ([#216](https://github.com/MetaMask/providers/pull/216))
-- Use _handleConnect for initial 'connect' event ([#214](https://github.com/MetaMask/providers/pull/214))
 
 ## [9.0.0]
 ### Changed
