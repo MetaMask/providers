@@ -71,7 +71,9 @@ export abstract class AbstractStreamProvider extends BaseProvider {
     );
 
     // Set up RPC connection
-    this._jsonRpcConnection = createStreamMiddleware();
+    this._jsonRpcConnection = createStreamMiddleware({
+      retryOnMessage: 'METAMASK_EXTENSION_STREAM_CONNECT',
+    });
     pump(
       this._jsonRpcConnection.stream,
       mux.createStream(jsonRpcStreamName) as unknown as Duplex,
