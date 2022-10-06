@@ -11,12 +11,12 @@ The `BaseProvider` implements the Ethereum JavaScript provider specification ([E
 ## Usage
 
 ```javascript
-import { initializeProvider } from '@metamask/providers';
+import { initializeProvider } from "@metamask/providers";
 
 // Create a stream to a remote provider:
 const metamaskStream = new LocalMessageDuplexStream({
-  name: 'inpage',
-  target: 'contentscript',
+  name: "inpage",
+  target: "contentscript",
 });
 
 // this will initialize the provider and set it as window.ethereum
@@ -41,7 +41,7 @@ The maintainers of this package will neither fix nor take responsbility for bugs
 
 ### Setup
 
-- Install [Node.js](https://nodejs.org) version 12
+- Install [Node.js](https://nodejs.org) version 14
   - If you are using [nvm](https://github.com/creationix/nvm#installation) (recommended) running `nvm use` will automatically choose the right node version for you.
 - Install [Yarn v1](https://yarnpkg.com/en/docs/install)
 - Run `yarn setup` to install dependencies and run any requried post-install scripts
