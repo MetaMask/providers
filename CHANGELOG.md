@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.0.0]
+### Changed
+- Retry sending messages to extension when `METAMASK_EXTENSION_STREAM_CONNECT` is received ([#223](https://github.com/MetaMask/providers/pull/223))
+- **BREAKING:** Update minimum Node.js version to v14 ([#225](https://github.com/MetaMask/providers/pull/225))
+
 ## [9.1.0]
 ### Added
 - Add deprecation warning for encryption methods ([#218](https://github.com/MetaMask/providers/pull/218))
@@ -192,7 +197,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v9.1.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v10.0.0...HEAD
+[10.0.0]: https://github.com/MetaMask/providers/compare/v9.1.0...v10.0.0
 [9.1.0]: https://github.com/MetaMask/providers/compare/v9.0.0...v9.1.0
 [9.0.0]: https://github.com/MetaMask/providers/compare/v8.1.1...v9.0.0
 [8.1.1]: https://github.com/MetaMask/providers/compare/v8.1.0...v8.1.1
