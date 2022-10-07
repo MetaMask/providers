@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.0.0]
 ### Changed
 - Passing configuration options to JSON stream middleware ([#223](https://github.com/MetaMask/providers/pull/223))
-- **BREAKING:** Updating node ([#225](https://github.com/MetaMask/providers/pull/225))
+- **BREAKING:** Update minimum Node.js version to v14 ([#225](https://github.com/MetaMask/providers/pull/225))
 
 ## [9.1.0]
 ### Added
