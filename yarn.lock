@@ -3490,10 +3490,10 @@ json-rpc-engine@^6.1.0:
     "@metamask/safe-event-emitter" "^2.0.0"
     eth-rpc-errors "^4.0.2"
 
-json-rpc-middleware-stream@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/json-rpc-middleware-stream/-/json-rpc-middleware-stream-4.0.0.tgz#54de6f57d795525547219c1581858962618adeeb"
-  integrity sha512-+s8ps2cO+zmw21W7TA9wVD/5fwNi4C2O7NzLxlrEDrfzNcs3YX76Qw2fXuQLKVFeP654CIa6nkfqkFU9o7x/3g==
+json-rpc-middleware-stream@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/json-rpc-middleware-stream/-/json-rpc-middleware-stream-4.1.0.tgz#5bc570cdfc63488805f43b5042273f9a631b052c"
+  integrity sha512-pg40YNVorY/HICPShALVPIsr7NrH5wgEqzF/MzCSAkk028VJ0sSa3VRvZCjaXd9b2gPigO9DMSo4/znxBpMVAg==
   dependencies:
     "@metamask/safe-event-emitter" "^2.0.0"
     readable-stream "^2.3.3"
