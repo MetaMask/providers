@@ -72,7 +72,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
 
     // Set up RPC connection
     this._jsonRpcConnection = createStreamMiddleware({
-      retryOnMessage: 'METAMASK_EXTENSION_STREAM_CONNECT',
+      retryOnMessage: 'METAMASK_EXTENSION_CONNECT_CAN_RETRY',
     });
     pump(
       this._jsonRpcConnection.stream,
