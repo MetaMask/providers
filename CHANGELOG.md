@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [10.2.0]
-### Uncategorized
+### Changed
 - update json-rpc-middleware-stream ([#230](https://github.com/MetaMask/providers/pull/230))
 
 ## [10.1.0]
