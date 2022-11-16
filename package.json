@@ -50,7 +50,7 @@
     "fast-deep-equal": "^2.0.1",
     "is-stream": "^2.0.0",
     "json-rpc-engine": "^6.1.0",
-    "json-rpc-middleware-stream": "^4.2.0",
+    "json-rpc-middleware-stream": "^4.2.1",
     "pump": "^3.0.0",
     "webextension-polyfill-ts": "^0.25.0"
   },
