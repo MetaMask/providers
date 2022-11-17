@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.2.1]
+### Uncategorized
+- Updating dependency json-rpc-middleware-stream ([#234](https://github.com/MetaMask/providers/pull/234))
+- Bump @metamask/auto-changelog from 3.0.0 to 3.1.0 ([#233](https://github.com/MetaMask/providers/pull/233))
+- Bump @metamask/auto-changelog from 2.6.1 to 3.0.0 ([#232](https://github.com/MetaMask/providers/pull/232))
+
 ## [10.2.0]
 ### Changed
 - update json-rpc-middleware-stream ([#230](https://github.com/MetaMask/providers/pull/230))
@@ -205,7 +211,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v10.2.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v10.2.1...HEAD
+[10.2.1]: https://github.com/MetaMask/providers/compare/v10.2.0...v10.2.1
 [10.2.0]: https://github.com/MetaMask/providers/compare/v10.1.0...v10.2.0
 [10.1.0]: https://github.com/MetaMask/providers/compare/v10.0.0...v10.1.0
 [10.0.0]: https://github.com/MetaMask/providers/compare/v9.1.0...v10.0.0
