@@ -417,7 +417,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
 
       // finally, after all state has been updated, emit the event
       if (this._state.initialized) {
-        const _nextAccounts = [..._accounts]
+        const _nextAccounts = [..._accounts];
         this.emit('accountsChanged', _nextAccounts);
       }
     }
