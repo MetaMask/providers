@@ -44,6 +44,7 @@
     "@metamask/object-multiplex": "^1.1.0",
     "@metamask/safe-event-emitter": "^2.0.0",
     "@types/chrome": "^0.0.136",
+    "@types/webextension-polyfill": "^0.10.0",
     "detect-browser": "^5.2.0",
     "eth-rpc-errors": "^4.0.2",
     "extension-port-stream": "^2.0.1",
@@ -51,8 +52,7 @@
     "is-stream": "^2.0.0",
     "json-rpc-engine": "^6.1.0",
     "json-rpc-middleware-stream": "^4.2.1",
-    "pump": "^3.0.0",
-    "webextension-polyfill-ts": "^0.25.0"
+    "pump": "^3.0.0"
   },
   "devDependencies": {
     "@lavamoat/allow-scripts": "^2.0.3",

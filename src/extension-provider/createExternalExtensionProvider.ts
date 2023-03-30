@@ -1,6 +1,6 @@
 import PortStream from 'extension-port-stream';
 import { detect } from 'detect-browser';
-import { Runtime } from 'webextension-polyfill-ts';
+import type { Runtime } from 'webextension-polyfill';
 import { MetaMaskInpageProviderStreamName } from '../MetaMaskInpageProvider';
 import { StreamProvider } from '../StreamProvider';
 import { getDefaultExternalMiddleware } from '../utils';
