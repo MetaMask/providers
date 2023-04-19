@@ -151,6 +151,16 @@ describe('createExternalExtensionProvider', () => {
     );
   });
 
+  it('supports custom extension ID', () => {
+    // `global.chrome.runtime` mock setup by `jest-chrome` in `jest.setup.js`
+    (global.chrome.runtime.connect as any).mockImplementation(() => {
+      return new MockPort();
+    });
+    const results = createExternalExtensionProvider('foobar');
+    expect(results).toBeInstanceOf(StreamProvider);
+    expect(global.chrome.runtime.connect).toHaveBeenCalledWith('foobar');
+  });
+
   describe('RPC warnings', () => {
     const warnings = [
       {
