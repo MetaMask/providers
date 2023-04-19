@@ -1,7 +1,8 @@
+import type { JsonRpcMiddleware } from '@metamask/json-rpc-engine';
 import ObjectMultiplex from '@metamask/object-multiplex';
 import SafeEventEmitter from '@metamask/safe-event-emitter';
+import { Json, JsonRpcParams } from '@metamask/utils';
 import { duplex as isDuplex } from 'is-stream';
-import type { JsonRpcMiddleware } from 'json-rpc-engine';
 import { createStreamMiddleware } from 'json-rpc-middleware-stream';
 import pump from 'pump';
 import type { Duplex } from 'stream';
@@ -23,7 +24,7 @@ export type StreamProviderOptions = {
 
 export type JsonRpcConnection = {
   events: SafeEventEmitter;
-  middleware: JsonRpcMiddleware<unknown, unknown>;
+  middleware: JsonRpcMiddleware<JsonRpcParams, Json>;
   stream: Duplex;
 };
 

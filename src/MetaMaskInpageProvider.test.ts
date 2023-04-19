@@ -1,6 +1,5 @@
-import { JsonRpcRequest } from 'json-rpc-engine';
+import { JsonRpcRequest } from '@metamask/utils';
 
-import messages from './messages';
 import {
   MetaMaskInpageProviderStreamName,
   MetaMaskInpageProvider,
@@ -58,7 +57,7 @@ async function getInitializedProvider({
   onMethodCalled?: {
     substream: string;
     method: string;
-    callback: (data: JsonRpcRequest<unknown>) => void;
+    callback: (data: JsonRpcRequest) => void;
   }[];
 } = {}): Promise<InitializedProviderDetails> {
   const onWrite = jest.fn();

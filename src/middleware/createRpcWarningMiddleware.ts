@@ -1,4 +1,5 @@
-import type { JsonRpcMiddleware, JsonRpcRequest } from 'json-rpc-engine';
+import type { JsonRpcMiddleware } from '@metamask/json-rpc-engine';
+import type { Json, JsonRpcParams, JsonRpcRequest } from '@metamask/utils';
 
 import { ERC1155, ERC721 } from '../constants';
 import messages from '../messages';
@@ -12,7 +13,7 @@ import type { ConsoleLike } from '../utils';
  */
 export function createRpcWarningMiddleware(
   log: ConsoleLike,
-): JsonRpcMiddleware<unknown, unknown> {
+): JsonRpcMiddleware<JsonRpcParams, Json> {
   const sentWarnings = {
     ethDecryptDeprecation: false,
     ethGetEncryptionPublicKeyDeprecation: false,
