@@ -1,9 +1,9 @@
-import { EventEmitter } from 'events';
 import {
   JsonRpcNotification,
   JsonRpcRequest,
   JsonRpcResponse,
-} from 'json-rpc-engine';
+} from '@metamask/utils';
+import { EventEmitter } from 'events';
 
 /**
  * A mock WebExtension Port for multiplexed JSON-RPC messages, used to
@@ -17,7 +17,7 @@ export class MockPort {
 
   #eventEmitter = new EventEmitter();
 
-  #onWrite?: (name: string, data: JsonRpcRequest<unknown>) => void;
+  #onWrite?: (name: string, data: JsonRpcRequest) => void;
 
   /**
    * Construct a mock WebExtension Port.
@@ -26,8 +26,7 @@ export class MockPort {
    * from another extension to the wallet are passed to this function.
    */
   constructor(
-    onWrite: (name: string, data: JsonRpcRequest<unknown>) => void = () =>
-      undefined,
+    onWrite: (name: string, data: JsonRpcRequest) => void = () => undefined,
   ) {
     this.#onWrite = onWrite;
   }
@@ -46,7 +45,7 @@ export class MockPort {
    * in.
    * @param message.data - The JSON-RPC request.
    */
-  postMessage(message: { name: string; data: JsonRpcRequest<unknown> }) {
+  postMessage(message: { name: string; data: JsonRpcRequest }) {
     if (!this.#connected) {
       throw new Error('Disconnected');
     } else if (this.#onWrite) {
@@ -65,10 +64,7 @@ export class MockPort {
   get onMessage() {
     return {
       addListener: (
-        listener: (message: {
-          name: string;
-          data: JsonRpcRequest<unknown>;
-        }) => void,
+        listener: (message: { name: string; data: JsonRpcRequest }) => void,
       ) => {
         this.#eventEmitter.addListener('message', listener);
       },
@@ -81,7 +77,7 @@ export class MockPort {
    * @param substream - The substream this reply is included in.
    * @param message - The JSON RPC response.
    */
-  reply(substream: string, message: JsonRpcResponse<unknown>) {
+  reply(substream: string, message: JsonRpcResponse) {
     if (!this.#connected) {
       throw new Error(
         'It is not possible to reply after the port has disconnected',
@@ -96,7 +92,7 @@ export class MockPort {
    * @param substream - The substream this notification is included in.
    * @param message - The JSoN RPC notification.
    */
-  notify(substream: string, message: JsonRpcNotification<unknown>) {
+  notify(substream: string, message: JsonRpcNotification) {
     if (!this.#connected) {
       throw new Error(
         'It is not possible to notify after the port has disconnected',

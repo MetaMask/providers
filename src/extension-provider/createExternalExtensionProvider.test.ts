@@ -1,4 +1,4 @@
-import type { JsonRpcRequest } from 'json-rpc-engine';
+import type { JsonRpcRequest } from '@metamask/utils';
 
 import { createExternalExtensionProvider } from './createExternalExtensionProvider';
 import config from './external-extension-config.json';
@@ -49,7 +49,7 @@ async function getInitializedProvider({
   onMethodCalled?: {
     substream: string;
     method: string;
-    callback: (data: JsonRpcRequest<unknown>) => void;
+    callback: (data: JsonRpcRequest) => void;
   }[];
 } = {}): Promise<InitializedExtensionProviderDetails> {
   const onWrite = jest.fn();

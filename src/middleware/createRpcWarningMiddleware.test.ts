@@ -1,4 +1,5 @@
-import { JsonRpcEngine, JsonRpcFailure, JsonRpcSuccess } from 'json-rpc-engine';
+import { JsonRpcEngine } from '@metamask/json-rpc-engine';
+import { Json, JsonRpcFailure, JsonRpcSuccess } from '@metamask/utils';
 
 import { createRpcWarningMiddleware } from './createRpcWarningMiddleware';
 import messages from '../messages';
@@ -89,7 +90,7 @@ describe('createRpcWarningMiddleware', () => {
         jsonrpc: '2.0',
         id: 1,
         method,
-      })) as JsonRpcSuccess<unknown>;
+      })) as JsonRpcSuccess<Json>;
 
       expect(response.result).toBe('success!');
     });
@@ -138,7 +139,7 @@ describe('createRpcWarningMiddleware', () => {
         id: 1,
         method,
         params,
-      })) as JsonRpcSuccess<unknown>;
+      })) as JsonRpcSuccess<Json>;
 
       expect(response.result).toBe('success!');
     });

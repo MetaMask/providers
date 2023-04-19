@@ -1037,6 +1037,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/json-rpc-engine@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@metamask/json-rpc-engine@npm:7.0.0"
+  dependencies:
+    "@metamask/rpc-errors": ^5.0.0
+    "@metamask/safe-event-emitter": ^2.0.0
+    "@metamask/utils": ^5.0.1
+  checksum: d22347ee4597bc72cdc34e65a27872ed8e77de188c5b95fed9133c25289cd4abd7aafa72e3e326d8a7449a857c275ed6435642727c30c51319f5d97a579c5f49
+  languageName: node
+  linkType: hard
+
 "@metamask/object-multiplex@npm:^1.1.0":
   version: 1.2.0
   resolution: "@metamask/object-multiplex@npm:1.2.0"
@@ -1058,9 +1069,11 @@ __metadata:
     "@metamask/eslint-config-jest": ^11.0.0
     "@metamask/eslint-config-nodejs": ^11.0.1
     "@metamask/eslint-config-typescript": ^11.0.0
+    "@metamask/json-rpc-engine": ^7.0.0
     "@metamask/object-multiplex": ^1.1.0
     "@metamask/rpc-errors": ^5.1.1
     "@metamask/safe-event-emitter": ^3.0.0
+    "@metamask/utils": ^6.2.0
     "@types/chrome": ^0.0.233
     "@types/jest": ^28.1.6
     "@types/node": ^17.0.23
@@ -1085,7 +1098,6 @@ __metadata:
     jest-chrome: ^0.7.1
     jest-environment-jsdom: ^29.5.0
     jest-it-up: ^2.0.2
-    json-rpc-engine: ^6.1.0
     json-rpc-middleware-stream: ^4.2.1
     prettier: ^2.7.1
     prettier-plugin-packagejson: ^2.3.0
@@ -1099,7 +1111,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@metamask/rpc-errors@npm:^5.1.1":
+"@metamask/rpc-errors@npm:^5.0.0, @metamask/rpc-errors@npm:^5.1.1":
   version: 5.1.1
   resolution: "@metamask/rpc-errors@npm:5.1.1"
   dependencies:
@@ -1123,7 +1135,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/utils@npm:^5.0.0":
+"@metamask/utils@npm:^5.0.0, @metamask/utils@npm:^5.0.1":
   version: 5.0.2
   resolution: "@metamask/utils@npm:5.0.2"
   dependencies:
@@ -1133,6 +1145,20 @@ __metadata:
     semver: ^7.3.8
     superstruct: ^1.0.3
   checksum: eca82e42911b2840deb4f32f0f215c5ffd14d22d68afbbe92d3180e920e509e310777b15eab29def3448f3535b66596ceb4c23666ec846adacc8e1bb093ff882
+  languageName: node
+  linkType: hard
+
+"@metamask/utils@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "@metamask/utils@npm:6.2.0"
+  dependencies:
+    "@ethereumjs/tx": ^4.1.2
+    "@noble/hashes": ^1.3.1
+    "@types/debug": ^4.1.7
+    debug: ^4.3.4
+    semver: ^7.3.8
+    superstruct: ^1.0.3
+  checksum: 0bc675358ecc09b3bc04da613d73666295d7afa51ff6b8554801585966900b24b8545bd93b8b2e9a17db867ebe421fe884baf3558ec4ca3199fa65504f677c1b
   languageName: node
   linkType: hard
 
@@ -1152,7 +1178,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/hashes@npm:~1.3.0, @noble/hashes@npm:~1.3.1":
+"@noble/hashes@npm:^1.3.1, @noble/hashes@npm:~1.3.0, @noble/hashes@npm:~1.3.1":
   version: 1.3.2
   resolution: "@noble/hashes@npm:1.3.2"
   checksum: fe23536b436539d13f90e4b9be843cc63b1b17666a07634a2b1259dded6f490be3d050249e6af98076ea8f2ea0d56f578773c2197f2aa0eeaa5fba5bc18ba474
@@ -3329,15 +3355,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eth-rpc-errors@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "eth-rpc-errors@npm:4.0.2"
-  dependencies:
-    fast-safe-stringify: ^2.0.6
-  checksum: 1dbdee8f416090f1d318e17bdee2251d174d73c8faa4286fa364bc51ae9105672045f2d078ec23ca6a2b4b92af7cfbe7fa1ba17ad49e591fc653a363bf8cbab2
-  languageName: node
-  linkType: hard
-
 "ethereum-cryptography@npm:^2.0.0":
   version: 2.1.2
   resolution: "ethereum-cryptography@npm:2.1.2"
@@ -4967,16 +4984,6 @@ __metadata:
   version: 3.0.0
   resolution: "json-parse-even-better-errors@npm:3.0.0"
   checksum: f1970b5220c7fa23d888565510752c3d5e863f93668a202fcaa719739fa41485dfc6a1db212f702ebd3c873851cc067aebc2917e3f79763cae2fdb95046f38f3
-  languageName: node
-  linkType: hard
-
-"json-rpc-engine@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "json-rpc-engine@npm:6.1.0"
-  dependencies:
-    "@metamask/safe-event-emitter": ^2.0.0
-    eth-rpc-errors: ^4.0.2
-  checksum: 33b6c9bbd81abf8e323a0281ee05871713203c40d34a4d0bda27706cd0a0935c7b51845238ba89b73027e44ebc8034bbd82db9f962e6c578eb922d9b95acc8bd
   languageName: node
   linkType: hard
 
