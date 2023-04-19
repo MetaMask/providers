@@ -4,6 +4,7 @@ import { StreamProvider } from '../StreamProvider';
 import { MockPort } from '../../test/mocks/MockPort';
 import messages from '../messages';
 import { createExternalExtensionProvider } from './createExternalExtensionProvider';
+import config from './external-extension-config.json';
 
 /**
  * A fully initialized extension provider, and additional mocks to help
@@ -124,6 +125,30 @@ describe('createExternalExtensionProvider', () => {
     });
     const results = createExternalExtensionProvider();
     expect(results).toBeInstanceOf(StreamProvider);
+  });
+
+  it('supports Flask', () => {
+    // `global.chrome.runtime` mock setup by `jest-chrome` in `jest.setup.js`
+    (global.chrome.runtime.connect as any).mockImplementation(() => {
+      return new MockPort();
+    });
+    const results = createExternalExtensionProvider('flask');
+    expect(results).toBeInstanceOf(StreamProvider);
+    expect(global.chrome.runtime.connect).toHaveBeenCalledWith(
+      config.chromeIds.flask,
+    );
+  });
+
+  it('supports Beta', () => {
+    // `global.chrome.runtime` mock setup by `jest-chrome` in `jest.setup.js`
+    (global.chrome.runtime.connect as any).mockImplementation(() => {
+      return new MockPort();
+    });
+    const results = createExternalExtensionProvider('beta');
+    expect(results).toBeInstanceOf(StreamProvider);
+    expect(global.chrome.runtime.connect).toHaveBeenCalledWith(
+      config.chromeIds.beta,
+    );
   });
 
   describe('RPC warnings', () => {

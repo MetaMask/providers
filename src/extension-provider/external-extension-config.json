@@ -1,4 +1,12 @@
 {
-  "CHROME_ID": "nkbihfbeogaeaoehlefnkodbefgpgknn",
-  "FIREFOX_ID": "webextension@metamask.io"
+  "chromeIds": {
+    "stable": "nkbihfbeogaeaoehlefnkodbefgpgknn",
+    "beta": "pbbkamfgmaedccnfkmjcofcecjhfgldn",
+    "flask": "ljfoeinjpaedjfecbmggjgodbgkmjkjk"
+  },
+  "firefoxIds": {
+    "stable": "webextension@metamask.io",
+    "beta": "webextension-beta@metamask.io",
+    "flask": "webextension-flask@metamask.io"
+  }
 }
