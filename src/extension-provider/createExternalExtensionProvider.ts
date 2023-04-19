@@ -40,6 +40,5 @@ export function createExternalExtensionProvider(
 function getExtensionId(typeOrId: ExtensionType) {
   const ids =
     browser?.name === 'firefox' ? config.firefoxIds : config.chromeIds;
-  // @ts-expect-error Ignoring indexing error since we have a fallback value
-  return ids[typeOrId] ?? typeOrId;
+  return ids[typeOrId as keyof typeof ids] ?? typeOrId;
 }
