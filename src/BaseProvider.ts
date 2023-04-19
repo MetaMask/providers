@@ -1,14 +1,15 @@
+import { JsonRpcEngine, JsonRpcMiddleware } from '@metamask/json-rpc-engine';
+import { rpcErrors, JsonRpcError } from '@metamask/rpc-errors';
 import SafeEventEmitter from '@metamask/safe-event-emitter';
-import { ethErrors, EthereumRpcError } from 'eth-rpc-errors';
-import dequal from 'fast-deep-equal';
 import {
-  JsonRpcEngine,
   JsonRpcRequest,
   JsonRpcId,
-  JsonRpcVersion,
+  JsonRpcVersion2,
   JsonRpcSuccess,
-  JsonRpcMiddleware,
-} from 'json-rpc-engine';
+  JsonRpcParams,
+  Json,
+} from '@metamask/utils';
+import dequal from 'fast-deep-equal';
 
 import messages from './messages';
 import {
@@ -20,7 +21,7 @@ import {
 
 export type UnvalidatedJsonRpcRequest = {
   id?: JsonRpcId;
-  jsonrpc?: JsonRpcVersion;
+  jsonrpc?: JsonRpcVersion2;
   method: string;
   params?: unknown;
 };
@@ -37,10 +38,10 @@ export type BaseProviderOptions = {
   maxEventListeners?: number;
 
   /**
-   * `json-rpc-engine` middleware. The middleware will be inserted in the given
+   * `@metamask/json-rpc-engine` middleware. The middleware will be inserted in the given
    * order immediately after engine initialization.
    */
-  rpcMiddleware?: JsonRpcMiddleware<unknown, unknown>[];
+  rpcMiddleware?: JsonRpcMiddleware<JsonRpcParams, Json>[];
 };
 
 export type RequestArguments = {
@@ -169,7 +170,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
    */
   async request<T>(args: RequestArguments): Promise<Maybe<T>> {
     if (!args || typeof args !== 'object' || Array.isArray(args)) {
-      throw ethErrors.rpc.invalidRequest({
+      throw rpcErrors.invalidRequest({
         message: messages.errors.invalidRequestArgs(),
         data: args,
       });
@@ -178,7 +179,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     const { method, params } = args;
 
     if (typeof method !== 'string' || method.length === 0) {
-      throw ethErrors.rpc.invalidRequest({
+      throw rpcErrors.invalidRequest({
         message: messages.errors.invalidRequestMethod(),
         data: args,
       });
@@ -189,7 +190,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
       !Array.isArray(params) &&
       (typeof params !== 'object' || params === null)
     ) {
-      throw ethErrors.rpc.invalidRequest({
+      throw rpcErrors.invalidRequest({
         message: messages.errors.invalidRequestParams(),
         data: args,
       });
@@ -285,15 +286,9 @@ export abstract class BaseProvider extends SafeEventEmitter {
           callback(error, response);
         };
       }
-      return this._rpcEngine.handle(
-        payload as JsonRpcRequest<unknown>,
-        callbackWrapper,
-      );
+      return this._rpcEngine.handle(payload as JsonRpcRequest, callbackWrapper);
     }
-    return this._rpcEngine.handle(
-      payload as JsonRpcRequest<unknown>[],
-      callbackWrapper,
-    );
+    return this._rpcEngine.handle(payload as JsonRpcRequest[], callbackWrapper);
   }
 
   /**
@@ -331,13 +326,13 @@ export abstract class BaseProvider extends SafeEventEmitter {
 
       let error;
       if (isRecoverable) {
-        error = new EthereumRpcError(
+        error = new JsonRpcError(
           1013, // Try again later
           errorMessage ?? messages.errors.disconnected(),
         );
         this._log.debug(error);
       } else {
-        error = new EthereumRpcError(
+        error = new JsonRpcError(
           1011, // Internal error
           errorMessage ?? messages.errors.permanentlyDisconnected(),
         );

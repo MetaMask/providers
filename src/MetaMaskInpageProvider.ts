@@ -1,8 +1,7 @@
-import { ethErrors } from 'eth-rpc-errors';
-import type { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
+import { rpcErrors } from '@metamask/rpc-errors';
+import type { Json, JsonRpcRequest, JsonRpcResponse } from '@metamask/utils';
 import type { Duplex } from 'stream';
 
-import type { UnvalidatedJsonRpcRequest } from './BaseProvider';
 import messages from './messages';
 import { sendSiteMetadata } from './siteMetadata';
 import {
@@ -22,7 +21,7 @@ export type SendSyncJsonRpcRequest = {
     | 'eth_coinbase'
     | 'eth_uninstallFilter'
     | 'net_version';
-} & JsonRpcRequest<unknown>;
+} & JsonRpcRequest;
 
 type WarningEventName = keyof SentWarningsState['events'];
 
@@ -171,8 +170,8 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @param callback - The callback function.
    */
   sendAsync(
-    payload: JsonRpcRequest<unknown>,
-    callback: (error: Error | null, result?: JsonRpcResponse<unknown>) => void,
+    payload: JsonRpcRequest,
+    callback: (error: Error | null, result?: JsonRpcResponse<Json>) => void,
   ): void {
     this._rpcRequest(payload, callback);
   }
@@ -283,7 +282,10 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @returns A Promise that resolves with the JSON-RPC response object for the
    * request.
    */
-  send<T>(method: string, params?: T[]): Promise<JsonRpcResponse<T>>;
+  send<T extends Json>(
+    method: string,
+    params?: T[],
+  ): Promise<JsonRpcResponse<T>>;
 
   /**
    * Submits an RPC request per the given JSON-RPC request object.
@@ -293,8 +295,8 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @param callback - An error-first callback that will receive the JSON-RPC
    * response object.
    */
-  send<T>(
-    payload: JsonRpcRequest<unknown>,
+  send<T extends Json>(
+    payload: JsonRpcRequest,
     callback: (error: Error | null, result?: JsonRpcResponse<T>) => void,
   ): void;
 
@@ -306,7 +308,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @param payload - A JSON-RPC request object.
    * @returns A JSON-RPC response object.
    */
-  send<T>(payload: SendSyncJsonRpcRequest): JsonRpcResponse<T>;
+  send<T extends Json>(payload: SendSyncJsonRpcRequest): JsonRpcResponse<T>;
 
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
@@ -335,7 +337,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
       typeof callbackOrArgs === 'function'
     ) {
       return this._rpcRequest(
-        methodOrPayload as JsonRpcRequest<unknown>,
+        methodOrPayload as JsonRpcRequest,
         callbackOrArgs as (...args: unknown[]) => void,
       );
     }
@@ -412,7 +414,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
          */
         requestBatch: async (requests: UnvalidatedJsonRpcRequest[]) => {
           if (!Array.isArray(requests)) {
-            throw ethErrors.rpc.invalidRequest({
+            throw rpcErrors.invalidRequest({
               message:
                 'Batch requests must be made with an array of request objects.',
               data: requests,
