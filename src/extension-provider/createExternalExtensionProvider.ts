@@ -8,14 +8,16 @@ import config from './external-extension-config.json';
 
 const browser = detect();
 
-export function createExternalExtensionProvider() {
+export type ExtensionType = 'stable' | 'flask' | 'beta' | string;
+
+export function createExternalExtensionProvider(
+  typeOrId: ExtensionType = 'stable',
+) {
   let provider;
 
   try {
-    const currentMetaMaskId = getMetaMaskId();
-    const metamaskPort = chrome.runtime.connect(
-      currentMetaMaskId,
-    ) as Runtime.Port;
+    const extensionId = getExtensionId(typeOrId);
+    const metamaskPort = chrome.runtime.connect(extensionId) as Runtime.Port;
 
     const pluginStream = new PortStream(metamaskPort);
     provider = new StreamProvider(pluginStream, {
@@ -35,13 +37,8 @@ export function createExternalExtensionProvider() {
   return provider;
 }
 
-function getMetaMaskId() {
-  switch (browser?.name) {
-    case 'chrome':
-      return config.CHROME_ID;
-    case 'firefox':
-      return config.FIREFOX_ID;
-    default:
-      return config.CHROME_ID;
-  }
+function getExtensionId(typeOrId: ExtensionType) {
+  const ids =
+    browser?.name === 'firefox' ? config.firefoxIds : config.chromeIds;
+  return ids[typeOrId as keyof typeof ids] ?? typeOrId;
 }
