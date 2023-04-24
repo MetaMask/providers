@@ -36,7 +36,8 @@ export const getDefaultExternalMiddleware = (logger: ConsoleLike = console) => [
 ];
 
 /**
- * json-rpc-engine middleware that logs RPC errors and and validates req.method.
+ * A `json-rpc-engine` middleware that logs RPC errors and validates the request
+ * method.
  *
  * @param log - The logging API to use.
  * @returns A json-rpc-engine middleware function.
@@ -44,17 +45,17 @@ export const getDefaultExternalMiddleware = (logger: ConsoleLike = console) => [
 function createErrorMiddleware(
   log: ConsoleLike,
 ): JsonRpcMiddleware<unknown, unknown> {
-  return (req, res, next) => {
+  return (request, response, next) => {
     // json-rpc-engine will terminate the request when it notices this error
-    if (typeof req.method !== 'string' || !req.method) {
-      res.error = ethErrors.rpc.invalidRequest({
+    if (typeof request.method !== 'string' || !request.method) {
+      response.error = ethErrors.rpc.invalidRequest({
         message: `The request 'method' must be a non-empty string.`,
-        data: req,
+        data: request,
       });
     }
 
     next((done) => {
-      const { error } = res;
+      const { error } = response;
       if (!error) {
         return done();
       }

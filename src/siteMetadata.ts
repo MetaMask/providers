@@ -34,8 +34,9 @@ export async function sendSiteMetadata(
 }
 
 /**
- * Gets site metadata and returns it
+ * Get site metadata.
  *
+ * @returns The site metadata.
  */
 async function getSiteMetadata() {
   return {
@@ -45,9 +46,10 @@ async function getSiteMetadata() {
 }
 
 /**
- * Extracts a name for the site from the DOM
+ * Extract a name for the site from the DOM.
  *
- * @param windowObject
+ * @param windowObject - The window object to extract the site name from.
+ * @returns The site name.
  */
 function getSiteName(windowObject: typeof window): string {
   const { document } = windowObject;
@@ -74,10 +76,10 @@ function getSiteName(windowObject: typeof window): string {
 }
 
 /**
- * Extracts an icon for the site from the DOM
+ * Extract an icon for the site from the DOM.
  *
- * @param windowObject
- * @returns an icon URL
+ * @param windowObject - The window object to extract the site icon from.
+ * @returns An icon URL, if one exists.
  */
 async function getSiteIcon(
   windowObject: typeof window,
@@ -87,7 +89,7 @@ async function getSiteIcon(
   const icons: NodeListOf<HTMLLinkElement> = document.querySelectorAll(
     'head > link[rel~="icon"]',
   );
-  for (const icon of icons) {
+  for (const icon of Array.from(icons)) {
     if (icon && (await imgExists(icon.href))) {
       return icon.href;
     }
@@ -97,9 +99,9 @@ async function getSiteIcon(
 }
 
 /**
- * Returns whether the given image URL exists
+ * Return whether the given image URL exists.
  *
- * @param url - the url of the image
+ * @param url - The url of the image.
  * @returns Whether the image exists.
  */
 async function imgExists(url: string): Promise<boolean> {
@@ -109,8 +111,8 @@ async function imgExists(url: string): Promise<boolean> {
       img.onload = () => resolve(true);
       img.onerror = () => resolve(false);
       img.src = url;
-    } catch (e) {
-      reject(e);
+    } catch (error) {
+      reject(error);
     }
   });
 }

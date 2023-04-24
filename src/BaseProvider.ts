@@ -63,9 +63,9 @@ export type BaseProviderState = {
  * An abstract class implementing the EIP-1193 interface. Implementers must:
  *
  * 1. At initialization, push a middleware to the internal `_rpcEngine` that
- *    hands off requests to the server and receives responses in return.
+ * hands off requests to the server and receives responses in return.
  * 2. At initialization, retrieve initial state and call
- *    {@link BaseProvider._initializeState} **once**.
+ * {@link BaseProvider._initializeState} **once**.
  * 3. Ensure that the provider's state is synchronized with the wallet.
  * 4. Ensure that notifications are received and emitted as appropriate.
  */
@@ -98,11 +98,13 @@ export abstract class BaseProvider extends SafeEventEmitter {
   public selectedAddress: string | null;
 
   /**
-   * @param options - An options bag
-   * @param options.logger - The logging API to use. Default: console
+   * Create a new instance of the provider.
+   *
+   * @param options - An options bag.
+   * @param options.logger - The logging API to use. Default: `console`.
    * @param options.maxEventListeners - The maximum number of event
-   * listeners. Default: 100
-   * @param options.rpcMiddleware
+   * listeners. Default: 100.
+   * @param options.rpcMiddleware - The RPC middleware stack. Default: [].
    */
   constructor({
     logger = console,
@@ -148,6 +150,8 @@ export abstract class BaseProvider extends SafeEventEmitter {
 
   /**
    * Returns whether the provider can process RPC requests.
+   *
+   * @returns Whether the provider can process RPC requests.
    */
   isConnected(): boolean {
     return this._state.isConnected;
@@ -204,7 +208,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
   //====================
 
   /**
-   * **MUST** be called by child classes.
+   * MUST be called by child classes.
    *
    * Sets initial state if provided and marks this provider as initialized.
    * Throws if called more than once.
@@ -213,11 +217,11 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * compatibility with child classes that use this value.
    *
    * @param initialState - The provider's initial state.
-   * @param initialState.accounts
-   * @param initialState.chainId
-   * @param initialState.isUnlocked
-   * @param initialState.networkVersion
-   * @fires BaseProvider#_initialized
+   * @param initialState.accounts - The user's accounts.
+   * @param initialState.chainId - The chain ID.
+   * @param initialState.isUnlocked - Whether the user has unlocked MetaMask.
+   * @param initialState.networkVersion - The network version.
+   * @fires BaseProvider#_initialized - If `initialState` is defined.
    * @fires BaseProvider#connect - If `initialState` is defined.
    */
   protected _initializeState(initialState?: {
@@ -252,12 +256,13 @@ export abstract class BaseProvider extends SafeEventEmitter {
    *
    * @param payload - The RPC request object.
    * @param callback - The consumer's callback.
+   * @returns The result of the RPC request.
    */
   protected _rpcRequest(
     payload: UnvalidatedJsonRpcRequest | UnvalidatedJsonRpcRequest[],
     callback: (...args: any[]) => void,
   ) {
-    let cb = callback;
+    let callbackWrapper = callback;
 
     if (!Array.isArray(payload)) {
       if (!payload.jsonrpc) {
@@ -269,17 +274,23 @@ export abstract class BaseProvider extends SafeEventEmitter {
         payload.method === 'eth_requestAccounts'
       ) {
         // handle accounts changing
-        cb = (err: Error, res: JsonRpcSuccess<string[]>) => {
+        callbackWrapper = (error: Error, res: JsonRpcSuccess<string[]>) => {
           this._handleAccountsChanged(
-            res.result || [],
+            res.result ?? [],
             payload.method === 'eth_accounts',
           );
-          callback(err, res);
+          callback(error, res);
         };
       }
-      return this._rpcEngine.handle(payload as JsonRpcRequest<unknown>, cb);
+      return this._rpcEngine.handle(
+        payload as JsonRpcRequest<unknown>,
+        callbackWrapper,
+      );
     }
-    return this._rpcEngine.handle(payload as JsonRpcRequest<unknown>[], cb);
+    return this._rpcEngine.handle(
+      payload as JsonRpcRequest<unknown>[],
+      callbackWrapper,
+    );
   }
 
   /**
@@ -302,11 +313,11 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * required events. Idempotent with respect to the isRecoverable parameter.
    *
    * Error codes per the CloseEvent status codes as required by EIP-1193:
-   * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes
+   * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes.
    *
    * @param isRecoverable - Whether the disconnection is recoverable.
    * @param errorMessage - A custom error message.
-   * @fires BaseProvider#disconnect
+   * @fires BaseProvider#disconnect - If the disconnection is not recoverable.
    */
   protected _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
     if (
@@ -319,13 +330,13 @@ export abstract class BaseProvider extends SafeEventEmitter {
       if (isRecoverable) {
         error = new EthereumRpcError(
           1013, // Try again later
-          errorMessage || messages.errors.disconnected(),
+          errorMessage ?? messages.errors.disconnected(),
         );
         this._log.debug(error);
       } else {
         error = new EthereumRpcError(
           1011, // Internal error
-          errorMessage || messages.errors.permanentlyDisconnected(),
+          errorMessage ?? messages.errors.permanentlyDisconnected(),
         );
         this._log.error(error);
         this.chainId = null;
@@ -349,12 +360,13 @@ export abstract class BaseProvider extends SafeEventEmitter {
    *
    * @fires BaseProvider#chainChanged
    * @param networkInfo - An object with network info.
-   * @param networkInfo.networkVersion
    * @param networkInfo.chainId - The latest chain ID.
    */
   protected _handleChainChanged({
     chainId,
-  }: { chainId?: string; networkVersion?: string } = {}) {
+  }:
+    | { chainId?: string | undefined; networkVersion?: string | undefined }
+    | undefined = {}) {
     if (!isValidChainId(chainId)) {
       this._log.error(messages.errors.invalidNetworkParams(), { chainId });
       return;
@@ -455,7 +467,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
 
     if (isUnlocked !== this._state.isUnlocked) {
       this._state.isUnlocked = isUnlocked;
-      this._handleAccountsChanged(accounts || []);
+      this._handleAccountsChanged(accounts ?? []);
     }
   }
 }

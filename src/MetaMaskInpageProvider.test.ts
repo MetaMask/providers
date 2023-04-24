@@ -40,11 +40,6 @@ type InitializedProviderDetails = {
  * initialization.  See {@link MetaMaskInpageProvider._initializeState}.
  * @param options.onMethodCalled - A set of configuration objects for adding
  * method-specific callbacks.
- * @param options.onMethodCalled[].substream - The substream of the method that
- * the callback is for.
- * @param options.onMethodCalled[].method - The name of the method that the
- * callback is for.
- * @param options.onMethodCalled[].callback - The method callback.
  * @returns The initialized provider, its stream, and an "onWrite" stub that
  * can be used to inspect message sent by the provider.
  */
@@ -111,7 +106,10 @@ describe('MetaMaskInpageProvider: RPC', () => {
   const MOCK_ERROR_MESSAGE = 'Did you specify a mock return value?';
 
   /**
+   * Creates a new MetaMaskInpageProvider instance, with a mocked connection
+   * stream.
    *
+   * @returns The new MetaMaskInpageProvider instance.
    */
   function initializeProvider() {
     const mockStream = new MockConnectionStream();
@@ -131,8 +129,11 @@ describe('MetaMaskInpageProvider: RPC', () => {
       .fn()
       .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
 
-    const setNextRpcEngineResponse = (err: Error | null = null, res = {}) => {
-      mockRpcEngineResponse.mockReturnValueOnce([err, res]);
+    const setNextRpcEngineResponse = (
+      error: Error | null = null,
+      response = {},
+    ) => {
+      mockRpcEngineResponse.mockReturnValueOnce([error, response]);
     };
 
     beforeEach(() => {
@@ -140,9 +141,9 @@ describe('MetaMaskInpageProvider: RPC', () => {
       jest.spyOn(provider, '_handleAccountsChanged').mockImplementation();
       jest
         .spyOn(provider._rpcEngine, 'handle')
-        // eslint-disable-next-line node/no-callback-literal
-        .mockImplementation((_payload, cb: any) =>
-          cb(...mockRpcEngineResponse()),
+        .mockImplementation((_payload, callback: any) =>
+          // eslint-disable-next-line node/no-callback-literal
+          callback(...mockRpcEngineResponse()),
         );
     });
 
@@ -181,7 +182,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       await new Promise((done) => {
         provider.sendAsync(
           { method: 'foo', params: ['bar'] },
-          (err: Error | null, res: any) => {
+          (error: Error | null, response: any) => {
             expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
               expect.objectContaining({
                 method: 'foo',
@@ -190,8 +191,8 @@ describe('MetaMaskInpageProvider: RPC', () => {
               expect.any(Function),
             );
 
-            expect(err).toBeNull();
-            expect(res).toStrictEqual({ result: 42 });
+            expect(error).toBeNull();
+            expect(response).toStrictEqual({ result: 42 });
             done(undefined);
           },
         );
@@ -211,7 +212,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
             { method: 'bar', params: ['baz'] },
             { method: 'baz', params: ['buzz'] },
           ],
-          (err: Error | null, res: any) => {
+          (error: Error | null, response: any) => {
             expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
               expect.arrayContaining([
                 { method: 'foo', params: ['bar'] },
@@ -221,8 +222,8 @@ describe('MetaMaskInpageProvider: RPC', () => {
               expect.any(Function),
             );
 
-            expect(err).toBeNull();
-            expect(res).toStrictEqual([
+            expect(error).toBeNull();
+            expect(response).toStrictEqual([
               { result: 42 },
               { result: 41 },
               { result: 40 },
@@ -238,7 +239,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       await new Promise((done) => {
         provider.sendAsync(
           { method: 'foo', params: ['bar'] },
-          (err: Error | null, res: any) => {
+          (error: Error | null, response: any) => {
             expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
               expect.objectContaining({
                 method: 'foo',
@@ -247,8 +248,8 @@ describe('MetaMaskInpageProvider: RPC', () => {
               expect.any(Function),
             );
 
-            expect(err).toStrictEqual(new Error('foo'));
-            expect(res).toStrictEqual({ error: 'foo' });
+            expect(error).toStrictEqual(new Error('foo'));
+            expect(response).toStrictEqual({ error: 'foo' });
             done(undefined);
           },
         );
@@ -288,7 +289,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       await new Promise((done) => {
         provider.send(
           { method: 'foo', params: ['bar'] },
-          (err: any, res: any) => {
+          (error: any, response: any) => {
             expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
               expect.objectContaining({
                 method: 'foo',
@@ -297,8 +298,8 @@ describe('MetaMaskInpageProvider: RPC', () => {
               expect.any(Function),
             );
 
-            expect(err).toBeNull();
-            expect(res).toStrictEqual({ result: 42 });
+            expect(error).toBeNull();
+            expect(response).toStrictEqual({ result: 42 });
             done(undefined);
           },
         );
@@ -310,7 +311,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       await new Promise((done) => {
         provider.send(
           { method: 'foo', params: ['bar'] },
-          (err: any, res: any) => {
+          (error: any, response: any) => {
             expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
               expect.objectContaining({
                 method: 'foo',
@@ -319,8 +320,8 @@ describe('MetaMaskInpageProvider: RPC', () => {
               expect.any(Function),
             );
 
-            expect(err).toStrictEqual(new Error('foo'));
-            expect(res).toStrictEqual({ error: 'foo' });
+            expect(error).toStrictEqual(new Error('foo'));
+            expect(response).toStrictEqual({ error: 'foo' });
             done(undefined);
           },
         );
@@ -334,17 +335,20 @@ describe('MetaMaskInpageProvider: RPC', () => {
       .fn()
       .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
 
-    const setNextRpcRequestResponse = (err: Error | null = null, res = {}) => {
-      mockRpcRequestResponse.mockReturnValueOnce([err, res]);
+    const setNextRpcRequestResponse = (
+      error: Error | null = null,
+      response = {},
+    ) => {
+      mockRpcRequestResponse.mockReturnValueOnce([error, response]);
     };
 
     beforeEach(() => {
       provider = initializeProvider();
       jest
         .spyOn(provider, '_rpcRequest')
-        .mockImplementation((_payload, cb: any, _isInternal) =>
+        .mockImplementation((_payload, callback: any, _isInternal) =>
           // eslint-disable-next-line node/no-callback-literal
-          cb(...mockRpcRequestResponse()),
+          callback(...mockRpcRequestResponse()),
         );
     });
 
@@ -441,8 +445,11 @@ describe('MetaMaskInpageProvider: RPC', () => {
       .fn()
       .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
 
-    const setNextRpcEngineResponse = (err: Error | null = null, res = {}) => {
-      mockRpcEngineResponse.mockReturnValueOnce([err, res]);
+    const setNextRpcEngineResponse = (
+      error: Error | null = null,
+      response = {},
+    ) => {
+      mockRpcEngineResponse.mockReturnValueOnce([error, response]);
     };
 
     beforeEach(() => {
@@ -450,9 +457,9 @@ describe('MetaMaskInpageProvider: RPC', () => {
       jest.spyOn(provider, '_handleAccountsChanged').mockImplementation();
       jest
         .spyOn(provider._rpcEngine, 'handle')
-        // eslint-disable-next-line node/no-callback-literal
-        .mockImplementation((_payload, cb: any) =>
-          cb(...mockRpcEngineResponse()),
+        .mockImplementation((_payload, callback: any) =>
+          // eslint-disable-next-line node/no-callback-literal
+          callback(...mockRpcEngineResponse()),
         );
     });
 
@@ -461,7 +468,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       await new Promise((done) => {
         provider._rpcRequest(
           { method: 'foo', params: ['bar'] },
-          (err: any, res: any) => {
+          (error: any, response: any) => {
             expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
               expect.objectContaining({
                 method: 'foo',
@@ -470,8 +477,8 @@ describe('MetaMaskInpageProvider: RPC', () => {
               expect.any(Function),
             );
 
-            expect(err).toBeNull();
-            expect(res).toStrictEqual({ result: 42 });
+            expect(error).toBeNull();
+            expect(response).toStrictEqual({ result: 42 });
             done(undefined);
           },
         );
@@ -483,7 +490,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       await new Promise((done) => {
         provider._rpcRequest(
           { method: 'foo', params: ['bar'] },
-          (err: any, res: any) => {
+          (error: any, response: any) => {
             expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
               expect.objectContaining({
                 method: 'foo',
@@ -492,8 +499,8 @@ describe('MetaMaskInpageProvider: RPC', () => {
               expect.any(Function),
             );
 
-            expect(err).toStrictEqual(new Error('foo'));
-            expect(res).toStrictEqual({ error: 'foo' });
+            expect(error).toStrictEqual(new Error('foo'));
+            expect(response).toStrictEqual({ error: 'foo' });
             done(undefined);
           },
         );
@@ -505,7 +512,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       await new Promise((done) => {
         provider._rpcRequest(
           { method: 'eth_accounts' },
-          (err: any, res: any) => {
+          (error: any, response: any) => {
             expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
               expect.objectContaining({ method: 'eth_accounts' }),
               expect.any(Function),
@@ -516,8 +523,8 @@ describe('MetaMaskInpageProvider: RPC', () => {
               true,
             );
 
-            expect(err).toBeNull();
-            expect(res).toStrictEqual({ result: ['0x1'] });
+            expect(error).toBeNull();
+            expect(response).toStrictEqual({ result: ['0x1'] });
             done(undefined);
           },
         );
@@ -529,7 +536,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       await new Promise((done) => {
         provider._rpcRequest(
           { method: 'eth_accounts' },
-          (err: any, res: any) => {
+          (error: any, response: any) => {
             expect(provider._rpcEngine.handle).toHaveBeenCalledWith(
               expect.objectContaining({ method: 'eth_accounts' }),
               expect.any(Function),
@@ -540,8 +547,8 @@ describe('MetaMaskInpageProvider: RPC', () => {
               true,
             );
 
-            expect(err).toStrictEqual(new Error('foo'));
-            expect(res).toStrictEqual({ error: 'foo' });
+            expect(error).toStrictEqual(new Error('foo'));
+            expect(response).toStrictEqual({ error: 'foo' });
             done(undefined);
           },
         );
@@ -555,17 +562,20 @@ describe('MetaMaskInpageProvider: RPC', () => {
       .fn()
       .mockReturnValue([new Error(MOCK_ERROR_MESSAGE), undefined]);
 
-    const setNextRpcRequestResponse = (err: Error | null = null, res = {}) => {
-      mockRpcRequestResponse.mockReturnValueOnce([err, res]);
+    const setNextRpcRequestResponse = (
+      error: Error | null = null,
+      response = {},
+    ) => {
+      mockRpcRequestResponse.mockReturnValueOnce([error, response]);
     };
 
     beforeEach(() => {
       provider = initializeProvider();
       jest
         .spyOn(provider, '_rpcRequest')
-        .mockImplementation((_payload, cb: any, _isInternal) =>
+        .mockImplementation((_payload, callback: any, _isInternal) =>
           // eslint-disable-next-line node/no-callback-literal
-          cb(...mockRpcRequestResponse()),
+          callback(...mockRpcRequestResponse()),
         );
     });
 
@@ -631,7 +641,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       await new Promise((done) => {
         provider.send(
           { method: 'foo', params: ['bar'] },
-          (err: Error | null, res: any) => {
+          (error: Error | null, response: any) => {
             expect(provider._rpcRequest).toHaveBeenCalledWith(
               expect.objectContaining({
                 method: 'foo',
@@ -640,8 +650,8 @@ describe('MetaMaskInpageProvider: RPC', () => {
               expect.any(Function),
             );
 
-            expect(err).toBeNull();
-            expect(res).toStrictEqual({ result: 42 });
+            expect(error).toBeNull();
+            expect(response).toStrictEqual({ result: 42 });
             done(undefined);
           },
         );
@@ -653,7 +663,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       await new Promise((done) => {
         provider.send(
           { method: 'foo', params: ['bar'] },
-          (err: Error | null, res: any) => {
+          (error: Error | null, response: any) => {
             expect(provider._rpcRequest).toHaveBeenCalledWith(
               expect.objectContaining({
                 method: 'foo',
@@ -662,8 +672,8 @@ describe('MetaMaskInpageProvider: RPC', () => {
               expect.any(Function),
             );
 
-            expect(err).toStrictEqual(new Error('foo'));
-            expect(res).toStrictEqual({ error: 'foo' });
+            expect(error).toStrictEqual(new Error('foo'));
+            expect(response).toStrictEqual({ error: 'foo' });
             done(undefined);
           },
         );
@@ -833,7 +843,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       ];
 
       for (const { method, warning } of warnings) {
-        describe(method, () => {
+        describe(`${method}`, () => {
           it('should warn the first time the method is called', async () => {
             const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
             const { provider, connectionStream } = await getInitializedProvider(

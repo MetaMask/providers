@@ -39,8 +39,9 @@ export class MockPort {
    * extension to the wallet.
    *
    * @param message - The message being sent to the port.
-   * @param message.name
-   * @param message.data
+   * @param message.name - The name of the substream this message is included
+   * in.
+   * @param message.data - The JSON-RPC request.
    */
   postMessage(message: { name: string; data: JsonRpcRequest<unknown> }) {
     if (!this.#connected) {

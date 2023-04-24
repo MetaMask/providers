@@ -16,7 +16,7 @@ const warnings = [
 
 describe('createRpcWarningMiddleware', () => {
   for (const { method, warning } of warnings) {
-    describe(method, () => {
+    describe(`${method}`, () => {
       it('should warn the first time the method is called', async () => {
         const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
         const middleware = createRpcWarningMiddleware(globalThis.console);

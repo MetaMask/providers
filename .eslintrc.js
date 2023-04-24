@@ -7,6 +7,13 @@ module.exports = {
     {
       files: ['*.ts'],
       extends: ['@metamask/eslint-config-typescript'],
+      rules: {
+        // These are disabled because this project uses both Node.js and browser
+        // globals and packages. In the future, we should consider removing the
+        // Node.js-specific packages and enabling these rules.
+        'no-restricted-globals': 'off',
+        'import/no-nodejs-modules': 'off',
+      },
     },
 
     {

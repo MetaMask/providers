@@ -9,18 +9,20 @@ const mockErrorMessage = 'Did you specify a mock return value?';
 const mockStreamName = 'mock-stream';
 
 /**
+ * Returns a StreamProvider instance and a mock stream.
  *
- * @param rpcMiddleware
+ * @param rpcMiddleware - The RPC middleware to use.
+ * @returns A tuple containing the StreamProvider instance and the mock stream.
  */
-function getStreamProvider(
-  rpcMiddleware?: JsonRpcMiddleware<unknown, unknown>[],
+async function getStreamProvider(
+  rpcMiddleware: JsonRpcMiddleware<unknown, unknown>[] = [],
 ) {
   const mockStream = new MockConnectionStream();
   const streamProvider = new StreamProvider(mockStream, {
     jsonRpcStreamName: mockStreamName,
     rpcMiddleware,
   });
-  streamProvider.initialize();
+  await streamProvider.initialize();
 
   return [streamProvider, mockStream] as const;
 }
@@ -70,20 +72,23 @@ describe('StreamProvider', () => {
         .fn()
         .mockReturnValue([new Error(mockErrorMessage), undefined]);
 
-      const setNextRpcEngineResponse = (err: Error | null = null, res = {}) => {
-        mockRpcEngineResponse.mockReturnValueOnce([err, res]);
+      const setNextRpcEngineResponse = (
+        error: Error | null = null,
+        response = {},
+      ) => {
+        mockRpcEngineResponse.mockReturnValueOnce([error, response]);
       };
 
-      beforeEach(() => {
-        [streamProvider] = getStreamProvider();
+      beforeEach(async () => {
+        [streamProvider] = await getStreamProvider();
         jest
           .spyOn(streamProvider as any, '_handleAccountsChanged')
           .mockImplementation();
         jest
           .spyOn((streamProvider as any)._rpcEngine, 'handle')
-          // eslint-disable-next-line node/no-callback-literal
-          .mockImplementation((_payload, cb: any) =>
-            cb(...mockRpcEngineResponse()),
+          .mockImplementation((_payload, callback: any) =>
+            // eslint-disable-next-line node/no-callback-literal
+            callback(...mockRpcEngineResponse()),
           );
       });
 
@@ -127,18 +132,18 @@ describe('StreamProvider', () => {
         .fn()
         .mockReturnValue([new Error(mockErrorMessage), undefined]);
 
-      const setNextRpcRequestResponse = (err: any = null, res = {}) => {
-        mockRpcRequestResponse.mockReturnValueOnce([err, res]);
+      const setNextRpcRequestResponse = (error: any = null, response = {}) => {
+        mockRpcRequestResponse.mockReturnValueOnce([error, response]);
       };
 
-      beforeEach(() => {
-        [streamProvider] = getStreamProvider();
+      beforeEach(async () => {
+        [streamProvider] = await getStreamProvider();
         jest
           .spyOn(streamProvider as any, '_rpcRequest')
           .mockImplementation(
-            (_payload: unknown, cb: any, _isInternal: unknown) =>
+            (_payload: unknown, callback: any, _isInternal: unknown) =>
               // eslint-disable-next-line node/no-callback-literal
-              cb(...mockRpcRequestResponse()),
+              callback(...mockRpcRequestResponse()),
           );
       });
 
@@ -240,20 +245,23 @@ describe('StreamProvider', () => {
         .fn()
         .mockReturnValue([new Error(mockErrorMessage), undefined]);
 
-      const setNextRpcEngineResponse = (err: Error | null = null, res = {}) => {
-        mockRpcEngineResponse.mockReturnValueOnce([err, res]);
+      const setNextRpcEngineResponse = (
+        error: Error | null = null,
+        response = {},
+      ) => {
+        mockRpcEngineResponse.mockReturnValueOnce([error, response]);
       };
 
-      beforeEach(() => {
-        [streamProvider] = getStreamProvider();
+      beforeEach(async () => {
+        [streamProvider] = await getStreamProvider();
         jest
           .spyOn(streamProvider as any, '_handleAccountsChanged')
           .mockImplementation();
         jest
           .spyOn((streamProvider as any)._rpcEngine, 'handle')
-          // eslint-disable-next-line node/no-callback-literal
-          .mockImplementation((_payload, cb: any) =>
-            cb(...mockRpcEngineResponse()),
+          .mockImplementation((_payload, callback: any) =>
+            // eslint-disable-next-line node/no-callback-literal
+            callback(...mockRpcEngineResponse()),
           );
       });
 
@@ -262,7 +270,7 @@ describe('StreamProvider', () => {
         await new Promise((done) => {
           (streamProvider as any)._rpcRequest(
             { method: 'foo', params: ['bar'] },
-            (err: Error | null, res: any) => {
+            (error: Error | null, response: any) => {
               expect(
                 (streamProvider as any)._rpcEngine.handle,
               ).toHaveBeenCalledWith(
@@ -273,8 +281,8 @@ describe('StreamProvider', () => {
                 expect.any(Function),
               );
 
-              expect(err).toBeNull();
-              expect(res).toStrictEqual({ result: 42 });
+              expect(error).toBeNull();
+              expect(response).toStrictEqual({ result: 42 });
               done(undefined);
             },
           );
@@ -286,7 +294,7 @@ describe('StreamProvider', () => {
         await new Promise((done) => {
           (streamProvider as any)._rpcRequest(
             { method: 'foo', params: ['bar'] },
-            (err: Error | null, res: any) => {
+            (error: Error | null, response: any) => {
               expect(
                 (streamProvider as any)._rpcEngine.handle,
               ).toHaveBeenCalledWith(
@@ -297,8 +305,8 @@ describe('StreamProvider', () => {
                 expect.any(Function),
               );
 
-              expect(err).toStrictEqual(new Error('foo'));
-              expect(res).toStrictEqual({ error: 'foo' });
+              expect(error).toStrictEqual(new Error('foo'));
+              expect(response).toStrictEqual({ error: 'foo' });
               done(undefined);
             },
           );
@@ -310,7 +318,7 @@ describe('StreamProvider', () => {
         await new Promise((done) => {
           (streamProvider as any)._rpcRequest(
             { method: 'eth_accounts' },
-            (err: Error | null, res: any) => {
+            (error: Error | null, response: any) => {
               expect(
                 (streamProvider as any)._rpcEngine.handle,
               ).toHaveBeenCalledWith(
@@ -322,8 +330,8 @@ describe('StreamProvider', () => {
                 (streamProvider as any)._handleAccountsChanged,
               ).toHaveBeenCalledWith(['0x1'], true);
 
-              expect(err).toBeNull();
-              expect(res).toStrictEqual({ result: ['0x1'] });
+              expect(error).toBeNull();
+              expect(response).toStrictEqual({ result: ['0x1'] });
               done(undefined);
             },
           );
@@ -335,7 +343,7 @@ describe('StreamProvider', () => {
         await new Promise((done) => {
           (streamProvider as any)._rpcRequest(
             { method: 'eth_accounts' },
-            (err: Error | null, res: any) => {
+            (error: Error | null, response: any) => {
               expect(
                 (streamProvider as any)._rpcEngine.handle,
               ).toHaveBeenCalledWith(
@@ -347,8 +355,8 @@ describe('StreamProvider', () => {
                 (streamProvider as any)._handleAccountsChanged,
               ).toHaveBeenCalledWith([], true);
 
-              expect(err).toStrictEqual(new Error('foo'));
-              expect(res).toStrictEqual({ error: 'foo' });
+              expect(error).toStrictEqual(new Error('foo'));
+              expect(response).toStrictEqual({ error: 'foo' });
               done(undefined);
             },
           );

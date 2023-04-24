@@ -37,21 +37,23 @@ export abstract class AbstractStreamProvider extends BaseProvider {
   protected _jsonRpcConnection: JsonRpcConnection;
 
   /**
-   * @param connectionStream - A Node.js duplex stream
-   * @param options - An options bag
+   * Creates a new AbstractStreamProvider instance.
+   *
+   * @param connectionStream - A Node.js duplex stream.
+   * @param options - An options bag.
    * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
-   * @param options.logger - The logging API to use. Default: console
+   * @param options.logger - The logging API to use. Default: `console`.
    * @param options.maxEventListeners - The maximum number of event
-   * listeners. Default: 100
-   * @param options.rpcMiddleware
+   * listeners. Default: 100.
+   * @param options.rpcMiddleware - The RPC middleware stack to use.
    */
   constructor(
     connectionStream: Duplex,
     {
       jsonRpcStreamName,
-      logger,
-      maxEventListeners,
-      rpcMiddleware,
+      logger = console,
+      maxEventListeners = 100,
+      rpcMiddleware = [],
     }: StreamProviderOptions,
   ) {
     super({ logger, maxEventListeners, rpcMiddleware });
@@ -60,27 +62,27 @@ export abstract class AbstractStreamProvider extends BaseProvider {
       throw new Error(messages.errors.invalidDuplexStream());
     }
 
-    // Bind functions to prevent consumers from making unbound calls
-    this._handleStreamDisconnect = this._handleStreamDisconnect.bind(this);
-
     // Set up connectionStream multiplexing
     const mux = new ObjectMultiplex();
     pump(
       connectionStream,
       mux as unknown as Duplex,
       connectionStream,
-      this._handleStreamDisconnect.bind(this, 'MetaMask'),
+      this.#handleStreamDisconnect.bind(this, 'MetaMask'),
     );
 
     // Set up RPC connection
+    // Typecast: The type of `Duplex` is incompatible with the type of
+    // `JsonRpcConnection`.
     this._jsonRpcConnection = createStreamMiddleware({
       retryOnMessage: 'METAMASK_EXTENSION_CONNECT_CAN_RETRY',
-    });
+    }) as unknown as JsonRpcConnection;
+
     pump(
       this._jsonRpcConnection.stream,
       mux.createStream(jsonRpcStreamName) as unknown as Duplex,
       this._jsonRpcConnection.stream,
-      this._handleStreamDisconnect.bind(this, 'MetaMask RpcProvider'),
+      this.#handleStreamDisconnect.bind(this, 'MetaMask RpcProvider'),
     );
 
     // Wire up the JsonRpcEngine to the JSON-RPC connection stream
@@ -113,7 +115,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
   //====================
 
   /**
-   * **MUST** be called by child classes.
+   * MUST be called by child classes.
    *
    * Calls `metamask_getProviderState` and passes the result to
    * {@link BaseProvider._initializeState}. Logs an error if getting initial state
@@ -139,11 +141,12 @@ export abstract class AbstractStreamProvider extends BaseProvider {
    * Called when connection is lost to critical streams. Emits an 'error' event
    * from the provider with the error message and stack if present.
    *
-   * @param streamName
-   * @param error
-   * @fires BaseProvider#disconnect
+   * @param streamName - The name of the stream that disconnected.
+   * @param error - The error that caused the disconnection.
+   * @fires BaseProvider#disconnect - If the provider is not already
+   * disconnected.
    */
-  private _handleStreamDisconnect(streamName: string, error: Error) {
+  #handleStreamDisconnect(streamName: string, error: Error) {
     let warningMsg = `MetaMask: Lost connection to "${streamName}".`;
     if (error?.stack) {
       warningMsg += `\n${error.stack}`;
@@ -174,7 +177,10 @@ export abstract class AbstractStreamProvider extends BaseProvider {
   protected _handleChainChanged({
     chainId,
     networkVersion,
-  }: { chainId?: string; networkVersion?: string } = {}) {
+  }: {
+    chainId?: string | undefined;
+    networkVersion?: string | undefined;
+  } = {}) {
     if (!isValidChainId(chainId) || !isValidNetworkVersion(networkVersion)) {
       this._log.error(messages.errors.invalidNetworkParams(), {
         chainId,
@@ -199,7 +205,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
  */
 export class StreamProvider extends AbstractStreamProvider {
   /**
-   * **MUST** be called after instantiation to complete initialization.
+   * MUST be called after instantiation to complete initialization.
    *
    * Calls `metamask_getProviderState` and passes the result to
    * {@link BaseProvider._initializeState}. Logs an error if getting initial state

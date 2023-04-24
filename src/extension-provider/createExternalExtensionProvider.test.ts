@@ -33,11 +33,6 @@ type InitializedExtensionProviderDetails = {
  * initialization.  See {@link MetaMaskInpageProvider._initializeState}.
  * @param options.onMethodCalled - A set of configuration objects for adding
  * method-specific callbacks.
- * @param options.onMethodCalled[].substream - The substream of the method that
- * the callback is for.
- * @param options.onMethodCalled[].method - The name of the method that the
- * callback is for.
- * @param options.onMethodCalled[].callback - The method callback.
  * @returns A tuple of the initialized provider, the mock port used, and an
  * "onWrite" stub that can be used to inspect message sent by the provider.
  */
@@ -176,7 +171,7 @@ describe('createExternalExtensionProvider', () => {
     ];
 
     for (const { method, warning } of warnings) {
-      describe(method, () => {
+      describe(`${method}`, () => {
         it('should warn the first time the method is called', async () => {
           const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
           const { provider, port } = await getInitializedProvider({

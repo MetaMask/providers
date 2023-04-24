@@ -33,7 +33,7 @@ type InitializeProviderOptions = {
  * @param options.shouldSendMetadata - Whether the provider should send page metadata.
  * @param options.shouldSetOnWindow - Whether the provider should be set as window.ethereum.
  * @param options.shouldShimWeb3 - Whether a window.web3 shim should be injected.
- * @param options.logger
+ * @param options.logger - The logging API to use. Default: `console`.
  * @returns The initialized provider (whether set or not).
  */
 export function initializeProvider({
