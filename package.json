@@ -33,8 +33,6 @@
     "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write && yarn lint:dependencies && yarn lint:changelog",
     "lint:misc": "prettier '**/*.json' '**/*.md' '!CHANGELOG.md' '**/*.yml' '!.yarnrc.yml' --ignore-path .gitignore --no-error-on-unmatched-pattern",
     "prepack": "./scripts/prepack.sh",
-    "prepublishOnly": "yarn build && yarn lint && yarn test",
-    "setup": "yarn install && yarn allow-scripts",
     "test": "jest && jest-it-up",
     "test:watch": "jest --watch"
   },

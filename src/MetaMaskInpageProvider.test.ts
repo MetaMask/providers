@@ -866,8 +866,6 @@ describe('MetaMaskInpageProvider: RPC', () => {
 
             await provider.request({ method });
 
-            console.log('consoleWarnSpy.mock.calls', consoleWarnSpy.mock.calls);
-
             expect(consoleWarnSpy).toHaveBeenCalledWith(warning);
             expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
           });
