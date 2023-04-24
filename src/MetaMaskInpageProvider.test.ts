@@ -67,7 +67,7 @@ async function getInitializedProvider({
       name === 'metamask-provider' &&
       data.method === 'metamask_getProviderState'
     ) {
-      // Wrap in `setImmediate` to ensure a reply is recieved by the provider
+      // Wrap in `setImmediate` to ensure a reply is received by the provider
       // after the provider has processed the request, to ensure that the
       // provider recognizes the id.
       setImmediate(() =>

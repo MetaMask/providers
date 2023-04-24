@@ -14,7 +14,7 @@ const mockStreamName = 'mock-stream';
  * @param rpcMiddleware - The RPC middleware to use.
  * @returns A tuple containing the StreamProvider instance and the mock stream.
  */
-async function getStreamProvider(
+function getStreamProvider(
   rpcMiddleware: JsonRpcMiddleware<unknown, unknown>[] = [],
 ) {
   const mockStream = new MockConnectionStream();
@@ -22,7 +22,9 @@ async function getStreamProvider(
     jsonRpcStreamName: mockStreamName,
     rpcMiddleware,
   });
-  await streamProvider.initialize();
+
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  streamProvider.initialize();
 
   return [streamProvider, mockStream] as const;
 }
@@ -79,8 +81,8 @@ describe('StreamProvider', () => {
         mockRpcEngineResponse.mockReturnValueOnce([error, response]);
       };
 
-      beforeEach(async () => {
-        [streamProvider] = await getStreamProvider();
+      beforeEach(() => {
+        [streamProvider] = getStreamProvider();
         jest
           .spyOn(streamProvider as any, '_handleAccountsChanged')
           .mockImplementation();
@@ -136,8 +138,8 @@ describe('StreamProvider', () => {
         mockRpcRequestResponse.mockReturnValueOnce([error, response]);
       };
 
-      beforeEach(async () => {
-        [streamProvider] = await getStreamProvider();
+      beforeEach(() => {
+        [streamProvider] = getStreamProvider();
         jest
           .spyOn(streamProvider as any, '_rpcRequest')
           .mockImplementation(
@@ -252,8 +254,8 @@ describe('StreamProvider', () => {
         mockRpcEngineResponse.mockReturnValueOnce([error, response]);
       };
 
-      beforeEach(async () => {
-        [streamProvider] = await getStreamProvider();
+      beforeEach(() => {
+        [streamProvider] = getStreamProvider();
         jest
           .spyOn(streamProvider as any, '_handleAccountsChanged')
           .mockImplementation();
@@ -343,7 +345,7 @@ describe('StreamProvider', () => {
         await new Promise((done) => {
           (streamProvider as any)._rpcRequest(
             { method: 'eth_accounts' },
-            (error: Error | null, response: any) => {
+            (error: Error | null, res: any) => {
               expect(
                 (streamProvider as any)._rpcEngine.handle,
               ).toHaveBeenCalledWith(
@@ -356,7 +358,7 @@ describe('StreamProvider', () => {
               ).toHaveBeenCalledWith([], true);
 
               expect(error).toStrictEqual(new Error('foo'));
-              expect(response).toStrictEqual({ error: 'foo' });
+              expect(res).toStrictEqual({ error: 'foo' });
               done(undefined);
             },
           );

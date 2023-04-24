@@ -274,12 +274,15 @@ export abstract class BaseProvider extends SafeEventEmitter {
         payload.method === 'eth_requestAccounts'
       ) {
         // handle accounts changing
-        callbackWrapper = (error: Error, res: JsonRpcSuccess<string[]>) => {
+        callbackWrapper = (
+          error: Error,
+          response: JsonRpcSuccess<string[]>,
+        ) => {
           this._handleAccountsChanged(
-            res.result ?? [],
+            response.result ?? [],
             payload.method === 'eth_accounts',
           );
-          callback(error, res);
+          callback(error, response);
         };
       }
       return this._rpcEngine.handle(

@@ -305,12 +305,10 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @param payload - A JSON-RPC request object.
    * @returns A JSON-RPC response object.
    */
-  send<T>(payload: SendSyncJsonRpcRequest): Promise<JsonRpcResponse<T>>;
+  send<T>(payload: SendSyncJsonRpcRequest): JsonRpcResponse<T>;
 
-  async send(
-    methodOrPayload: unknown,
-    callbackOrArgs?: unknown,
-  ): Promise<unknown> {
+  // eslint-disable-next-line @typescript-eslint/promise-function-async
+  send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
     if (!this._sentWarnings.send) {
       this._log.warn(messages.warnings.sendDeprecation);
       this._sentWarnings.send = true;

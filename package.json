@@ -76,6 +76,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "jest": "^28.1.3",
     "jest-chrome": "^0.7.1",
+    "jest-environment-jsdom": "^29.5.0",
     "jest-it-up": "^2.0.2",
     "prettier": "^2.7.1",
     "prettier-plugin-packagejson": "^2.3.0",
