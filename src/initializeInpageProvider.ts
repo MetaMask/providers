@@ -1,11 +1,12 @@
 import { Duplex } from 'stream';
+
 import {
   MetaMaskInpageProvider,
   MetaMaskInpageProviderOptions,
 } from './MetaMaskInpageProvider';
 import { shimWeb3 } from './shimWeb3';
 
-interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
+type InitializeProviderOptions = {
   /**
    * The stream used to connect to the wallet.
    */
@@ -20,7 +21,7 @@ interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
    * Whether the window.web3 shim should be set.
    */
   shouldShimWeb3?: boolean;
-}
+} & MetaMaskInpageProviderOptions;
 
 /**
  * Initializes a MetaMaskInpageProvider and (optionally) assigns it as window.ethereum.
@@ -32,6 +33,7 @@ interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
  * @param options.shouldSendMetadata - Whether the provider should send page metadata.
  * @param options.shouldSetOnWindow - Whether the provider should be set as window.ethereum.
  * @param options.shouldShimWeb3 - Whether a window.web3 shim should be injected.
+ * @param options.logger
  * @returns The initialized provider (whether set or not).
  */
 export function initializeProvider({

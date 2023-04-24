@@ -1,25 +1,27 @@
 import { JsonRpcRequest } from 'json-rpc-engine';
-import { MockConnectionStream } from '../test/mocks/MockConnectionStream';
+
+import messages from './messages';
 import {
   MetaMaskInpageProviderStreamName,
   MetaMaskInpageProvider,
 } from './MetaMaskInpageProvider';
-import messages from './messages';
+import { MockConnectionStream } from '../test/mocks/MockConnectionStream';
 
 /**
  * A fully initialized inpage provider, and additional mocks to help
  * test the provider.
  */
-interface InitializedProviderDetails {
+type InitializedProviderDetails = {
   /** The initialized provider, created using a mocked connection stream. */
   provider: MetaMaskInpageProvider;
   /** The mock connection stream used to create the provider. */
   connectionStream: MockConnectionStream;
-  /** A mock function that can be used to inspect what gets written to the
+  /**
+   * A mock function that can be used to inspect what gets written to the
    * mock connection Stream.
    */
   onWrite: ReturnType<typeof jest.fn>;
-}
+};
 
 /**
  * For legacy purposes, MetaMaskInpageProvider retrieves state from the wallet
@@ -108,6 +110,9 @@ async function getInitializedProvider({
 describe('MetaMaskInpageProvider: RPC', () => {
   const MOCK_ERROR_MESSAGE = 'Did you specify a mock return value?';
 
+  /**
+   *
+   */
   function initializeProvider() {
     const mockStream = new MockConnectionStream();
     const provider: any | MetaMaskInpageProvider = new MetaMaskInpageProvider(
@@ -721,7 +726,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
   });
 
   describe('provider events', () => {
-    it('calls chainChanged when receiving a new chainId ', async () => {
+    it('calls chainChanged when receiving a new chainId', async () => {
       const { provider, connectionStream } = await getInitializedProvider();
 
       await new Promise((resolve) => {
@@ -738,7 +743,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       });
     });
 
-    it('calls networkChanged when receiving a new networkVersion ', async () => {
+    it('calls networkChanged when receiving a new networkVersion', async () => {
       const { provider, connectionStream } = await getInitializedProvider();
 
       await new Promise((resolve) => {
@@ -924,7 +929,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
               },
             );
 
-            await expect(() =>
+            await expect(async () =>
               provider.request({ method }),
             ).rejects.toMatchObject({
               code: 0,

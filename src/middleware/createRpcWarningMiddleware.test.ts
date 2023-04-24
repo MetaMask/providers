@@ -1,6 +1,7 @@
 import { JsonRpcEngine, JsonRpcFailure, JsonRpcSuccess } from 'json-rpc-engine';
-import messages from '../messages';
+
 import { createRpcWarningMiddleware } from './createRpcWarningMiddleware';
+import messages from '../messages';
 
 const warnings = [
   {

@@ -1,39 +1,39 @@
-import type { Duplex } from 'stream';
-import type { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
 import { ethErrors } from 'eth-rpc-errors';
-import { sendSiteMetadata } from './siteMetadata';
+import type { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
+import type { Duplex } from 'stream';
+
+import type { UnvalidatedJsonRpcRequest } from './BaseProvider';
 import messages from './messages';
+import { sendSiteMetadata } from './siteMetadata';
+import {
+  AbstractStreamProvider,
+  StreamProviderOptions,
+} from './StreamProvider';
 import {
   EMITTED_NOTIFICATIONS,
   getDefaultExternalMiddleware,
   getRpcPromiseCallback,
   NOOP,
 } from './utils';
-import type { UnvalidatedJsonRpcRequest } from './BaseProvider';
-import {
-  AbstractStreamProvider,
-  StreamProviderOptions,
-} from './StreamProvider';
 
-export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
+export type SendSyncJsonRpcRequest = {
   method:
     | 'eth_accounts'
     | 'eth_coinbase'
     | 'eth_uninstallFilter'
     | 'net_version';
-}
+} & JsonRpcRequest<unknown>;
 
 type WarningEventName = keyof SentWarningsState['events'];
 
-export interface MetaMaskInpageProviderOptions
-  extends Partial<Omit<StreamProviderOptions, 'rpcMiddleware'>> {
+export type MetaMaskInpageProviderOptions = {
   /**
    * Whether the provider should send page metadata.
    */
   shouldSendMetadata?: boolean;
-}
+} & Partial<Omit<StreamProviderOptions, 'rpcMiddleware'>>;
 
-interface SentWarningsState {
+type SentWarningsState = {
   // methods
   enable: boolean;
   experimentalMethods: boolean;
@@ -45,7 +45,7 @@ interface SentWarningsState {
     networkChanged: boolean;
     notification: boolean;
   };
-}
+};
 
 /**
  * The name of the stream consumed by {@link MetaMaskInpageProvider}.
@@ -217,7 +217,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    *
    * @param isRecoverable - Whether the disconnection is recoverable.
    * @param errorMessage - A custom error message.
-   * @emits BaseProvider#disconnect
+   * @fires BaseProvider#disconnect
    */
   protected _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
     super._handleDisconnect(isRecoverable, errorMessage);
@@ -228,9 +228,11 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
 
   /**
    * Warns of deprecation for the given event, if applicable.
+   *
+   * @param eventName
    */
   protected _warnOfDeprecation(eventName: string): void {
-    if (this._sentWarnings?.events[eventName as WarningEventName] === false) {
+    if (!this._sentWarnings?.events[eventName as WarningEventName]) {
       this._log.warn(messages.warnings.events[eventName as WarningEventName]);
       this._sentWarnings.events[eventName as WarningEventName] = true;
     }
@@ -246,7 +248,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @deprecated Use request({ method: 'eth_requestAccounts' }) instead.
    * @returns A promise that resolves to an array of addresses.
    */
-  enable(): Promise<string[]> {
+  async enable(): Promise<string[]> {
     if (!this._sentWarnings.enable) {
       this._log.warn(messages.warnings.enableDeprecation);
       this._sentWarnings.enable = true;
@@ -298,7 +300,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    */
   send<T>(payload: SendSyncJsonRpcRequest): JsonRpcResponse<T>;
 
-  send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
+  async send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
     if (!this._sentWarnings.send) {
       this._log.warn(messages.warnings.sendDeprecation);
       this._sentWarnings.send = true;
@@ -334,6 +336,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   /**
    * Internal backwards compatibility method, used in send.
    *
+   * @param payload
    * @deprecated
    */
   protected _sendSync(payload: SendSyncJsonRpcRequest) {
@@ -392,6 +395,8 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
 
         /**
          * Make a batch RPC request.
+         *
+         * @param requests
          */
         requestBatch: async (requests: UnvalidatedJsonRpcRequest[]) => {
           if (!Array.isArray(requests)) {
@@ -424,7 +429,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * events and sets relevant public state. Does nothing if neither the chainId
    * nor the networkVersion are different from existing values.
    *
-   * @emits MetamaskInpageProvider#networkChanged
+   * @fires MetamaskInpageProvider#networkChanged
    * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
    * @param networkInfo.networkVersion - The latest network ID.

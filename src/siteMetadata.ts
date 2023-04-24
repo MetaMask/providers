@@ -46,6 +46,8 @@ async function getSiteMetadata() {
 
 /**
  * Extracts a name for the site from the DOM
+ *
+ * @param windowObject
  */
 function getSiteName(windowObject: typeof window): string {
   const { document } = windowObject;
@@ -73,6 +75,8 @@ function getSiteName(windowObject: typeof window): string {
 
 /**
  * Extracts an icon for the site from the DOM
+ *
+ * @param windowObject
  * @returns an icon URL
  */
 async function getSiteIcon(
@@ -94,10 +98,11 @@ async function getSiteIcon(
 
 /**
  * Returns whether the given image URL exists
+ *
  * @param url - the url of the image
  * @returns Whether the image exists.
  */
-function imgExists(url: string): Promise<boolean> {
+async function imgExists(url: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     try {
       const img = document.createElement('img');

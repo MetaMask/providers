@@ -1,12 +1,17 @@
 import type { JsonRpcMiddleware } from 'json-rpc-engine';
-import { MockConnectionStream } from '../test/mocks/MockConnectionStream';
-import { StreamProvider } from './StreamProvider';
+
 import messages from './messages';
+import { StreamProvider } from './StreamProvider';
+import { MockConnectionStream } from '../test/mocks/MockConnectionStream';
 
 const mockErrorMessage = 'Did you specify a mock return value?';
 
 const mockStreamName = 'mock-stream';
 
+/**
+ *
+ * @param rpcMiddleware
+ */
 function getStreamProvider(
   rpcMiddleware?: JsonRpcMiddleware<unknown, unknown>[],
 ) {
@@ -172,57 +177,57 @@ describe('StreamProvider', () => {
       });
 
       it('throws on non-object args', async () => {
-        await expect(() =>
+        await expect(async () =>
           streamProvider.request(undefined as any),
         ).rejects.toThrow(messages.errors.invalidRequestArgs());
 
-        await expect(() => streamProvider.request(null as any)).rejects.toThrow(
-          messages.errors.invalidRequestArgs(),
-        );
+        await expect(async () =>
+          streamProvider.request(null as any),
+        ).rejects.toThrow(messages.errors.invalidRequestArgs());
 
-        await expect(() => streamProvider.request([] as any)).rejects.toThrow(
-          messages.errors.invalidRequestArgs(),
-        );
+        await expect(async () =>
+          streamProvider.request([] as any),
+        ).rejects.toThrow(messages.errors.invalidRequestArgs());
 
-        await expect(() =>
+        await expect(async () =>
           streamProvider.request('foo' as any),
         ).rejects.toThrow(messages.errors.invalidRequestArgs());
       });
 
       it('throws on invalid args.method', async () => {
-        await expect(() => streamProvider.request({} as any)).rejects.toThrow(
-          messages.errors.invalidRequestMethod(),
-        );
+        await expect(async () =>
+          streamProvider.request({} as any),
+        ).rejects.toThrow(messages.errors.invalidRequestMethod());
 
-        await expect(() =>
+        await expect(async () =>
           streamProvider.request({ method: null } as any),
         ).rejects.toThrow(messages.errors.invalidRequestMethod());
 
-        await expect(() =>
+        await expect(async () =>
           streamProvider.request({
             method: 2 as any,
           }),
         ).rejects.toThrow(messages.errors.invalidRequestMethod());
 
-        await expect(() =>
+        await expect(async () =>
           streamProvider.request({ method: '' }),
         ).rejects.toThrow(messages.errors.invalidRequestMethod());
       });
 
       it('throws on invalid args.params', async () => {
-        await expect(() =>
+        await expect(async () =>
           streamProvider.request({ method: 'foo', params: null } as any),
         ).rejects.toThrow(messages.errors.invalidRequestParams());
 
-        await expect(() =>
+        await expect(async () =>
           streamProvider.request({ method: 'foo', params: 2 } as any),
         ).rejects.toThrow(messages.errors.invalidRequestParams());
 
-        await expect(() =>
+        await expect(async () =>
           streamProvider.request({ method: 'foo', params: true } as any),
         ).rejects.toThrow(messages.errors.invalidRequestParams());
 
-        await expect(() =>
+        await expect(async () =>
           streamProvider.request({ method: 'foo', params: 'a' } as any),
         ).rejects.toThrow(messages.errors.invalidRequestParams());
       });
@@ -414,7 +419,7 @@ describe('StreamProvider', () => {
 
         await new Promise<void>((resolve) => {
           streamProvider.once('disconnect', (error) => {
-            expect((error as any).code).toBe(1013);
+            expect(error.code).toBe(1013);
             resolve();
           });
 

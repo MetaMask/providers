@@ -1,30 +1,31 @@
-import type { Duplex } from 'stream';
 import ObjectMultiplex from '@metamask/object-multiplex';
 import SafeEventEmitter from '@metamask/safe-event-emitter';
 import { duplex as isDuplex } from 'is-stream';
 import type { JsonRpcMiddleware } from 'json-rpc-engine';
 import { createStreamMiddleware } from 'json-rpc-middleware-stream';
 import pump from 'pump';
+import type { Duplex } from 'stream';
+
+import { BaseProvider, BaseProviderOptions } from './BaseProvider';
 import messages from './messages';
 import {
   EMITTED_NOTIFICATIONS,
   isValidChainId,
   isValidNetworkVersion,
 } from './utils';
-import { BaseProvider, BaseProviderOptions } from './BaseProvider';
 
-export interface StreamProviderOptions extends BaseProviderOptions {
+export type StreamProviderOptions = {
   /**
    * The name of the stream used to connect to the wallet.
    */
   jsonRpcStreamName: string;
-}
+} & BaseProviderOptions;
 
-export interface JsonRpcConnection {
+export type JsonRpcConnection = {
   events: SafeEventEmitter;
   middleware: JsonRpcMiddleware<unknown, unknown>;
   stream: Duplex;
-}
+};
 
 /**
  * An abstract EIP-1193 provider wired to some duplex stream via a
@@ -42,6 +43,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
    * @param options.logger - The logging API to use. Default: console
    * @param options.maxEventListeners - The maximum number of event
    * listeners. Default: 100
+   * @param options.rpcMiddleware
    */
   constructor(
     connectionStream: Duplex,
@@ -137,7 +139,9 @@ export abstract class AbstractStreamProvider extends BaseProvider {
    * Called when connection is lost to critical streams. Emits an 'error' event
    * from the provider with the error message and stack if present.
    *
-   * @emits BaseProvider#disconnect
+   * @param streamName
+   * @param error
+   * @fires BaseProvider#disconnect
    */
   private _handleStreamDisconnect(streamName: string, error: Error) {
     let warningMsg = `MetaMask: Lost connection to "${streamName}".`;
@@ -162,7 +166,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
    * `networkVersion` for other purposes must implement additional handling
    * therefore.
    *
-   * @emits BaseProvider#chainChanged
+   * @fires BaseProvider#chainChanged
    * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
    * @param networkInfo.networkVersion - The latest network ID.

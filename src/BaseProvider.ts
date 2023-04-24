@@ -9,6 +9,7 @@ import {
   JsonRpcSuccess,
   JsonRpcMiddleware,
 } from 'json-rpc-engine';
+
 import messages from './messages';
 import {
   getRpcPromiseCallback,
@@ -17,14 +18,14 @@ import {
   isValidChainId,
 } from './utils';
 
-export interface UnvalidatedJsonRpcRequest {
+export type UnvalidatedJsonRpcRequest = {
   id?: JsonRpcId;
   jsonrpc?: JsonRpcVersion;
   method: string;
   params?: unknown;
-}
+};
 
-export interface BaseProviderOptions {
+export type BaseProviderOptions = {
   /**
    * The logging API to use.
    */
@@ -40,23 +41,23 @@ export interface BaseProviderOptions {
    * order immediately after engine initialization.
    */
   rpcMiddleware?: JsonRpcMiddleware<unknown, unknown>[];
-}
+};
 
-export interface RequestArguments {
+export type RequestArguments = {
   /** The RPC method to request. */
   method: string;
 
   /** The params of the RPC method, if any. */
   params?: unknown[] | Record<string, unknown>;
-}
+};
 
-export interface BaseProviderState {
+export type BaseProviderState = {
   accounts: null | string[];
   isConnected: boolean;
   isUnlocked: boolean;
   initialized: boolean;
   isPermanentlyDisconnected: boolean;
-}
+};
 
 /**
  * An abstract class implementing the EIP-1193 interface. Implementers must:
@@ -101,6 +102,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * @param options.logger - The logging API to use. Default: console
    * @param options.maxEventListeners - The maximum number of event
    * listeners. Default: 100
+   * @param options.rpcMiddleware
    */
   constructor({
     logger = console,
@@ -211,8 +213,12 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * compatibility with child classes that use this value.
    *
    * @param initialState - The provider's initial state.
-   * @emits BaseProvider#_initialized
-   * @emits BaseProvider#connect - If `initialState` is defined.
+   * @param initialState.accounts
+   * @param initialState.chainId
+   * @param initialState.isUnlocked
+   * @param initialState.networkVersion
+   * @fires BaseProvider#_initialized
+   * @fires BaseProvider#connect - If `initialState` is defined.
    */
   protected _initializeState(initialState?: {
     accounts: string[];
@@ -220,7 +226,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     isUnlocked: boolean;
     networkVersion?: string;
   }) {
-    if (this._state.initialized === true) {
+    if (this._state.initialized) {
       throw new Error('Provider already initialized.');
     }
 
@@ -281,7 +287,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * required events. Idempotent.
    *
    * @param chainId - The ID of the newly connected chain.
-   * @emits MetaMaskInpageProvider#connect
+   * @fires MetaMaskInpageProvider#connect
    */
   protected _handleConnect(chainId: string) {
     if (!this._state.isConnected) {
@@ -300,7 +306,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
    *
    * @param isRecoverable - Whether the disconnection is recoverable.
    * @param errorMessage - A custom error message.
-   * @emits BaseProvider#disconnect
+   * @fires BaseProvider#disconnect
    */
   protected _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
     if (
@@ -341,8 +347,9 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * Permits the `networkVersion` field in the parameter object for
    * compatibility with child classes that use this value.
    *
-   * @emits BaseProvider#chainChanged
+   * @fires BaseProvider#chainChanged
    * @param networkInfo - An object with network info.
+   * @param networkInfo.networkVersion
    * @param networkInfo.chainId - The latest chain ID.
    */
   protected _handleChainChanged({

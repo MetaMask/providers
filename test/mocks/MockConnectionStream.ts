@@ -1,9 +1,9 @@
-import { Duplex } from 'stream';
 import {
   JsonRpcNotification,
   JsonRpcRequest,
   JsonRpcResponse,
 } from 'json-rpc-engine';
+import { Duplex } from 'stream';
 
 /**
  * A mock multiplexed JSON-RPC stream that represents the connection from the
@@ -29,7 +29,9 @@ export class MockConnectionStream extends Duplex {
    *
    * @param message - The message being sent to the stream. This is always an
    * object because the stream is in "objectMode".
+   * @param message.name
    * @param _encoding - The encoding of the message. Ignored in object mode.
+   * @param message.data
    * @param callback - The callback for the write operation. It is called with
    * an error when the write fails, otherwise it is called with nothing when
    * the write has completed.

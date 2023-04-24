@@ -1,9 +1,10 @@
+import { ethErrors } from 'eth-rpc-errors';
 import {
   createIdRemapMiddleware,
   JsonRpcMiddleware,
   PendingJsonRpcResponse,
 } from 'json-rpc-engine';
-import { ethErrors } from 'eth-rpc-errors';
+
 import { createRpcWarningMiddleware } from './middleware/createRpcWarningMiddleware';
 
 export type Maybe<T> = Partial<T> | null | undefined;

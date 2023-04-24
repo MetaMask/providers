@@ -1,25 +1,27 @@
 import type { JsonRpcRequest } from 'json-rpc-engine';
-import type { BaseProvider } from '../BaseProvider';
-import { StreamProvider } from '../StreamProvider';
-import { MockPort } from '../../test/mocks/MockPort';
-import messages from '../messages';
+
 import { createExternalExtensionProvider } from './createExternalExtensionProvider';
 import config from './external-extension-config.json';
+import { MockPort } from '../../test/mocks/MockPort';
+import type { BaseProvider } from '../BaseProvider';
+import messages from '../messages';
+import { StreamProvider } from '../StreamProvider';
 
 /**
  * A fully initialized extension provider, and additional mocks to help
  * test the provider.
  */
-interface InitializedExtensionProviderDetails {
+type InitializedExtensionProviderDetails = {
   /** The initialized provider, created using a mocked Port instance. */
   provider: StreamProvider;
   /** The mock Port instance used to create the provider. */
   port: MockPort;
-  /** A mock function that can be used to inspect what gets written to the
+  /**
+   * A mock function that can be used to inspect what gets written to the
    * mock connection Stream.
    */
   onWrite: ReturnType<typeof jest.fn>;
-}
+};
 
 /**
  * The `createExternalExtensionProvider` function initializes the wallet state
@@ -263,7 +265,7 @@ describe('createExternalExtensionProvider', () => {
             ],
           });
 
-          await expect(() =>
+          await expect(async () =>
             provider.request({ method }),
           ).rejects.toMatchObject({
             code: 0,

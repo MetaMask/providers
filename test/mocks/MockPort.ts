@@ -39,6 +39,8 @@ export class MockPort {
    * extension to the wallet.
    *
    * @param message - The message being sent to the port.
+   * @param message.name
+   * @param message.data
    */
   postMessage(message: { name: string; data: JsonRpcRequest<unknown> }) {
     if (!this.#connected) {

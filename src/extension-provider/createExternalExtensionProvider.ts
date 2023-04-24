@@ -1,15 +1,20 @@
-import PortStream from 'extension-port-stream';
 import { detect } from 'detect-browser';
+import PortStream from 'extension-port-stream';
 import type { Runtime } from 'webextension-polyfill';
+
+import config from './external-extension-config.json';
 import { MetaMaskInpageProviderStreamName } from '../MetaMaskInpageProvider';
 import { StreamProvider } from '../StreamProvider';
 import { getDefaultExternalMiddleware } from '../utils';
-import config from './external-extension-config.json';
 
 const browser = detect();
 
 export type ExtensionType = 'stable' | 'flask' | 'beta' | string;
 
+/**
+ *
+ * @param typeOrId
+ */
 export function createExternalExtensionProvider(
   typeOrId: ExtensionType = 'stable',
 ) {
@@ -37,6 +42,10 @@ export function createExternalExtensionProvider(
   return provider;
 }
 
+/**
+ *
+ * @param typeOrId
+ */
 function getExtensionId(typeOrId: ExtensionType) {
   const ids =
     browser?.name === 'firefox' ? config.firefoxIds : config.chromeIds;
