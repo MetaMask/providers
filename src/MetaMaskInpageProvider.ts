@@ -239,7 +239,8 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @param eventName - The name of the event.
    */
   protected _warnOfDeprecation(eventName: string): void {
-    if (!this._sentWarnings?.events[eventName as WarningEventName]) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
+    if (this._sentWarnings?.events[eventName as WarningEventName] === false) {
       this._log.warn(messages.warnings.events[eventName as WarningEventName]);
       this._sentWarnings.events[eventName as WarningEventName] = true;
     }

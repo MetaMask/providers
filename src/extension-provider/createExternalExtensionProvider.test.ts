@@ -58,10 +58,10 @@ async function getInitializedProvider({
       name === 'metamask-provider' &&
       data.method === 'metamask_getProviderState'
     ) {
-      // Wrap in `setImmediate` to ensure a reply is recieved by the provider
+      // Wrap in `setTimeout` to ensure a reply is received by the provider
       // after the provider has processed the request, to ensure that the
       // provider recognizes the id.
-      setImmediate(() =>
+      setTimeout(() =>
         port.reply('metamask-provider', {
           id: onWrite.mock.calls[0][1].id,
           jsonrpc: '2.0',
@@ -76,10 +76,10 @@ async function getInitializedProvider({
     }
     for (const { substream, method, callback } of onMethodCalled) {
       if (name === substream && data.method === method) {
-        // Wrap in `setImmediate` to ensure a reply is recieved by the provider
+        // Wrap in `setTimeout` to ensure a reply is received by the provider
         // after the provider has processed the request, to ensure that the
         // provider recognizes the id.
-        setImmediate(() => callback(data));
+        setTimeout(() => callback(data));
       }
     }
     onWrite(name, data);
