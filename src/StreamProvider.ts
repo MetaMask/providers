@@ -62,13 +62,16 @@ export abstract class AbstractStreamProvider extends BaseProvider {
       throw new Error(messages.errors.invalidDuplexStream());
     }
 
+    // Bind functions to prevent consumers from making unbound calls
+    this._handleStreamDisconnect = this._handleStreamDisconnect.bind(this);
+
     // Set up connectionStream multiplexing
     const mux = new ObjectMultiplex();
     pump(
       connectionStream,
       mux as unknown as Duplex,
       connectionStream,
-      this.#handleStreamDisconnect.bind(this, 'MetaMask'),
+      this._handleStreamDisconnect.bind(this, 'MetaMask'),
     );
 
     // Set up RPC connection
@@ -82,7 +85,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
       this._jsonRpcConnection.stream,
       mux.createStream(jsonRpcStreamName) as unknown as Duplex,
       this._jsonRpcConnection.stream,
-      this.#handleStreamDisconnect.bind(this, 'MetaMask RpcProvider'),
+      this._handleStreamDisconnect.bind(this, 'MetaMask RpcProvider'),
     );
 
     // Wire up the JsonRpcEngine to the JSON-RPC connection stream
@@ -146,7 +149,8 @@ export abstract class AbstractStreamProvider extends BaseProvider {
    * @fires BaseProvider#disconnect - If the provider is not already
    * disconnected.
    */
-  #handleStreamDisconnect(streamName: string, error: Error) {
+  // eslint-disable-next-line no-restricted-syntax
+  private _handleStreamDisconnect(streamName: string, error: Error) {
     let warningMsg = `MetaMask: Lost connection to "${streamName}".`;
     if (error?.stack) {
       warningMsg += `\n${error.stack}`;
