@@ -1,39 +1,41 @@
-import type { Duplex } from 'stream';
-import type { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
 import { ethErrors } from 'eth-rpc-errors';
-import { sendSiteMetadata } from './siteMetadata';
+import type { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
+import type { Duplex } from 'stream';
+
+import type { UnvalidatedJsonRpcRequest } from './BaseProvider';
 import messages from './messages';
+import { sendSiteMetadata } from './siteMetadata';
+import {
+  AbstractStreamProvider,
+  StreamProviderOptions,
+} from './StreamProvider';
 import {
   EMITTED_NOTIFICATIONS,
   getDefaultExternalMiddleware,
   getRpcPromiseCallback,
   NOOP,
 } from './utils';
-import type { UnvalidatedJsonRpcRequest } from './BaseProvider';
-import {
-  AbstractStreamProvider,
-  StreamProviderOptions,
-} from './StreamProvider';
 
-export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
+export type SendSyncJsonRpcRequest = {
   method:
     | 'eth_accounts'
     | 'eth_coinbase'
     | 'eth_uninstallFilter'
     | 'net_version';
-}
+} & JsonRpcRequest<unknown>;
 
 type WarningEventName = keyof SentWarningsState['events'];
 
-export interface MetaMaskInpageProviderOptions
-  extends Partial<Omit<StreamProviderOptions, 'rpcMiddleware'>> {
+export type MetaMaskInpageProviderOptions = {
   /**
    * Whether the provider should send page metadata.
    */
   shouldSendMetadata?: boolean;
-}
 
-interface SentWarningsState {
+  jsonRpcStreamName?: string | undefined;
+} & Partial<Omit<StreamProviderOptions, 'rpcMiddleware'>>;
+
+type SentWarningsState = {
   // methods
   enable: boolean;
   experimentalMethods: boolean;
@@ -45,7 +47,7 @@ interface SentWarningsState {
     networkChanged: boolean;
     notification: boolean;
   };
-}
+};
 
 /**
  * The name of the stream consumed by {@link MetaMaskInpageProvider}.
@@ -82,22 +84,24 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   public readonly isMetaMask: true;
 
   /**
-   * @param connectionStream - A Node.js duplex stream
-   * @param options - An options bag
+   * Creates a new `MetaMaskInpageProvider`.
+   *
+   * @param connectionStream - A Node.js duplex stream.
+   * @param options - An options bag.
    * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
-   * Default: metamask-provider
-   * @param options.logger - The logging API to use. Default: console
+   * Default: `metamask-provider`.
+   * @param options.logger - The logging API to use. Default: `console`.
    * @param options.maxEventListeners - The maximum number of event
-   * listeners. Default: 100
+   * listeners. Default: 100.
    * @param options.shouldSendMetadata - Whether the provider should
-   * send page metadata. Default: true
+   * send page metadata. Default: `true`.
    */
   constructor(
     connectionStream: Duplex,
     {
       jsonRpcStreamName = MetaMaskInpageProviderStreamName,
       logger = console,
-      maxEventListeners,
+      maxEventListeners = 100,
       shouldSendMetadata,
     }: MetaMaskInpageProviderOptions = {},
   ) {
@@ -111,6 +115,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     // We shouldn't perform asynchronous work in the constructor, but at one
     // point we started doing so, and changing this class isn't worth it at
     // the time of writing.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this._initializeStateAsync();
 
     this.networkVersion = null;
@@ -139,9 +144,11 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     // send website metadata
     if (shouldSendMetadata) {
       if (document.readyState === 'complete') {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         sendSiteMetadata(this._rpcEngine, this._log);
       } else {
         const domContentLoadedHandler = () => {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           sendSiteMetadata(this._rpcEngine, this._log);
           window.removeEventListener(
             'DOMContentLoaded',
@@ -173,7 +180,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   /**
    * We override the following event methods so that we can warn consumers
    * about deprecated events:
-   *   addListener, on, once, prependListener, prependOnceListener
+   * `addListener`, `on`, `once`, `prependListener`, `prependOnceListener`.
    */
 
   addListener(eventName: string, listener: (...args: unknown[]) => void) {
@@ -213,11 +220,11 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * required events. Idempotent with respect to the isRecoverable parameter.
    *
    * Error codes per the CloseEvent status codes as required by EIP-1193:
-   * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes
+   * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes.
    *
    * @param isRecoverable - Whether the disconnection is recoverable.
    * @param errorMessage - A custom error message.
-   * @emits BaseProvider#disconnect
+   * @fires BaseProvider#disconnect - If the disconnection is not recoverable.
    */
   protected _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
     super._handleDisconnect(isRecoverable, errorMessage);
@@ -228,8 +235,11 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
 
   /**
    * Warns of deprecation for the given event, if applicable.
+   *
+   * @param eventName - The name of the event.
    */
   protected _warnOfDeprecation(eventName: string): void {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
     if (this._sentWarnings?.events[eventName as WarningEventName] === false) {
       this._log.warn(messages.warnings.events[eventName as WarningEventName]);
       this._sentWarnings.events[eventName as WarningEventName] = true;
@@ -241,12 +251,12 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   //====================
 
   /**
-   * Equivalent to: ethereum.request('eth_requestAccounts')
+   * Equivalent to: `ethereum.request('eth_requestAccounts')`.
    *
    * @deprecated Use request({ method: 'eth_requestAccounts' }) instead.
    * @returns A promise that resolves to an array of addresses.
    */
-  enable(): Promise<string[]> {
+  async enable(): Promise<string[]> {
     if (!this._sentWarnings.enable) {
       this._log.warn(messages.warnings.enableDeprecation);
       this._sentWarnings.enable = true;
@@ -298,6 +308,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    */
   send<T>(payload: SendSyncJsonRpcRequest): JsonRpcResponse<T>;
 
+  // eslint-disable-next-line @typescript-eslint/promise-function-async
   send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
     if (!this._sentWarnings.send) {
       this._log.warn(messages.warnings.sendDeprecation);
@@ -334,6 +345,8 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   /**
    * Internal backwards compatibility method, used in send.
    *
+   * @param payload - A JSON-RPC request object.
+   * @returns A JSON-RPC response object.
    * @deprecated
    */
   protected _sendSync(payload: SendSyncJsonRpcRequest) {
@@ -344,7 +357,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
         break;
 
       case 'eth_coinbase':
-        result = this.selectedAddress || null;
+        result = this.selectedAddress ?? null;
         break;
 
       case 'eth_uninstallFilter':
@@ -353,7 +366,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
         break;
 
       case 'net_version':
-        result = this.networkVersion || null;
+        result = this.networkVersion ?? null;
         break;
 
       default:
@@ -372,6 +385,8 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    *
    * Gets the experimental _metamask API as Proxy, so that we can warn consumers
    * about its experimental nature.
+   *
+   * @returns The experimental _metamask API.
    */
   protected _getExperimentalApi() {
     return new Proxy(
@@ -379,7 +394,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
         /**
          * Determines if MetaMask is unlocked by the user.
          *
-         * @returns Promise resolving to true if MetaMask is currently unlocked
+         * @returns Promise resolving to true if MetaMask is currently unlocked.
          */
         isUnlocked: async () => {
           if (!this._state.initialized) {
@@ -392,6 +407,8 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
 
         /**
          * Make a batch RPC request.
+         *
+         * @param requests - The RPC requests to make.
          */
         requestBatch: async (requests: UnvalidatedJsonRpcRequest[]) => {
           if (!Array.isArray(requests)) {
@@ -424,7 +441,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * events and sets relevant public state. Does nothing if neither the chainId
    * nor the networkVersion are different from existing values.
    *
-   * @emits MetamaskInpageProvider#networkChanged
+   * @fires MetamaskInpageProvider#networkChanged
    * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
    * @param networkInfo.networkVersion - The latest network ID.

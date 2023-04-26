@@ -1,25 +1,27 @@
 import type { JsonRpcRequest } from 'json-rpc-engine';
-import type { BaseProvider } from '../BaseProvider';
-import { StreamProvider } from '../StreamProvider';
-import { MockPort } from '../../test/mocks/MockPort';
-import messages from '../messages';
+
 import { createExternalExtensionProvider } from './createExternalExtensionProvider';
 import config from './external-extension-config.json';
+import { MockPort } from '../../test/mocks/MockPort';
+import type { BaseProvider } from '../BaseProvider';
+import messages from '../messages';
+import { StreamProvider } from '../StreamProvider';
 
 /**
  * A fully initialized extension provider, and additional mocks to help
  * test the provider.
  */
-interface InitializedExtensionProviderDetails {
+type InitializedExtensionProviderDetails = {
   /** The initialized provider, created using a mocked Port instance. */
   provider: StreamProvider;
   /** The mock Port instance used to create the provider. */
   port: MockPort;
-  /** A mock function that can be used to inspect what gets written to the
+  /**
+   * A mock function that can be used to inspect what gets written to the
    * mock connection Stream.
    */
   onWrite: ReturnType<typeof jest.fn>;
-}
+};
 
 /**
  * The `createExternalExtensionProvider` function initializes the wallet state
@@ -31,11 +33,6 @@ interface InitializedExtensionProviderDetails {
  * initialization.  See {@link MetaMaskInpageProvider._initializeState}.
  * @param options.onMethodCalled - A set of configuration objects for adding
  * method-specific callbacks.
- * @param options.onMethodCalled[].substream - The substream of the method that
- * the callback is for.
- * @param options.onMethodCalled[].method - The name of the method that the
- * callback is for.
- * @param options.onMethodCalled[].callback - The method callback.
  * @returns A tuple of the initialized provider, the mock port used, and an
  * "onWrite" stub that can be used to inspect message sent by the provider.
  */
@@ -61,10 +58,10 @@ async function getInitializedProvider({
       name === 'metamask-provider' &&
       data.method === 'metamask_getProviderState'
     ) {
-      // Wrap in `setImmediate` to ensure a reply is recieved by the provider
+      // Wrap in `setTimeout` to ensure a reply is received by the provider
       // after the provider has processed the request, to ensure that the
       // provider recognizes the id.
-      setImmediate(() =>
+      setTimeout(() =>
         port.reply('metamask-provider', {
           id: onWrite.mock.calls[0][1].id,
           jsonrpc: '2.0',
@@ -79,10 +76,10 @@ async function getInitializedProvider({
     }
     for (const { substream, method, callback } of onMethodCalled) {
       if (name === substream && data.method === method) {
-        // Wrap in `setImmediate` to ensure a reply is recieved by the provider
+        // Wrap in `setTimeout` to ensure a reply is received by the provider
         // after the provider has processed the request, to ensure that the
         // provider recognizes the id.
-        setImmediate(() => callback(data));
+        setTimeout(() => callback(data));
       }
     }
     onWrite(name, data);
@@ -174,7 +171,7 @@ describe('createExternalExtensionProvider', () => {
     ];
 
     for (const { method, warning } of warnings) {
-      describe(method, () => {
+      describe(`${method}`, () => {
         it('should warn the first time the method is called', async () => {
           const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
           const { provider, port } = await getInitializedProvider({
@@ -263,7 +260,7 @@ describe('createExternalExtensionProvider', () => {
             ],
           });
 
-          await expect(() =>
+          await expect(async () =>
             provider.request({ method }),
           ).rejects.toMatchObject({
             code: 0,

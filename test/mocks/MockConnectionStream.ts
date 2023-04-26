@@ -1,9 +1,9 @@
-import { Duplex } from 'stream';
 import {
   JsonRpcNotification,
   JsonRpcRequest,
   JsonRpcResponse,
 } from 'json-rpc-engine';
+import { Duplex } from 'stream';
 
 /**
  * A mock multiplexed JSON-RPC stream that represents the connection from the
@@ -18,7 +18,10 @@ export class MockConnectionStream extends Duplex {
    * @param onWrite - Called when the stream is written to. Messages sent from
    * the provider to the wallet are passed to this function.
    */
-  constructor(onWrite?: (name: string, data: JsonRpcRequest<unknown>) => void) {
+  constructor(
+    onWrite: (name: string, data: JsonRpcRequest<unknown>) => void = () =>
+      undefined,
+  ) {
     super({ objectMode: true });
     this.#onWrite = onWrite;
   }
@@ -29,6 +32,9 @@ export class MockConnectionStream extends Duplex {
    *
    * @param message - The message being sent to the stream. This is always an
    * object because the stream is in "objectMode".
+   * @param message.name - The name of the substream this message is included
+   * in.
+   * @param message.data - The JSON RPC request.
    * @param _encoding - The encoding of the message. Ignored in object mode.
    * @param callback - The callback for the write operation. It is called with
    * an error when the write fails, otherwise it is called with nothing when
@@ -43,7 +49,7 @@ export class MockConnectionStream extends Duplex {
       if (this.#onWrite) {
         this.#onWrite(message.name, message.data);
       }
-    } catch (error) {
+    } catch (error: any) {
       callback(error);
       return;
     }
@@ -53,6 +59,8 @@ export class MockConnectionStream extends Duplex {
   /**
    * Internal method that is called when the stream is read from. Do not call
    * directly.
+   *
+   * @returns Always returns undefined because this stream is write-only.
    */
   _read() {
     return undefined;

@@ -1,0 +1,11 @@
+{
+  "ignores": [
+    "@lavamoat/allow-scripts",
+    "@metamask/auto-changelog",
+    "@types/*",
+    "jest-chrome",
+    "prettier-plugin-packagejson",
+    "ts-node",
+    "typedoc"
+  ]
+}

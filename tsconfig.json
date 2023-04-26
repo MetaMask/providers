@@ -1,16 +1,18 @@
 {
   "compilerOptions": {
-    "declaration": true,
     "esModuleInterop": true,
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["ES2020", "DOM"],
     "module": "CommonJS",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "outDir": "dist",
-    "sourceMap": true,
+    "noEmit": true,
+    "noErrorTruncation": true,
+    "noUncheckedIndexedAccess": true,
     "strict": true,
-    "target": "ES2017",
-    "typeRoots": ["./node_modules/@types"]
+    "target": "es2020",
+    "resolveJsonModule": true,
+    "skipLibCheck": true
   },
-  "include": ["./src/*.ts"],
-  "exclude": ["**/*.test.ts", "mocks/"]
+  "exclude": ["./dist/**/*"]
 }

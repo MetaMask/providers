@@ -1,30 +1,31 @@
-import type { Duplex } from 'stream';
 import ObjectMultiplex from '@metamask/object-multiplex';
 import SafeEventEmitter from '@metamask/safe-event-emitter';
 import { duplex as isDuplex } from 'is-stream';
 import type { JsonRpcMiddleware } from 'json-rpc-engine';
 import { createStreamMiddleware } from 'json-rpc-middleware-stream';
 import pump from 'pump';
+import type { Duplex } from 'stream';
+
+import { BaseProvider, BaseProviderOptions } from './BaseProvider';
 import messages from './messages';
 import {
   EMITTED_NOTIFICATIONS,
   isValidChainId,
   isValidNetworkVersion,
 } from './utils';
-import { BaseProvider, BaseProviderOptions } from './BaseProvider';
 
-export interface StreamProviderOptions extends BaseProviderOptions {
+export type StreamProviderOptions = {
   /**
    * The name of the stream used to connect to the wallet.
    */
   jsonRpcStreamName: string;
-}
+} & BaseProviderOptions;
 
-export interface JsonRpcConnection {
+export type JsonRpcConnection = {
   events: SafeEventEmitter;
   middleware: JsonRpcMiddleware<unknown, unknown>;
   stream: Duplex;
-}
+};
 
 /**
  * An abstract EIP-1193 provider wired to some duplex stream via a
@@ -36,20 +37,23 @@ export abstract class AbstractStreamProvider extends BaseProvider {
   protected _jsonRpcConnection: JsonRpcConnection;
 
   /**
-   * @param connectionStream - A Node.js duplex stream
-   * @param options - An options bag
+   * Creates a new AbstractStreamProvider instance.
+   *
+   * @param connectionStream - A Node.js duplex stream.
+   * @param options - An options bag.
    * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
-   * @param options.logger - The logging API to use. Default: console
+   * @param options.logger - The logging API to use. Default: `console`.
    * @param options.maxEventListeners - The maximum number of event
-   * listeners. Default: 100
+   * listeners. Default: 100.
+   * @param options.rpcMiddleware - The RPC middleware stack to use.
    */
   constructor(
     connectionStream: Duplex,
     {
       jsonRpcStreamName,
-      logger,
-      maxEventListeners,
-      rpcMiddleware,
+      logger = console,
+      maxEventListeners = 100,
+      rpcMiddleware = [],
     }: StreamProviderOptions,
   ) {
     super({ logger, maxEventListeners, rpcMiddleware });
@@ -71,9 +75,12 @@ export abstract class AbstractStreamProvider extends BaseProvider {
     );
 
     // Set up RPC connection
+    // Typecast: The type of `Duplex` is incompatible with the type of
+    // `JsonRpcConnection`.
     this._jsonRpcConnection = createStreamMiddleware({
       retryOnMessage: 'METAMASK_EXTENSION_CONNECT_CAN_RETRY',
-    });
+    }) as unknown as JsonRpcConnection;
+
     pump(
       this._jsonRpcConnection.stream,
       mux.createStream(jsonRpcStreamName) as unknown as Duplex,
@@ -111,7 +118,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
   //====================
 
   /**
-   * **MUST** be called by child classes.
+   * MUST be called by child classes.
    *
    * Calls `metamask_getProviderState` and passes the result to
    * {@link BaseProvider._initializeState}. Logs an error if getting initial state
@@ -137,8 +144,12 @@ export abstract class AbstractStreamProvider extends BaseProvider {
    * Called when connection is lost to critical streams. Emits an 'error' event
    * from the provider with the error message and stack if present.
    *
-   * @emits BaseProvider#disconnect
+   * @param streamName - The name of the stream that disconnected.
+   * @param error - The error that caused the disconnection.
+   * @fires BaseProvider#disconnect - If the provider is not already
+   * disconnected.
    */
+  // eslint-disable-next-line no-restricted-syntax
   private _handleStreamDisconnect(streamName: string, error: Error) {
     let warningMsg = `MetaMask: Lost connection to "${streamName}".`;
     if (error?.stack) {
@@ -162,7 +173,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
    * `networkVersion` for other purposes must implement additional handling
    * therefore.
    *
-   * @emits BaseProvider#chainChanged
+   * @fires BaseProvider#chainChanged
    * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
    * @param networkInfo.networkVersion - The latest network ID.
@@ -170,7 +181,10 @@ export abstract class AbstractStreamProvider extends BaseProvider {
   protected _handleChainChanged({
     chainId,
     networkVersion,
-  }: { chainId?: string; networkVersion?: string } = {}) {
+  }: {
+    chainId?: string | undefined;
+    networkVersion?: string | undefined;
+  } = {}) {
     if (!isValidChainId(chainId) || !isValidNetworkVersion(networkVersion)) {
       this._log.error(messages.errors.invalidNetworkParams(), {
         chainId,
@@ -195,7 +209,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
  */
 export class StreamProvider extends AbstractStreamProvider {
   /**
-   * **MUST** be called after instantiation to complete initialization.
+   * MUST be called after instantiation to complete initialization.
    *
    * Calls `metamask_getProviderState` and passes the result to
    * {@link BaseProvider._initializeState}. Logs an error if getting initial state

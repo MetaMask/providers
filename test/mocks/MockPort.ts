@@ -25,7 +25,10 @@ export class MockPort {
    * @param onWrite - Called when a message is sent to the port. Messages sent
    * from another extension to the wallet are passed to this function.
    */
-  constructor(onWrite?: (name: string, data: JsonRpcRequest<unknown>) => void) {
+  constructor(
+    onWrite: (name: string, data: JsonRpcRequest<unknown>) => void = () =>
+      undefined,
+  ) {
     this.#onWrite = onWrite;
   }
 
@@ -39,6 +42,9 @@ export class MockPort {
    * extension to the wallet.
    *
    * @param message - The message being sent to the port.
+   * @param message.name - The name of the substream this message is included
+   * in.
+   * @param message.data - The JSON-RPC request.
    */
   postMessage(message: { name: string; data: JsonRpcRequest<unknown> }) {
     if (!this.#connected) {
