@@ -5,6 +5,7 @@ import {
   MetaMaskInpageProvider,
 } from './MetaMaskInpageProvider';
 import { MockConnectionStream } from '../test/mocks/MockConnectionStream';
+import messages from './messages';
 
 /**
  * A fully initialized inpage provider, and additional mocks to help
