@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [11.0.0]
+### Changed
+- **BREAKING**: Minimum Node.js version 16 ([#254](https://github.com/MetaMask/providers/pull/254))
+- Support Flask and Beta in the external extension provider ([#252](https://github.com/MetaMask/providers/pull/252))
+- Bump @metamask/safe-event-emitter from 2.0.0 to 3.0.0 ([#255](https://github.com/MetaMask/providers/pull/255))
+
+### Fixed
+- Fix console warning about deprecated `webextension-polyfill-ts` ([#249](https://github.com/MetaMask/providers/pull/249))
+- Prevent `accountsChanged` + `eth_accounts` callback loop ([#248](https://github.com/MetaMask/providers/pull/248))
+  - If you listen to the provider `accountsChanged` event, modify the returned accounts, then call `eth_accounts`, it was possible to enter an infinite loop. This was caused by the provider mistakenly thinking the accounts had changed because of the mutation performed in the event listener, triggering redundant `accountsChanged` events. This was fixed; there should be no more redundant `accountsChanged` events and no infinite loop.
+
 ## [10.2.1]
 ### Changed
 - Update `json-rpc-middleware-stream` ([#234](https://github.com/MetaMask/providers/pull/234))
@@ -209,7 +220,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v10.2.1...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v11.0.0...HEAD
+[11.0.0]: https://github.com/MetaMask/providers/compare/v10.2.1...v11.0.0
 [10.2.1]: https://github.com/MetaMask/providers/compare/v10.2.0...v10.2.1
 [10.2.0]: https://github.com/MetaMask/providers/compare/v10.1.0...v10.2.0
 [10.1.0]: https://github.com/MetaMask/providers/compare/v10.0.0...v10.1.0
