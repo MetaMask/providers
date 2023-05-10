@@ -1,6 +1,6 @@
 {
   "name": "@metamask/providers",
-  "version": "10.2.1",
+  "version": "11.0.0",
   "description": "A JavaScript Ethereum provider that connects to the wallet over a stream.",
   "keywords": [
     "MetaMask",
