@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump @metamask/safe-event-emitter from 2.0.0 to 3.0.0 ([#255](https://github.com/MetaMask/providers/pull/255))
 
 ### Fixed
-- fix deprecated webextension-polyfill-ts ([#249](https://github.com/MetaMask/providers/pull/249))
+- Fix console warning about deprecated `webextension-polyfill-ts` ([#249](https://github.com/MetaMask/providers/pull/249))
 - Prevent `accountsChanged` + `eth_accounts` callback loop ([#248](https://github.com/MetaMask/providers/pull/248))
   - If you listen to the provider `accountsChanged` event, modify the returned accounts, then call `eth_accounts`, it was possible to enter an infinite loop. This was caused by the provider mistakenly thinking the accounts had changed because of the mutation performed in the event listener, triggering redundant `accountsChanged` events. This was fixed; there should be no more redundant `accountsChanged` events and no infinite loop.
 
