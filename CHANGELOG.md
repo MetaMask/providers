@@ -7,16 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [11.0.0]
-### Uncategorized
-- Standardise repo per module template as of April 2023 ([#254](https://github.com/MetaMask/providers/pull/254))
-- Bump @metamask/safe-event-emitter from 2.0.0 to 3.0.0 ([#255](https://github.com/MetaMask/providers/pull/255))
+### Changed
+- **BREAKING**: Minimum Node.js version 16 ([#254](https://github.com/MetaMask/providers/pull/254))
 - Support Flask and Beta in the external extension provider ([#252](https://github.com/MetaMask/providers/pull/252))
-- chore: fix deprecated webextension-polyfill-ts ([#249](https://github.com/MetaMask/providers/pull/249))
+- Bump @metamask/safe-event-emitter from 2.0.0 to 3.0.0 ([#255](https://github.com/MetaMask/providers/pull/255))
+
+### Fixed
+- fix deprecated webextension-polyfill-ts ([#249](https://github.com/MetaMask/providers/pull/249))
 - fix accountsChanged callback loop ([#248](https://github.com/MetaMask/providers/pull/248))
-- Bump json5 from 1.0.1 to 1.0.2 ([#241](https://github.com/MetaMask/providers/pull/241))
-- Bump minimatch from 3.0.4 to 3.1.2 ([#240](https://github.com/MetaMask/providers/pull/240))
-- Bump decode-uri-component from 0.2.0 to 0.2.2 ([#238](https://github.com/MetaMask/providers/pull/238))
-- Bump qs from 6.5.2 to 6.5.3 ([#239](https://github.com/MetaMask/providers/pull/239))
 
 ## [10.2.1]
 ### Changed
