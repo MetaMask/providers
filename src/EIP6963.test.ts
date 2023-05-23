@@ -1,5 +1,3 @@
-/* eslint-disable no-restricted-globals */
-
 import {
   announceProvider,
   requestProvider,

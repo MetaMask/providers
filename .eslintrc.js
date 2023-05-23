@@ -34,14 +34,22 @@ module.exports = {
     },
 
     {
+      files: ['EIP6963.test.ts', 'jest.setup.browser.js'],
+      rules: {
+        // We're mixing Node and browser environments in these files.
+        'no-restricted-globals': 'off',
+      },
+    },
+
+    {
       files: ['jest.setup.browser.js'],
       env: { browser: true },
+      // This file contains copypasta and we're not going to bother fixing these.
       rules: {
         'jest/require-top-level-describe': 'off',
         'jsdoc/require-description': 'off',
         'jsdoc/require-param-description': 'off',
         'jsdoc/require-param-type': 'off',
-        'no-restricted-globals': 'off',
       },
     },
   ],
