@@ -39,6 +39,7 @@
   "dependencies": {
     "@metamask/object-multiplex": "^1.1.0",
     "@metamask/safe-event-emitter": "^3.0.0",
+    "@metamask/utils": "^5.0.2",
     "detect-browser": "^5.2.0",
     "eth-rpc-errors": "^4.0.2",
     "extension-port-stream": "^2.0.1",
@@ -47,6 +48,7 @@
     "json-rpc-engine": "^6.1.0",
     "json-rpc-middleware-stream": "^4.2.1",
     "pump": "^3.0.0",
+    "uuid": "^9.0.0",
     "webextension-polyfill": "^0.10.0"
   },
   "devDependencies": {
@@ -61,6 +63,7 @@
     "@types/node": "^17.0.23",
     "@types/pump": "^1.1.0",
     "@types/readable-stream": "^2.3.15",
+    "@types/uuid": "^9.0.1",
     "@types/webextension-polyfill": "^0.10.0",
     "@typescript-eslint/eslint-plugin": "^5.43.0",
     "@typescript-eslint/parser": "^5.43.0",

@@ -26,11 +26,23 @@ module.exports = {
     },
 
     {
-      files: ['*.test.ts', '*.test.js'],
+      files: ['*.test.ts', '*.test.js', 'jest.setup*.js'],
       extends: [
         '@metamask/eslint-config-jest',
         '@metamask/eslint-config-nodejs',
       ],
+    },
+
+    {
+      files: ['jest.setup.browser.js'],
+      env: { browser: true },
+      rules: {
+        'jest/require-top-level-describe': 'off',
+        'jsdoc/require-description': 'off',
+        'jsdoc/require-param-description': 'off',
+        'jsdoc/require-param-type': 'off',
+        'no-restricted-globals': 'off',
+      },
     },
   ],
 
