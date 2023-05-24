@@ -7,16 +7,71 @@ const getProviderInfo = () => ({
   uuid: '1449211e-5560-4235-9ab1-582cbe2b165f',
 });
 
+const providerInfoValidationError = () =>
+  new Error(
+    'Invalid EIP-6963 provider detail. See https://eips.ethereum.org/EIPS/eip-6963 for requirements.',
+  );
+
 describe('EIP6963', () => {
   describe('announceProvider', () => {
-    it('throws if the UUID is invalid', () => {
-      ['foo', null, undefined, Symbol('bar')].forEach((invalidUuid) => {
-        const provider: any = { name: 'test' };
-        const providerDetail = { info: getProviderInfo(), provider };
-        providerDetail.info.uuid = invalidUuid as any;
+    describe('provider info validation', () => {
+      it('throws if the provider info is not a plain object', () => {
+        [null, undefined, Symbol('bar'), []].forEach((invalidInfo) => {
+          expect(() => announceProvider(invalidInfo as any)).toThrow(
+            providerInfoValidationError(),
+          );
+        });
+      });
 
-        expect(() => announceProvider(providerDetail)).toThrow(
-          new Error('Invalid `uuid` field. Must be a v4 UUID.'),
+      it('throws if the `icon` field is invalid', () => {
+        [null, undefined, '', 'not-a-url', Symbol('bar')].forEach(
+          (invalidIcon) => {
+            const provider: any = { name: 'test' };
+            const providerDetail = { info: getProviderInfo(), provider };
+            providerDetail.info.icon = invalidIcon as any;
+
+            expect(() => announceProvider(providerDetail)).toThrow(
+              providerInfoValidationError(),
+            );
+          },
+        );
+      });
+
+      it('throws if the `name` field is invalid', () => {
+        [null, undefined, '', {}, [], Symbol('bar')].forEach((invalidName) => {
+          const provider: any = { name: 'test' };
+          const providerDetail = { info: getProviderInfo(), provider };
+          providerDetail.info.name = invalidName as any;
+
+          expect(() => announceProvider(providerDetail)).toThrow(
+            providerInfoValidationError(),
+          );
+        });
+      });
+
+      it('throws if the `uuid` field is invalid', () => {
+        [null, undefined, '', 'foo', Symbol('bar')].forEach((invalidUuid) => {
+          const provider: any = { name: 'test' };
+          const providerDetail = { info: getProviderInfo(), provider };
+          providerDetail.info.uuid = invalidUuid as any;
+
+          expect(() => announceProvider(providerDetail)).toThrow(
+            providerInfoValidationError(),
+          );
+        });
+      });
+
+      it('throws if the `walletId` field is invalid', () => {
+        [null, undefined, '', {}, [], Symbol('bar')].forEach(
+          (invalidWalletId) => {
+            const provider: any = { name: 'test' };
+            const providerDetail = { info: getProviderInfo(), provider };
+            providerDetail.info.walletId = invalidWalletId as any;
+
+            expect(() => announceProvider(providerDetail)).toThrow(
+              providerInfoValidationError(),
+            );
+          },
         );
       });
     });

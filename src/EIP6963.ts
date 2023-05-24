@@ -84,17 +84,18 @@ const UUID_V4_REGEX =
  * Announces a provider by dispatching an {@link EIP6963AnnounceProviderEvent}, and
  * listening for {@link EIP6963RequestProviderEvent} to re-announce.
  *
+ * @throws If the {@link EIP6963ProviderDetail} is invalid.
  * @param providerDetail - The {@link EIP6963ProviderDetail} to announce.
  * @param providerDetail.info - The {@link EIP6963ProviderInfo} to announce.
  * @param providerDetail.provider - The provider to announce.
  */
-export function announceProvider({
-  info,
-  provider,
-}: EIP6963ProviderDetail): void {
-  if (typeof info.uuid !== 'string' || !UUID_V4_REGEX.test(info.uuid)) {
-    throw new Error('Invalid `uuid` field. Must be a v4 UUID.');
+export function announceProvider(providerDetail: EIP6963ProviderDetail): void {
+  if (!isValidProviderDetail(providerDetail)) {
+    throw new Error(
+      'Invalid EIP-6963 provider detail. See https://eips.ethereum.org/EIPS/eip-6963 for requirements.',
+    );
   }
+  const { info, provider } = providerDetail;
 
   const _announceProvider = () =>
     window.dispatchEvent(
@@ -110,4 +111,46 @@ export function announceProvider({
       _announceProvider();
     },
   );
+}
+
+/**
+ * Validates an {@link EIP6963ProviderDetail} object.
+ *
+ * @param providerDetail - The {@link EIP6963ProviderDetail} to validate.
+ * @returns Whether the {@link EIP6963ProviderDetail} is valid.
+ */
+function isValidProviderDetail(
+  providerDetail: unknown,
+): providerDetail is EIP6963ProviderDetail {
+  if (!isObject(providerDetail) || !isObject(providerDetail.info)) {
+    return false;
+  }
+  const { info } = providerDetail as EIP6963ProviderDetail;
+
+  return (
+    typeof info.icon === 'string' &&
+    isValidUrl(info.icon) &&
+    typeof info.name === 'string' &&
+    Boolean(info.name) &&
+    typeof info.uuid === 'string' &&
+    UUID_V4_REGEX.test(info.uuid) &&
+    typeof info.walletId === 'string' &&
+    Boolean(info.walletId)
+  );
+}
+
+/**
+ * Checks if a string is a valid URL.
+ *
+ * @param url - The string to check.
+ * @returns Whether the string is a valid URL.
+ */
+function isValidUrl(url: string) {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(url);
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
