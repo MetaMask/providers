@@ -4,11 +4,23 @@ const getProviderInfo = () => ({
   name: 'test',
   icon: 'https://wallet.io/icon.svg',
   walletId: 'testWalletId',
-  uuid: 'testUuid',
+  uuid: '1449211e-5560-4235-9ab1-582cbe2b165f',
 });
 
 describe('EIP6963', () => {
   describe('announceProvider', () => {
+    it('throws if the UUID is invalid', () => {
+      ['foo', null, undefined, Symbol('bar')].forEach((invalidUuid) => {
+        const provider: any = { name: 'test' };
+        const providerDetail = { info: getProviderInfo(), provider };
+        providerDetail.info.uuid = invalidUuid as any;
+
+        expect(() => announceProvider(providerDetail)).toThrow(
+          new Error('Invalid `uuid` field. Must be a v4 UUID.'),
+        );
+      });
+    });
+
     it('should announce a provider', () => {
       const provider: any = { name: 'test' };
       const providerDetail = { info: getProviderInfo(), provider };
