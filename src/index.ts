@@ -2,7 +2,6 @@ import { BaseProvider } from './BaseProvider';
 import {
   announceProvider as eip6963AnnounceProvider,
   requestProvider as eip6963RequestProvider,
-  MetaMaskEIP6963ProviderInfo,
   EIP6963AnnounceProviderEvent,
   EIP6963ProviderDetail,
   EIP6963ProviderInfo,
@@ -38,5 +37,4 @@ export {
   StreamProvider,
   eip6963AnnounceProvider,
   eip6963RequestProvider,
-  MetaMaskEIP6963ProviderInfo,
 };

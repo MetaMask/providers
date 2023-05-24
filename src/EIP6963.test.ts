@@ -1,34 +1,27 @@
-import {
-  announceProvider,
-  requestProvider,
-  MetaMaskEIP6963ProviderInfo,
-} from './EIP6963';
+import { announceProvider, requestProvider } from './EIP6963';
+
+const getProviderInfo = () => ({
+  name: 'test',
+  icon: 'https://wallet.io/icon.svg',
+  walletId: 'testWalletId',
+  uuid: 'testUuid',
+});
 
 describe('EIP6963', () => {
-  describe('MetaMaskEIP6963ProviderInfo', () => {
-    it('has expected shape and values', () => {
-      expect(MetaMaskEIP6963ProviderInfo).toStrictEqual({
-        walletId: 'io.metamask',
-        uuid: expect.any(String),
-        name: 'MetaMask',
-        icon: 'https://raw.githubusercontent.com/MetaMask/brand-resources/cb6fd847f3a9cc5e231c749383c3898935e62eab/SVG/metamask-fox.svg',
-      });
-    });
-  });
-
   describe('announceProvider', () => {
     it('should announce a provider', () => {
-      const provider = { name: 'test' };
+      const provider: any = { name: 'test' };
+      const providerDetail = { info: getProviderInfo(), provider };
       const dispatchEvent = jest.spyOn(window, 'dispatchEvent');
       const addEventListener = jest.spyOn(window, 'addEventListener');
 
-      announceProvider(provider as any);
+      announceProvider(providerDetail);
 
       expect(dispatchEvent).toHaveBeenCalledTimes(1);
       expect(dispatchEvent).toHaveBeenCalledWith(
         new CustomEvent('eip6963:announceProvider', {
           detail: {
-            info: MetaMaskEIP6963ProviderInfo,
+            info: getProviderInfo(),
             provider,
           },
         }),
@@ -38,51 +31,19 @@ describe('EIP6963', () => {
         'eip6963:requestProvider',
         expect.any(Function),
       );
-    });
-
-    it('should not be affected by modifying MetaMaskEIP6963ProviderInfo', () => {
-      const provider = { name: 'test' };
-      const dispatchEvent = jest.spyOn(window, 'dispatchEvent');
-      const addEventListener = jest.spyOn(window, 'addEventListener');
-
-      const { walletId } = MetaMaskEIP6963ProviderInfo;
-      (MetaMaskEIP6963ProviderInfo as any).walletId = 'foo';
-      announceProvider(provider as any);
-
-      expect(dispatchEvent).toHaveBeenCalledTimes(1);
-      expect(dispatchEvent).toHaveBeenCalledWith(
-        new CustomEvent('eip6963:announceProvider', {
-          detail: {
-            info: { ...MetaMaskEIP6963ProviderInfo, walletId },
-            provider,
-          },
-        }),
-      );
-      expect((dispatchEvent as any).mock.calls[0][0].detail).toStrictEqual({
-        info: { ...MetaMaskEIP6963ProviderInfo, walletId },
-        provider,
-      });
-
-      expect(addEventListener).toHaveBeenCalledTimes(1);
-      expect(addEventListener).toHaveBeenCalledWith(
-        'eip6963:requestProvider',
-        expect.any(Function),
-      );
-
-      // Reset
-      (MetaMaskEIP6963ProviderInfo as any).walletId = walletId;
     });
   });
 
   describe('requestProvider', () => {
     it('should receive an announced provider (called before announceProvider)', async () => {
       const provider: any = { name: 'test' };
+      const providerDetail = { info: getProviderInfo(), provider };
       const handleProvider = jest.fn();
       const dispatchEvent = jest.spyOn(window, 'dispatchEvent');
       const addEventListener = jest.spyOn(window, 'addEventListener');
 
       requestProvider(handleProvider);
-      announceProvider(provider);
+      announceProvider(providerDetail);
       await delay();
 
       expect(dispatchEvent).toHaveBeenCalledTimes(2);
@@ -105,18 +66,19 @@ describe('EIP6963', () => {
 
       expect(handleProvider).toHaveBeenCalledTimes(1);
       expect(handleProvider).toHaveBeenCalledWith({
-        info: MetaMaskEIP6963ProviderInfo,
+        info: getProviderInfo(),
         provider,
       });
     });
 
     it('should receive an announced provider (called after announceProvider)', async () => {
       const provider: any = { name: 'test' };
+      const providerDetail = { info: getProviderInfo(), provider };
       const handleProvider = jest.fn();
       const dispatchEvent = jest.spyOn(window, 'dispatchEvent');
       const addEventListener = jest.spyOn(window, 'addEventListener');
 
-      announceProvider(provider);
+      announceProvider(providerDetail);
       requestProvider(handleProvider);
       await delay();
 
@@ -142,7 +104,7 @@ describe('EIP6963', () => {
 
       expect(handleProvider).toHaveBeenCalledTimes(1);
       expect(handleProvider).toHaveBeenCalledWith({
-        info: MetaMaskEIP6963ProviderInfo,
+        info: getProviderInfo(),
         provider,
       });
     });

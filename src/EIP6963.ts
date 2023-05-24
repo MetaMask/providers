@@ -1,5 +1,4 @@
 import { isObject } from '@metamask/utils';
-import { v4 as uuid } from 'uuid';
 
 import { BaseProvider } from './BaseProvider';
 
@@ -16,20 +15,6 @@ export type EIP6963ProviderInfo = {
   uuid: string;
   name: string;
   icon: string;
-};
-
-type MetaMaskEIP6963ProviderInfo = EIP6963ProviderInfo & {
-  walletId: 'io.metamask';
-  uuid: string;
-  name: 'MetaMask';
-  icon: `https://${string}.svg`;
-};
-
-export const MetaMaskEIP6963ProviderInfo: MetaMaskEIP6963ProviderInfo = {
-  walletId: 'io.metamask',
-  uuid: uuid(),
-  name: 'MetaMask',
-  icon: 'https://raw.githubusercontent.com/MetaMask/brand-resources/cb6fd847f3a9cc5e231c749383c3898935e62eab/SVG/metamask-fox.svg',
 };
 
 export type EIP6963ProviderDetail = {
@@ -73,19 +58,22 @@ export function requestProvider<HandlerReturnType>(
   window.dispatchEvent(new Event(EIP6963EventNames.Request));
 }
 
-const _MetaMaskEIP6963ProviderInfo = { ...MetaMaskEIP6963ProviderInfo };
-
 /**
  * Announces a provider by dispatching an {@link EIP6963AnnounceProviderEvent}, and
  * listening for {@link EIP6963RequestProviderEvent} to re-announce.
  *
- * @param provider - The provider to announce.
+ * @param providerDetail - The {@link EIP6963ProviderDetail} to announce.
+ * @param providerDetail.info - The {@link EIP6963ProviderInfo} to announce.
+ * @param providerDetail.provider - The provider to announce.
  */
-export function announceProvider(provider: BaseProvider): void {
+export function announceProvider({
+  info,
+  provider,
+}: EIP6963ProviderDetail): void {
   const _announceProvider = () =>
     window.dispatchEvent(
       new CustomEvent(EIP6963EventNames.Announce, {
-        detail: { info: _MetaMaskEIP6963ProviderInfo, provider },
+        detail: { info: { ...info }, provider },
       }),
     );
 

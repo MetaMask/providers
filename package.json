@@ -48,7 +48,6 @@
     "json-rpc-engine": "^6.1.0",
     "json-rpc-middleware-stream": "^4.2.1",
     "pump": "^3.0.0",
-    "uuid": "^9.0.0",
     "webextension-polyfill": "^0.10.0"
   },
   "devDependencies": {
