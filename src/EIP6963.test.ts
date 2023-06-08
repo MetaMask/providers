@@ -3,7 +3,6 @@ import { announceProvider, requestProvider } from './EIP6963';
 const getProviderInfo = () => ({
   name: 'test',
   icon: 'https://wallet.io/icon.svg',
-  walletId: 'testWalletId',
   uuid: '1449211e-5560-4235-9ab1-582cbe2b165f',
 });
 
@@ -59,20 +58,6 @@ describe('EIP6963', () => {
             providerInfoValidationError(),
           );
         });
-      });
-
-      it('throws if the `walletId` field is invalid', () => {
-        [null, undefined, '', {}, [], Symbol('bar')].forEach(
-          (invalidWalletId) => {
-            const provider: any = { name: 'test' };
-            const providerDetail = { info: getProviderInfo(), provider };
-            providerDetail.info.walletId = invalidWalletId as any;
-
-            expect(() => announceProvider(providerDetail)).toThrow(
-              providerInfoValidationError(),
-            );
-          },
-        );
       });
     });
 

@@ -12,11 +12,6 @@ enum EIP6963EventNames {
  */
 export type EIP6963ProviderInfo = {
   /**
-   * The global identifier for the wallet. SHOULD be in reverse domain format,
-   * e.g. `com.wallet.example`.
-   */
-  walletId: string;
-  /**
    * A locally unique identifier for the wallet. MUST be a v4 UUID.
    */
   uuid: string;
@@ -133,9 +128,7 @@ function isValidProviderDetail(
     typeof info.name === 'string' &&
     Boolean(info.name) &&
     typeof info.uuid === 'string' &&
-    UUID_V4_REGEX.test(info.uuid) &&
-    typeof info.walletId === 'string' &&
-    Boolean(info.walletId)
+    UUID_V4_REGEX.test(info.uuid)
   );
 }
 
