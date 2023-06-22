@@ -47,8 +47,8 @@ const unaffected = [
 ];
 
 describe('createRpcWarningMiddleware', () => {
-  for (const { scenario = '', method, params = {}, warning } of affected) {
-    const name = [method, scenario].join(' ');
+  for (const { method, params = {}, scenario, warning } of affected) {
+    const name = scenario ? `${method} (${scenario})` : method;
     describe(`${name}`, () => {
       it('should warn the first time the method is called', async () => {
         const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
@@ -112,8 +112,8 @@ describe('createRpcWarningMiddleware', () => {
     });
   }
 
-  for (const { scenario = '', method, params = {} } of unaffected) {
-    const name = [method, scenario].join(' ');
+  for (const { method, params = {}, scenario } of unaffected) {
+    const name = scenario ? `${method} (${scenario})` : method;
     describe(`${name}`, () => {
       it('should not issue a warning', async () => {
         const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
