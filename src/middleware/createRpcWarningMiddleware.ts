@@ -1,3 +1,4 @@
+import { ERC1155, ERC721 } from '@metamask/controller-utils';
 import type { JsonRpcMiddleware, JsonRpcRequest } from 'json-rpc-engine';
 
 import messages from '../messages';
@@ -31,7 +32,7 @@ export function createRpcWarningMiddleware(
     } else if (
       !sentWarnings.walletWatchAssetNFTExperimental &&
       req.method === 'wallet_watchAsset' &&
-      ['ERC721', 'ERC1155'].includes(
+      [ERC721, ERC1155].includes(
         (req as JsonRpcRequest<{ type: string }>).params?.type || '',
       )
     ) {
