@@ -94,6 +94,10 @@
     "registry": "https://registry.npmjs.org/"
   },
   "lavamoat": {
-    "allowScripts": {}
+    "allowScripts": {
+      "@metamask/controller-utils>babel-runtime>core-js": false,
+      "@metamask/controller-utils>ethereumjs-util>ethereum-cryptography>keccak": false,
+      "@metamask/controller-utils>ethereumjs-util>ethereum-cryptography>secp256k1": false
+    }
   }
 }
