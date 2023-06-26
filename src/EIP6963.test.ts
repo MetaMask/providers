@@ -99,10 +99,12 @@ describe('EIP6963', () => {
       await delay();
 
       expect(dispatchEvent).toHaveBeenCalledTimes(2);
-      expect(dispatchEvent).toHaveBeenCalledWith(
+      expect(dispatchEvent).toHaveBeenNthCalledWith(
+        1,
         new Event('eip6963:requestProvider'),
       );
-      expect(dispatchEvent).toHaveBeenCalledWith(
+      expect(dispatchEvent).toHaveBeenNthCalledWith(
+        2,
         new CustomEvent('eip6963:announceProvider'),
       );
 
@@ -137,10 +139,16 @@ describe('EIP6963', () => {
       // Notice that 3 events are dispatched in total when requestProvider is
       // called after announceProvider.
       expect(dispatchEvent).toHaveBeenCalledTimes(3);
-      expect(dispatchEvent).toHaveBeenCalledWith(
+      expect(dispatchEvent).toHaveBeenNthCalledWith(
+        1,
+        new CustomEvent('eip6963:announceProvider'),
+      );
+      expect(dispatchEvent).toHaveBeenNthCalledWith(
+        2,
         new Event('eip6963:requestProvider'),
       );
-      expect(dispatchEvent).toHaveBeenCalledWith(
+      expect(dispatchEvent).toHaveBeenNthCalledWith(
+        3,
         new CustomEvent('eip6963:announceProvider'),
       );
 

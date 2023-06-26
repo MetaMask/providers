@@ -25,8 +25,7 @@ const sideEffects = {
 beforeAll(async () => {
   // Spy addEventListener
   ['document', 'window'].forEach((obj) => {
-    const { fn } = sideEffects[obj].addEventListener;
-    const { refs } = sideEffects[obj].addEventListener;
+    const { fn, refs } = sideEffects[obj].addEventListener;
 
     /**
      *
