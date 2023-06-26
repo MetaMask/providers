@@ -7,9 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [11.1.0]
-### Uncategorized
-- console.warn experimental wallet_watchAsset ERC721,ERC1155 ([#264](https://github.com/MetaMask/providers/pull/264))
-- devDeps: @lavamoat/allow-scripts@2.0.3->2.3.1 ([#256](https://github.com/MetaMask/providers/pull/256))
+### Added
+- Add warning for callers of `wallet_watchAsset` with ERC721 and ERC1155 token types, that support is currently considered experimental ([#264](https://github.com/MetaMask/providers/pull/264))
 
 ## [11.0.0]
 ### Changed
