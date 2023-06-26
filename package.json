@@ -37,7 +37,6 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@metamask/controller-utils": "^4.0.0",
     "@metamask/object-multiplex": "^1.1.0",
     "@metamask/safe-event-emitter": "^3.0.0",
     "detect-browser": "^5.2.0",
@@ -94,10 +93,6 @@
     "registry": "https://registry.npmjs.org/"
   },
   "lavamoat": {
-    "allowScripts": {
-      "@metamask/controller-utils>babel-runtime>core-js": false,
-      "@metamask/controller-utils>ethereumjs-util>ethereum-cryptography>keccak": false,
-      "@metamask/controller-utils>ethereumjs-util>ethereum-cryptography>secp256k1": false
-    }
+    "allowScripts": {}
   }
 }
