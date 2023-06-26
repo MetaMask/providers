@@ -1,6 +1,6 @@
-import { ERC1155, ERC721 } from '../constants';
 import type { JsonRpcMiddleware, JsonRpcRequest } from 'json-rpc-engine';
 
+import { ERC1155, ERC721 } from '../constants';
 import messages from '../messages';
 import type { ConsoleLike } from '../utils';
 
