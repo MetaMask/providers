@@ -1,4 +1,4 @@
-import { ERC1155, ERC721 } from '@metamask/controller-utils';
+import { ERC1155, ERC721 } from '../constants';
 import type { JsonRpcMiddleware, JsonRpcRequest } from 'json-rpc-engine';
 
 import messages from '../messages';
