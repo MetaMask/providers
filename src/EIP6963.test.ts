@@ -8,7 +8,7 @@ const getProviderInfo = () => ({
 
 const providerInfoValidationError = () =>
   new Error(
-    'Invalid EIP-6963 provider detail. See https://eips.ethereum.org/EIPS/eip-6963 for requirements.',
+    'Invalid EIP-6963 ProviderDetail object. See https://eips.ethereum.org/EIPS/eip-6963 for requirements.',
   );
 
 describe('EIP6963', () => {
@@ -53,6 +53,19 @@ describe('EIP6963', () => {
           const provider: any = { name: 'test' };
           const providerDetail = { info: getProviderInfo(), provider };
           providerDetail.info.uuid = invalidUuid as any;
+
+          expect(() => announceProvider(providerDetail)).toThrow(
+            providerInfoValidationError(),
+          );
+        });
+      });
+    });
+
+    describe('provider validation', () => {
+      it('throws if the provider is not a plain object', () => {
+        [null, undefined, Symbol('bar'), []].forEach((invalidProvider) => {
+          const provider: any = invalidProvider;
+          const providerDetail = { info: getProviderInfo(), provider };
 
           expect(() => announceProvider(providerDetail)).toThrow(
             providerInfoValidationError(),

@@ -57,12 +57,10 @@ export function requestProvider<HandlerReturnType>(
   window.addEventListener(
     EIP6963EventNames.Announce as any,
     (event: EIP6963AnnounceProviderEvent) => {
-      if (
-        event.type === EIP6963EventNames.Announce &&
-        isObject(event.detail?.provider)
-      ) {
-        handleProvider(event.detail);
+      if (!isValidAnnounceProviderEvent(event)) {
+        throwErrorEIP6963(`Invalid EIP-6963 AnnounceProviderEvent object received from ${EIP6963EventNames.Announce} event.`);
       }
+      handleProvider(event.detail);
     },
   );
 
@@ -86,25 +84,62 @@ const UUID_V4_REGEX =
  */
 export function announceProvider(providerDetail: EIP6963ProviderDetail): void {
   if (!isValidProviderDetail(providerDetail)) {
-    throw new Error(
-      'Invalid EIP-6963 provider detail. See https://eips.ethereum.org/EIPS/eip-6963 for requirements.',
-    );
+    throwErrorEIP6963('Invalid EIP-6963 ProviderDetail object.');
   }
   const { info, provider } = providerDetail;
 
   const _announceProvider = () =>
     window.dispatchEvent(
       new CustomEvent(EIP6963EventNames.Announce, {
-        detail: { info: { ...info }, provider },
+        detail: Object.freeze({ info: { ...info }, provider }),
       }),
     );
 
   _announceProvider();
   window.addEventListener(
     EIP6963EventNames.Request as any,
-    (_event: EIP6963RequestProviderEvent) => {
+    (event: EIP6963RequestProviderEvent) => {
+      if (!isValidRequestProviderEvent(event)) {
+        throwErrorEIP6963(`Invalid EIP-6963 RequestProviderEvent object received from ${EIP6963EventNames.Request} event.`);
+      }
       _announceProvider();
     },
+  );
+}
+
+/**
+ * Validates an {@link EIP6963RequestProviderEvent} object.
+ *
+ * @param event - The {@link EIP6963RequestProviderEvent} to validate.
+ * @returns Whether the {@link EIP6963RequestProviderEvent} is valid.
+ */
+function isValidRequestProviderEvent(
+  event: unknown,
+): event is EIP6963RequestProviderEvent {
+  const providerEvent = event as EIP6963RequestProviderEvent;
+
+  return (
+    providerEvent instanceof Event &&
+    providerEvent.type === EIP6963EventNames.Request
+  );
+}
+
+/**
+ * Validates an {@link EIP6963AnnounceProviderEvent} object.
+ *
+ * @param event - The {@link EIP6963AnnounceProviderEvent} to validate.
+ * @returns Whether the {@link EIP6963AnnounceProviderEvent} is valid.
+ */
+function isValidAnnounceProviderEvent(
+  event: unknown,
+): event is EIP6963AnnounceProviderEvent {
+  const providerEvent = event as EIP6963AnnounceProviderEvent;
+
+  return (
+    providerEvent instanceof CustomEvent &&
+    providerEvent.type === EIP6963EventNames.Announce &&
+    Object.isFrozen(providerEvent.detail) &&
+    isValidProviderDetail(providerEvent.detail)
   );
 }
 
@@ -117,7 +152,11 @@ export function announceProvider(providerDetail: EIP6963ProviderDetail): void {
 function isValidProviderDetail(
   providerDetail: unknown,
 ): providerDetail is EIP6963ProviderDetail {
-  if (!isObject(providerDetail) || !isObject(providerDetail.info)) {
+  if (
+    !isObject(providerDetail) ||
+    !isObject(providerDetail.info) ||
+    !isObject(providerDetail.provider)
+  ) {
     return false;
   }
   const { info } = providerDetail as EIP6963ProviderDetail;
@@ -146,4 +185,16 @@ function isValidUrl(url: string) {
   } catch (error) {
     return false;
   }
+}
+
+/**
+ * Throws an error with link to EIP-6963 specifications.
+ *
+ * @param message - The message to include.
+ * @throws a friendly error with a link to EIP-6963.
+ */
+function throwErrorEIP6963(message: string) {
+  throw new Error(
+    `${message} See https://eips.ethereum.org/EIPS/eip-6963 for requirements.`,
+  );
 }
