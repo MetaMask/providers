@@ -1,5 +1,6 @@
-import type { JsonRpcMiddleware } from 'json-rpc-engine';
+import type { JsonRpcMiddleware, JsonRpcRequest } from 'json-rpc-engine';
 
+import { ERC1155, ERC721 } from '../constants';
 import messages from '../messages';
 import type { ConsoleLike } from '../utils';
 
@@ -15,6 +16,7 @@ export function createRpcWarningMiddleware(
   const sentWarnings = {
     ethDecryptDeprecation: false,
     ethGetEncryptionPublicKeyDeprecation: false,
+    walletWatchAssetNFTExperimental: false,
   };
 
   return (req, _res, next) => {
@@ -27,6 +29,15 @@ export function createRpcWarningMiddleware(
     ) {
       log.warn(messages.warnings.rpc.ethGetEncryptionPublicKeyDeprecation);
       sentWarnings.ethGetEncryptionPublicKeyDeprecation = true;
+    } else if (
+      !sentWarnings.walletWatchAssetNFTExperimental &&
+      req.method === 'wallet_watchAsset' &&
+      [ERC721, ERC1155].includes(
+        (req as JsonRpcRequest<{ type: string }>).params?.type || '',
+      )
+    ) {
+      log.warn(messages.warnings.rpc.walletWatchAssetNFTExperimental);
+      sentWarnings.walletWatchAssetNFTExperimental = true;
     }
     next();
   };
