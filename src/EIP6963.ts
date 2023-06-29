@@ -58,7 +58,9 @@ export function requestProvider<HandlerReturnType>(
     EIP6963EventNames.Announce as any,
     (event: EIP6963AnnounceProviderEvent) => {
       if (!isValidAnnounceProviderEvent(event)) {
-        throwErrorEIP6963(`Invalid EIP-6963 AnnounceProviderEvent object received from ${EIP6963EventNames.Announce} event.`);
+        throwErrorEIP6963(
+          `Invalid EIP-6963 AnnounceProviderEvent object received from ${EIP6963EventNames.Announce} event.`,
+        );
       }
       handleProvider(event.detail);
     },
@@ -100,7 +102,9 @@ export function announceProvider(providerDetail: EIP6963ProviderDetail): void {
     EIP6963EventNames.Request as any,
     (event: EIP6963RequestProviderEvent) => {
       if (!isValidRequestProviderEvent(event)) {
-        throwErrorEIP6963(`Invalid EIP-6963 RequestProviderEvent object received from ${EIP6963EventNames.Request} event.`);
+        throwErrorEIP6963(
+          `Invalid EIP-6963 RequestProviderEvent object received from ${EIP6963EventNames.Request} event.`,
+        );
       }
       _announceProvider();
     },
