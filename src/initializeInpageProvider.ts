@@ -1,5 +1,6 @@
 import { Duplex } from 'stream';
 
+import { EIP6963ProviderInfo, announceProvider } from './EIP6963';
 import {
   MetaMaskInpageProvider,
   MetaMaskInpageProviderOptions,
@@ -11,6 +12,11 @@ type InitializeProviderOptions = {
    * The stream used to connect to the wallet.
    */
   connectionStream: Duplex;
+
+  /**
+   * The provider info that should be used for EIP6963 announcements.
+   */
+  providerInfo?: EIP6963ProviderInfo;
 
   /**
    * Whether the provider should be set as window.ethereum.
@@ -30,6 +36,7 @@ type InitializeProviderOptions = {
  * @param options.connectionStream - A Node.js stream.
  * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
  * @param options.maxEventListeners - The maximum number of event listeners.
+ * @param options.providerInfo - The provider info that should be used for EIP6963.
  * @param options.shouldSendMetadata - Whether the provider should send page metadata.
  * @param options.shouldSetOnWindow - Whether the provider should be set as window.ethereum.
  * @param options.shouldShimWeb3 - Whether a window.web3 shim should be injected.
@@ -41,6 +48,7 @@ export function initializeProvider({
   jsonRpcStreamName,
   logger = console,
   maxEventListeners = 100,
+  providerInfo,
   shouldSendMetadata = true,
   shouldSetOnWindow = true,
   shouldShimWeb3 = false,
@@ -56,6 +64,10 @@ export function initializeProvider({
     // some common libraries, e.g. web3@1.x, mess with our API
     deleteProperty: () => true,
   });
+
+  if (providerInfo) {
+    announceProvider({ info: providerInfo, provider: proxiedProvider });
+  }
 
   if (shouldSetOnWindow) {
     setGlobalProvider(proxiedProvider);
