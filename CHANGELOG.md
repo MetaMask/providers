@@ -7,9 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [11.1.1]
-### Uncategorized
-- deps: fast-deep-equal@2.0.1->3.1.3 ([#258](https://github.com/MetaMask/providers/pull/258))
-- Bump tough-cookie from 4.1.2 to 4.1.3 ([#267](https://github.com/MetaMask/providers/pull/267))
+### Changed
+- Update `fast-deep-equal` ([#258](https://github.com/MetaMask/providers/pull/258))
 
 ## [11.1.0]
 ### Added
