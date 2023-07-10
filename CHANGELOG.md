@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [11.1.1]
+### Uncategorized
+- deps: fast-deep-equal@2.0.1->3.1.3 ([#258](https://github.com/MetaMask/providers/pull/258))
+- Bump tough-cookie from 4.1.2 to 4.1.3 ([#267](https://github.com/MetaMask/providers/pull/267))
+
 ## [11.1.0]
 ### Added
 - Add warning for callers of `wallet_watchAsset` with ERC721 and ERC1155 token types, that support is currently considered experimental ([#264](https://github.com/MetaMask/providers/pull/264))
@@ -224,7 +229,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v11.1.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v11.1.1...HEAD
+[11.1.1]: https://github.com/MetaMask/providers/compare/v11.1.0...v11.1.1
 [11.1.0]: https://github.com/MetaMask/providers/compare/v11.0.0...v11.1.0
 [11.0.0]: https://github.com/MetaMask/providers/compare/v10.2.1...v11.0.0
 [10.2.1]: https://github.com/MetaMask/providers/compare/v10.2.0...v10.2.1
