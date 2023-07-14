@@ -1,8 +1,8 @@
 import { rpcErrors } from '@metamask/rpc-errors';
 import type { Json, JsonRpcRequest, JsonRpcResponse } from '@metamask/utils';
 import type { Duplex } from 'stream';
-import { UnvalidatedJsonRpcRequest } from './BaseProvider';
 
+import { UnvalidatedJsonRpcRequest } from './BaseProvider';
 import messages from './messages';
 import { sendSiteMetadata } from './siteMetadata';
 import {
