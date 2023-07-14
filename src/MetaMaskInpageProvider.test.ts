@@ -1,11 +1,11 @@
 import { JsonRpcRequest } from '@metamask/utils';
 
+import messages from './messages';
 import {
   MetaMaskInpageProviderStreamName,
   MetaMaskInpageProvider,
 } from './MetaMaskInpageProvider';
 import { MockConnectionStream } from '../test/mocks/MockConnectionStream';
-import messages from './messages';
 
 /**
  * A fully initialized inpage provider, and additional mocks to help
