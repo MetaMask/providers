@@ -1,9 +1,10 @@
 import { announceProvider, requestProvider } from './EIP6963';
 
 const getProviderInfo = () => ({
-  name: 'test',
-  icon: 'https://wallet.io/icon.svg',
-  uuid: '1449211e-5560-4235-9ab1-582cbe2b165f',
+  uuid: '350670db-19fa-4704-a166-e52e178b59d2',
+  name: 'Example Wallet',
+  icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>',
+  rdns: 'com.example.wallet',
 });
 
 const providerInfoValidationError = () =>
@@ -11,7 +12,7 @@ const providerInfoValidationError = () =>
     'Invalid EIP-6963 ProviderDetail object. See https://eips.ethereum.org/EIPS/eip-6963 for requirements.',
   );
 
-describe('EIP6963', () => {
+describe('EIP-6963', () => {
   describe('announceProvider', () => {
     describe('provider info validation', () => {
       it('throws if the provider info is not a plain object', () => {

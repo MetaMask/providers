@@ -20,9 +20,13 @@ export type EIP6963ProviderInfo = {
    */
   name: string;
   /**
-   * The URL of an icon for the wallet.
+   * The icon for the wallet. MUST be data URI.
    */
   icon: string;
+  /**
+   * The reverse syntax domain name identifier for the wallet.
+   */
+  rdns: string;
 };
 
 /**
@@ -166,29 +170,25 @@ function isValidProviderDetail(
   const { info } = providerDetail as EIP6963ProviderDetail;
 
   return (
-    typeof info.icon === 'string' &&
-    isValidUrl(info.icon) &&
+    typeof info.uuid === 'string' &&
+    UUID_V4_REGEX.test(info.uuid) &&
     typeof info.name === 'string' &&
     Boolean(info.name) &&
-    typeof info.uuid === 'string' &&
-    UUID_V4_REGEX.test(info.uuid)
+    typeof info.icon === 'string' &&
+    isImageDataUriLike(info.icon) &&
+    typeof info.rdns === 'string' &&
+    Boolean(info.rdns)
   );
 }
 
 /**
- * Checks if a string is a valid URL.
+ * Checks if a string is a data URI like.
  *
- * @param url - The string to check.
- * @returns Whether the string is a valid URL.
+ * @param uri - The string to check.
+ * @returns Whether the string looks like a data URI specifying an image.
  */
-function isValidUrl(url: string) {
-  try {
-    // eslint-disable-next-line no-new
-    new URL(url);
-    return true;
-  } catch (error) {
-    return false;
-  }
+function isImageDataUriLike(uri: string) {
+  return uri.startsWith('data:image');
 }
 
 /**
