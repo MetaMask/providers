@@ -36,6 +36,9 @@
     "test": "jest && jest-it-up",
     "test:watch": "jest --watch"
   },
+  "resolutions": {
+    "@metamask/rpc-errors@^5.1.1": "patch:@metamask/rpc-errors@npm:5.1.1#.yarn/patches/@metamask-rpc-errors-npm-5.1.1-dc76c26803.patch"
+  },
   "dependencies": {
     "@metamask/json-rpc-engine": "^7.0.0",
     "@metamask/object-multiplex": "^1.1.0",
@@ -95,8 +98,5 @@
   },
   "lavamoat": {
     "allowScripts": {}
-  },
-  "resolutions": {
-    "@metamask/rpc-errors@^5.1.1": "patch:@metamask/rpc-errors@npm:5.1.1#.yarn/patches/@metamask-rpc-errors-npm-5.1.1-dc76c26803.patch"
   }
 }
