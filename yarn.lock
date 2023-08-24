@@ -1111,13 +1111,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@metamask/rpc-errors@npm:^5.0.0, @metamask/rpc-errors@npm:^5.1.1":
+"@metamask/rpc-errors@npm:5.1.1, @metamask/rpc-errors@npm:^5.0.0":
   version: 5.1.1
   resolution: "@metamask/rpc-errors@npm:5.1.1"
   dependencies:
     "@metamask/utils": ^5.0.0
     fast-safe-stringify: ^2.0.6
   checksum: ccd1b24da66af3ae63960b79c04b86efb8b96acb89ca6f7e0bbfe636d23ba5cddeba533c0692eafb87c44ec6f840085372d0f21b39e05df9a80700ff61538a30
+  languageName: node
+  linkType: hard
+
+"@metamask/rpc-errors@patch:@metamask/rpc-errors@npm:5.1.1#.yarn/patches/@metamask-rpc-errors-npm-5.1.1-dc76c26803.patch::locator=%40metamask%2Fproviders%40workspace%3A.":
+  version: 5.1.1
+  resolution: "@metamask/rpc-errors@patch:@metamask/rpc-errors@npm%3A5.1.1#.yarn/patches/@metamask-rpc-errors-npm-5.1.1-dc76c26803.patch::version=5.1.1&hash=cfc1a2&locator=%40metamask%2Fproviders%40workspace%3A."
+  dependencies:
+    "@metamask/utils": ^5.0.0
+    fast-safe-stringify: ^2.0.6
+  checksum: 3a382e33ed163632070c6c49f6ba226723566af8b568c99f9d5d5a5e992643ab16f52d95756ea3d6ccec01f18bf574659643f00d2f63fb28f25d695571b5764e
   languageName: node
   linkType: hard
 

@@ -95,5 +95,8 @@
   },
   "lavamoat": {
     "allowScripts": {}
+  },
+  "resolutions": {
+    "@metamask/rpc-errors@^5.1.1": "patch:@metamask/rpc-errors@npm:5.1.1#.yarn/patches/@metamask-rpc-errors-npm-5.1.1-dc76c26803.patch"
   }
 }
