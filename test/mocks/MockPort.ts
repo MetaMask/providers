@@ -1,4 +1,5 @@
 import {
+  Json,
   JsonRpcNotification,
   JsonRpcRequest,
   JsonRpcResponse,
@@ -77,7 +78,7 @@ export class MockPort {
    * @param substream - The substream this reply is included in.
    * @param message - The JSON RPC response.
    */
-  reply(substream: string, message: JsonRpcResponse) {
+  reply(substream: string, message: JsonRpcResponse<Json>) {
     if (!this.#connected) {
       throw new Error(
         'It is not possible to reply after the port has disconnected',
