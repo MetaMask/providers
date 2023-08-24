@@ -1,4 +1,5 @@
 import {
+  Json,
   JsonRpcNotification,
   JsonRpcRequest,
   JsonRpcResponse,
@@ -71,7 +72,7 @@ export class MockConnectionStream extends Duplex {
    * @param substream - The substream this reply is included in.
    * @param message - The JSON RPC response.
    */
-  reply(substream: string, message: JsonRpcResponse) {
+  reply(substream: string, message: JsonRpcResponse<Json>) {
     this.push({ name: substream, data: message });
   }
 
@@ -81,7 +82,7 @@ export class MockConnectionStream extends Duplex {
    * @param substream - The substream this notification is included in.
    * @param message - The JSON RPC notification.
    */
-  notify(substream: string, message: JsonRpcNotification<unknown>) {
+  notify(substream: string, message: JsonRpcNotification) {
     this.push({ name: substream, data: message });
   }
 }
