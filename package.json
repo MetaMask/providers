@@ -37,7 +37,8 @@
     "test:watch": "jest --watch"
   },
   "resolutions": {
-    "@metamask/rpc-errors@^5.1.1": "patch:@metamask/rpc-errors@npm:5.1.1#.yarn/patches/@metamask-rpc-errors-npm-5.1.1-dc76c26803.patch"
+    "@metamask/rpc-errors@^5.1.1": "patch:@metamask/rpc-errors@npm:5.1.1#.yarn/patches/@metamask-rpc-errors-npm-5.1.1-dc76c26803.patch",
+    "@metamask/utils@^7.1.0": "patch:@metamask/utils@npm:7.1.0#.yarn/patches/@metamask-utils-npm-7.1.0-4e01225a9e.patch"
   },
   "dependencies": {
     "@metamask/json-rpc-engine": "^7.0.0",
