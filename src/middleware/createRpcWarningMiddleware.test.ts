@@ -1,10 +1,23 @@
 import { JsonRpcEngine } from '@metamask/json-rpc-engine';
-import { Json, JsonRpcFailure, JsonRpcSuccess } from '@metamask/utils';
+import {
+  Json,
+  JsonRpcFailure,
+  JsonRpcParams,
+  JsonRpcRequest,
+  JsonRpcSuccess,
+} from '@metamask/utils';
 
 import { createRpcWarningMiddleware } from './createRpcWarningMiddleware';
 import messages from '../messages';
 
-const affected = [
+type Scenario = {
+  scenario: string;
+  method: string;
+  warning?: string;
+  params?: JsonRpcParams;
+};
+
+const affected: Scenario[] = [
   {
     scenario: 'eth_decrypt',
     method: 'eth_decrypt',
@@ -35,7 +48,7 @@ const affected = [
   },
 ];
 
-const unaffected = [
+const unaffected: Scenario[] = [
   {
     scenario: 'eth_chainId',
     method: 'eth_chainId',
@@ -51,67 +64,84 @@ const unaffected = [
 ];
 
 describe('createRpcWarningMiddleware', () => {
-  describe.each(affected)('$scenario', ({ method, params = {}, warning }) => {
-    it('should warn the first time the method is called', async () => {
-      const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
-      const middleware = createRpcWarningMiddleware(globalThis.console);
-      const engine = new JsonRpcEngine();
-      engine.push(middleware);
+  describe.each(affected)(
+    '$scenario',
+    ({ method, params = {}, warning }: Scenario) => {
+      it('should warn the first time the method is called', async () => {
+        const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
+        const middleware = createRpcWarningMiddleware(globalThis.console);
+        const engine = new JsonRpcEngine();
+        engine.push(middleware);
 
-      await engine.handle({ jsonrpc: '2.0', id: 1, method, params });
-
-      expect(consoleWarnSpy).toHaveBeenCalledWith(warning);
-      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not warn the second time the method is called', async () => {
-      const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
-      const middleware = createRpcWarningMiddleware(globalThis.console);
-      const engine = new JsonRpcEngine();
-      engine.push(middleware);
-
-      await engine.handle({ jsonrpc: '2.0', id: 1, method, params });
-      await engine.handle({ jsonrpc: '2.0', id: 1, method, params });
-
-      expect(consoleWarnSpy).toHaveBeenCalledWith(warning);
-      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should allow the method to succeed', async () => {
-      const middleware = createRpcWarningMiddleware(globalThis.console);
-      const engine = new JsonRpcEngine();
-      engine.push(middleware);
-      engine.push((_req, res, _next, end) => {
-        res.result = 'success!';
-        end();
+        await engine.handle({
+          jsonrpc: '2.0',
+          id: 1,
+          method,
+          params,
+        } as JsonRpcRequest);
+        expect(consoleWarnSpy).toHaveBeenCalledWith(warning);
+        expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
       });
 
-      const response = (await engine.handle({
-        jsonrpc: '2.0',
-        id: 1,
-        method,
-      })) as JsonRpcSuccess<Json>;
+      it('should not warn the second time the method is called', async () => {
+        const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
+        const middleware = createRpcWarningMiddleware(globalThis.console);
+        const engine = new JsonRpcEngine();
+        engine.push(middleware);
 
-      expect(response.result).toBe('success!');
-    });
+        await engine.handle({
+          jsonrpc: '2.0',
+          id: 1,
+          method,
+          params,
+        } as JsonRpcRequest);
+        await engine.handle({
+          jsonrpc: '2.0',
+          id: 1,
+          method,
+          params,
+        } as JsonRpcRequest);
 
-    it('should allow the method to fail', async () => {
-      const middleware = createRpcWarningMiddleware(globalThis.console);
-      const engine = new JsonRpcEngine();
-      engine.push(middleware);
-      engine.push(() => {
-        throw new Error('Failure!');
+        expect(consoleWarnSpy).toHaveBeenCalledWith(warning);
+        expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
       });
 
-      const result = (await engine.handle({
-        jsonrpc: '2.0',
-        id: 1,
-        method,
-      })) as JsonRpcFailure;
+      it('should allow the method to succeed', async () => {
+        const middleware = createRpcWarningMiddleware(globalThis.console);
+        const engine = new JsonRpcEngine();
+        engine.push(middleware);
+        engine.push((_req, res, _next, end) => {
+          res.result = 'success!';
+          end();
+        });
 
-      expect(result.error.message).toBe('Internal JSON-RPC error.');
-    });
-  });
+        const response = (await engine.handle({
+          jsonrpc: '2.0',
+          id: 1,
+          method,
+        })) as JsonRpcSuccess<Json>;
+
+        expect(response.result).toBe('success!');
+      });
+
+      it('should allow the method to fail', async () => {
+        const middleware = createRpcWarningMiddleware(globalThis.console);
+        const engine = new JsonRpcEngine();
+        engine.push(middleware);
+        engine.push(() => {
+          throw new Error('Failure!');
+        });
+
+        const result = (await engine.handle({
+          jsonrpc: '2.0',
+          id: 1,
+          method,
+        })) as JsonRpcFailure;
+
+        expect(result.error.message).toBe('Internal JSON-RPC error.');
+      });
+    },
+  );
 
   describe.each(unaffected)('$scenario', ({ method, params = {} }) => {
     it('should not issue a warning', async () => {
@@ -120,7 +150,12 @@ describe('createRpcWarningMiddleware', () => {
       const engine = new JsonRpcEngine();
       engine.push(middleware);
 
-      await engine.handle({ jsonrpc: '2.0', id: 1, method, params });
+      await engine.handle({
+        jsonrpc: '2.0',
+        id: 1,
+        method,
+        params,
+      } as JsonRpcRequest);
 
       expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
@@ -139,7 +174,7 @@ describe('createRpcWarningMiddleware', () => {
         id: 1,
         method,
         params,
-      })) as JsonRpcSuccess<Json>;
+      } as JsonRpcRequest)) as JsonRpcSuccess<Json>;
 
       expect(response.result).toBe('success!');
     });
@@ -157,7 +192,7 @@ describe('createRpcWarningMiddleware', () => {
         id: 1,
         method,
         params,
-      })) as JsonRpcFailure;
+      } as JsonRpcRequest)) as JsonRpcFailure;
 
       expect(result.error.message).toBe('Internal JSON-RPC error.');
     });
