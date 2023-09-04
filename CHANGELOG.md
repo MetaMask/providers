@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [12.0.0]
+
 ## [11.1.2]
 ### Changed
 - Update `extension-port-stream` to `^2.1.1` ([#273](https://github.com/MetaMask/providers/pull/273))
@@ -232,7 +234,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v11.1.2...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v12.0.0...HEAD
+[12.0.0]: https://github.com/MetaMask/providers/compare/v11.1.2...v12.0.0
 [11.1.2]: https://github.com/MetaMask/providers/compare/v11.1.1...v11.1.2
 [11.1.1]: https://github.com/MetaMask/providers/compare/v11.1.0...v11.1.1
 [11.1.0]: https://github.com/MetaMask/providers/compare/v11.0.0...v11.1.0
