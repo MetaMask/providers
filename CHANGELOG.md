@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [11.1.2]
+### Changed
+- Update `extension-port-stream` to `^2.1.1` ([#273](https://github.com/MetaMask/providers/pull/273))
 
 ## [11.1.1]
 ### Changed
