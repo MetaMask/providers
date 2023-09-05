@@ -1,4 +1,5 @@
-import type { JsonRpcMiddleware } from 'json-rpc-engine';
+import type { JsonRpcMiddleware } from '@metamask/json-rpc-engine';
+import { Json, JsonRpcParams } from '@metamask/utils';
 
 import messages from './messages';
 import { StreamProvider } from './StreamProvider';
@@ -15,7 +16,7 @@ const mockStreamName = 'mock-stream';
  * @returns A tuple containing the StreamProvider instance and the mock stream.
  */
 function getStreamProvider(
-  rpcMiddleware: JsonRpcMiddleware<unknown, unknown>[] = [],
+  rpcMiddleware: JsonRpcMiddleware<JsonRpcParams, Json>[] = [],
 ) {
   const mockStream = new MockConnectionStream();
   const streamProvider = new StreamProvider(mockStream, {
