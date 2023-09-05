@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [12.0.0]
+### Changed
+- **BREAKING**: Replace `eth-rpc-errors`@`^4.0.2` with `@metamask/rpc-errors`@`6.0.0` ([#277](https://github.com/MetaMask/providers/pull/277))
+- **BREAKING**: Replace `json-rpc-engine`@`^6.1.0` with `@metamask/json-rpc-engine`@`7.1.1` ([#277](https://github.com/MetaMask/providers/pull/277))
+- Upgrade `@metamask/utils` from `^6.2.0` to `^8.1.0` ([#277](https://github.com/MetaMask/providers/pull/277))
+
 ## [11.1.2]
 ### Changed
 - Update `extension-port-stream` to `^2.1.1` ([#273](https://github.com/MetaMask/providers/pull/273))
@@ -232,7 +238,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v11.1.2...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v12.0.0...HEAD
+[12.0.0]: https://github.com/MetaMask/providers/compare/v11.1.2...v12.0.0
 [11.1.2]: https://github.com/MetaMask/providers/compare/v11.1.1...v11.1.2
 [11.1.1]: https://github.com/MetaMask/providers/compare/v11.1.0...v11.1.1
 [11.1.0]: https://github.com/MetaMask/providers/compare/v11.0.0...v11.1.0
