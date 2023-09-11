@@ -89,14 +89,14 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * The chain ID of the currently connected Ethereum chain.
    * See [chainId.network]{@link https://chainid.network} for more information.
    */
-  public chainId: string | null;
+  #chainId: string | null;
 
   /**
    * The user's currently selected Ethereum address.
    * If null, MetaMask is either locked or the user has not permitted any
    * addresses to be viewed.
    */
-  public selectedAddress: string | null;
+  #selectedAddress: string | null;
 
   /**
    * Create a new instance of the provider.
@@ -124,8 +124,8 @@ export abstract class BaseProvider extends SafeEventEmitter {
     };
 
     // Public state
-    this.selectedAddress = null;
-    this.chainId = null;
+    this.#selectedAddress = null;
+    this.#chainId = null;
 
     // Bind functions to prevent consumers from making unbound calls
     this._handleAccountsChanged = this._handleAccountsChanged.bind(this);
@@ -143,6 +143,18 @@ export abstract class BaseProvider extends SafeEventEmitter {
     const rpcEngine = new JsonRpcEngine();
     rpcMiddleware.forEach((middleware) => rpcEngine.push(middleware));
     this._rpcEngine = rpcEngine;
+  }
+
+  //====================
+  // Public Properties
+  //====================
+
+  get chainId(): string | null {
+    return this.#chainId;
+  }
+
+  get selectedAddress(): string | null {
+    return this.#selectedAddress;
   }
 
   //====================
@@ -337,9 +349,9 @@ export abstract class BaseProvider extends SafeEventEmitter {
           errorMessage ?? messages.errors.permanentlyDisconnected(),
         );
         this._log.error(error);
-        this.chainId = null;
+        this.#chainId = null;
         this._state.accounts = null;
-        this.selectedAddress = null;
+        this.#selectedAddress = null;
         this._state.isUnlocked = false;
         this._state.isPermanentlyDisconnected = true;
       }
@@ -372,10 +384,10 @@ export abstract class BaseProvider extends SafeEventEmitter {
 
     this._handleConnect(chainId);
 
-    if (chainId !== this.chainId) {
-      this.chainId = chainId;
+    if (chainId !== this.#chainId) {
+      this.#chainId = chainId;
       if (this._state.initialized) {
-        this.emit('chainChanged', this.chainId);
+        this.emit('chainChanged', this.#chainId);
       }
     }
   }
@@ -428,8 +440,8 @@ export abstract class BaseProvider extends SafeEventEmitter {
       this._state.accounts = _accounts as string[];
 
       // handle selectedAddress
-      if (this.selectedAddress !== _accounts[0]) {
-        this.selectedAddress = (_accounts[0] as string) || null;
+      if (this.#selectedAddress !== _accounts[0]) {
+        this.#selectedAddress = (_accounts[0] as string) || null;
       }
 
       // finally, after all state has been updated, emit the event
