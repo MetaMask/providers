@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [12.1.0]
-### Uncategorized
+### Added
 - Make `chainId`, `networkVersion`, `selectedAddress` readonly and log deprecation warning ([#280](https://github.com/MetaMask/providers/pull/280))
+
+### Changed
 - Remove `pump` ([#281](https://github.com/MetaMask/providers/pull/281))
 
 ## [12.0.0]
