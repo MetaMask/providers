@@ -6,12 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [12.1.0]
-### Added
-- Add deprecation warning when accessing `chainId`, `networkVersion`, and `selectedAddress`([#280](https://github.com/MetaMask/providers/pull/280))
-
+## [13.0.0]
 ### Changed
-- Make `chainId`, `networkVersion`, and `selectedAddress` read-only ([#280](https://github.com/MetaMask/providers/pull/280))
+- Log deprecation warning when accessing `chainId`, `networkVersion`, and `selectedAddress`([#280](https://github.com/MetaMask/providers/pull/280))
+  - These properties are also now read-only.
 - Remove `pump` ([#281](https://github.com/MetaMask/providers/pull/281))
 
 ## [12.0.0]
@@ -246,8 +244,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v12.1.0...HEAD
-[12.1.0]: https://github.com/MetaMask/providers/compare/v12.0.0...v12.1.0
+[Unreleased]: https://github.com/MetaMask/providers/compare/v13.0.0...HEAD
+[13.0.0]: https://github.com/MetaMask/providers/compare/v12.0.0...v13.0.0
 [12.0.0]: https://github.com/MetaMask/providers/compare/v11.1.2...v12.0.0
 [11.1.2]: https://github.com/MetaMask/providers/compare/v11.1.1...v11.1.2
 [11.1.1]: https://github.com/MetaMask/providers/compare/v11.1.0...v11.1.1
