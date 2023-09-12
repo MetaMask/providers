@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [13.0.0]
 ### Changed
-- Log deprecation warning when accessing `chainId`, `networkVersion`, and `selectedAddress`([#280](https://github.com/MetaMask/providers/pull/280))
-  - These properties are also now read-only.
+- **BREAKING**: Update `chainId`, `networkVersion`, and `selectedAddress` to be read-only ([#280](https://github.com/MetaMask/providers/pull/280))
+- Log deprecation warning when accessing `chainId`, `networkVersion`, and `selectedAddress` ([#280](https://github.com/MetaMask/providers/pull/280))
 - Remove `pump` ([#281](https://github.com/MetaMask/providers/pull/281))
 
 ## [12.0.0]
