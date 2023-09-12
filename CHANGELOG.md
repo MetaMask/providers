@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.0.0]
+### Uncategorized
+- Make `chainId`, `networkVersion`, `selectedAddress` readonly and log deprecation warning ([#280](https://github.com/MetaMask/providers/pull/280))
+- Remove `pump` ([#281](https://github.com/MetaMask/providers/pull/281))
+
 ## [12.0.0]
 ### Changed
 - **BREAKING**: Replace `eth-rpc-errors`@`^4.0.2` with `@metamask/rpc-errors`@`6.0.0` ([#277](https://github.com/MetaMask/providers/pull/277))
@@ -238,7 +243,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v12.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v13.0.0...HEAD
+[13.0.0]: https://github.com/MetaMask/providers/compare/v12.0.0...v13.0.0
 [12.0.0]: https://github.com/MetaMask/providers/compare/v11.1.2...v12.0.0
 [11.1.2]: https://github.com/MetaMask/providers/compare/v11.1.1...v11.1.2
 [11.1.1]: https://github.com/MetaMask/providers/compare/v11.1.0...v11.1.1
