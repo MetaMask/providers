@@ -24,17 +24,23 @@ describe('EIP-6963', () => {
       });
 
       it('throws if the `icon` field is invalid', () => {
-        [null, undefined, '', 'not-a-url', Symbol('bar')].forEach(
-          (invalidIcon) => {
-            const provider: any = { name: 'test' };
-            const providerDetail = { info: getProviderInfo(), provider };
-            providerDetail.info.icon = invalidIcon as any;
+        [
+          null,
+          undefined,
+          '',
+          'not-a-data-uri',
+          'https://example.com/logo.png',
+          'data:text/plain;blah',
+          Symbol('bar'),
+        ].forEach((invalidIcon) => {
+          const provider: any = { name: 'test' };
+          const providerDetail = { info: getProviderInfo(), provider };
+          providerDetail.info.icon = invalidIcon as any;
 
-            expect(() => announceProvider(providerDetail)).toThrow(
-              providerInfoValidationError(),
-            );
-          },
-        );
+          expect(() => announceProvider(providerDetail)).toThrow(
+            providerInfoValidationError(),
+          );
+        });
       });
 
       it('throws if the `name` field is invalid', () => {
@@ -54,6 +60,26 @@ describe('EIP-6963', () => {
           const provider: any = { name: 'test' };
           const providerDetail = { info: getProviderInfo(), provider };
           providerDetail.info.uuid = invalidUuid as any;
+
+          expect(() => announceProvider(providerDetail)).toThrow(
+            providerInfoValidationError(),
+          );
+        });
+      });
+
+      it('throws if the `rdns` field is invalid', () => {
+        [
+          null,
+          undefined,
+          '',
+          'not-a-valid-domain',
+          '..com',
+          'com.',
+          Symbol('bar'),
+        ].forEach((invalidRdns) => {
+          const provider: any = { name: 'test' };
+          const providerDetail = { info: getProviderInfo(), provider };
+          providerDetail.info.rdns = invalidRdns as any;
 
           expect(() => announceProvider(providerDetail)).toThrow(
             providerInfoValidationError(),

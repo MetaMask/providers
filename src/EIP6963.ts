@@ -73,11 +73,13 @@ export function requestProvider<HandlerReturnType>(
   window.dispatchEvent(new Event(EIP6963EventNames.Request));
 }
 
-/**
- * Courtesy https://github.com/thenativeweb/uuidv4/blob/bdcf3a3138bef4fb7c51f389a170666f9012c478/lib/uuidv4.ts#L5
- */
+// https://github.com/thenativeweb/uuidv4/blob/bdcf3a3138bef4fb7c51f389a170666f9012c478/lib/uuidv4.ts#L5
 const UUID_V4_REGEX =
   /(?:^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}$)|(?:^0{8}-0{4}-0{4}-0{4}-0{12}$)/u;
+
+// https://stackoverflow.com/a/20204811
+const FQDN_REGEX =
+  /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)/u;
 
 /**
  * Announces a provider by dispatching an {@link EIP6963AnnounceProviderEvent}, and
@@ -175,20 +177,10 @@ function isValidProviderDetail(
     typeof info.name === 'string' &&
     Boolean(info.name) &&
     typeof info.icon === 'string' &&
-    isImageDataUriLike(info.icon) &&
+    info.icon.startsWith('data:image') &&
     typeof info.rdns === 'string' &&
-    Boolean(info.rdns)
+    FQDN_REGEX.test(info.rdns)
   );
-}
-
-/**
- * Checks if a string is a data URI like.
- *
- * @param uri - The string to check.
- * @returns Whether the string looks like a data URI specifying an image.
- */
-function isImageDataUriLike(uri: string) {
-  return uri.startsWith('data:image');
 }
 
 /**
