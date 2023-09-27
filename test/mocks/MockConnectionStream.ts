@@ -1,8 +1,9 @@
 import {
+  Json,
   JsonRpcNotification,
   JsonRpcRequest,
   JsonRpcResponse,
-} from 'json-rpc-engine';
+} from '@metamask/utils';
 import { Duplex } from 'stream';
 
 /**
@@ -10,7 +11,7 @@ import { Duplex } from 'stream';
  * provider to the wallet.
  */
 export class MockConnectionStream extends Duplex {
-  #onWrite?: (name: string, data: JsonRpcRequest<unknown>) => void;
+  #onWrite?: (name: string, data: JsonRpcRequest) => void;
 
   /**
    * Construct a mock connection stream.
@@ -19,8 +20,7 @@ export class MockConnectionStream extends Duplex {
    * the provider to the wallet are passed to this function.
    */
   constructor(
-    onWrite: (name: string, data: JsonRpcRequest<unknown>) => void = () =>
-      undefined,
+    onWrite: (name: string, data: JsonRpcRequest) => void = () => undefined,
   ) {
     super({ objectMode: true });
     this.#onWrite = onWrite;
@@ -41,7 +41,7 @@ export class MockConnectionStream extends Duplex {
    * the write has completed.
    */
   _write(
-    message: { name: string; data: JsonRpcRequest<unknown> },
+    message: { name: string; data: JsonRpcRequest },
     _encoding: string,
     callback: (error?: Error) => void,
   ) {
@@ -72,7 +72,7 @@ export class MockConnectionStream extends Duplex {
    * @param substream - The substream this reply is included in.
    * @param message - The JSON RPC response.
    */
-  reply(substream: string, message: JsonRpcResponse<unknown>) {
+  reply(substream: string, message: JsonRpcResponse<Json>) {
     this.push({ name: substream, data: message });
   }
 
@@ -82,7 +82,7 @@ export class MockConnectionStream extends Duplex {
    * @param substream - The substream this notification is included in.
    * @param message - The JSON RPC notification.
    */
-  notify(substream: string, message: JsonRpcNotification<unknown>) {
+  notify(substream: string, message: JsonRpcNotification) {
     this.push({ name: substream, data: message });
   }
 }

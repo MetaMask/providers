@@ -1,8 +1,8 @@
-import { ethErrors } from 'eth-rpc-errors';
-import type { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
+import { rpcErrors } from '@metamask/rpc-errors';
+import type { Json, JsonRpcRequest, JsonRpcResponse } from '@metamask/utils';
 import type { Duplex } from 'stream';
 
-import type { UnvalidatedJsonRpcRequest } from './BaseProvider';
+import { UnvalidatedJsonRpcRequest } from './BaseProvider';
 import messages from './messages';
 import { sendSiteMetadata } from './siteMetadata';
 import {
@@ -22,7 +22,7 @@ export type SendSyncJsonRpcRequest = {
     | 'eth_coinbase'
     | 'eth_uninstallFilter'
     | 'net_version';
-} & JsonRpcRequest<unknown>;
+} & JsonRpcRequest;
 
 type WarningEventName = keyof SentWarningsState['events'];
 
@@ -36,6 +36,10 @@ export type MetaMaskInpageProviderOptions = {
 } & Partial<Omit<StreamProviderOptions, 'rpcMiddleware'>>;
 
 type SentWarningsState = {
+  // properties
+  chainId: boolean;
+  networkVersion: boolean;
+  selectedAddress: boolean;
   // methods
   enable: boolean;
   experimentalMethods: boolean;
@@ -56,6 +60,10 @@ export const MetaMaskInpageProviderStreamName = 'metamask-provider';
 
 export class MetaMaskInpageProvider extends AbstractStreamProvider {
   protected _sentWarnings: SentWarningsState = {
+    // properties
+    chainId: false,
+    networkVersion: false,
+    selectedAddress: false,
     // methods
     enable: false,
     experimentalMethods: false,
@@ -76,7 +84,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     MetaMaskInpageProvider['_getExperimentalApi']
   >;
 
-  public networkVersion: string | null;
+  #networkVersion: string | null;
 
   /**
    * Indicating that this provider is a MetaMask provider.
@@ -118,7 +126,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this._initializeStateAsync();
 
-    this.networkVersion = null;
+    this.#networkVersion = null;
     this.isMetaMask = true;
 
     this._sendSync = this._sendSync.bind(this);
@@ -161,6 +169,34 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   }
 
   //====================
+  // Deprecated Properties
+  //====================
+
+  get chainId(): string | null {
+    if (!this._sentWarnings.chainId) {
+      this._log.warn(messages.warnings.chainIdDeprecation);
+      this._sentWarnings.chainId = true;
+    }
+    return super.chainId;
+  }
+
+  get networkVersion(): string | null {
+    if (!this._sentWarnings.networkVersion) {
+      this._log.warn(messages.warnings.networkVersionDeprecation);
+      this._sentWarnings.networkVersion = true;
+    }
+    return this.#networkVersion;
+  }
+
+  get selectedAddress(): string | null {
+    if (!this._sentWarnings.selectedAddress) {
+      this._log.warn(messages.warnings.selectedAddressDeprecation);
+      this._sentWarnings.selectedAddress = true;
+    }
+    return super.selectedAddress;
+  }
+
+  //====================
   // Public Methods
   //====================
 
@@ -171,8 +207,8 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @param callback - The callback function.
    */
   sendAsync(
-    payload: JsonRpcRequest<unknown>,
-    callback: (error: Error | null, result?: JsonRpcResponse<unknown>) => void,
+    payload: JsonRpcRequest,
+    callback: (error: Error | null, result?: JsonRpcResponse<Json>) => void,
   ): void {
     this._rpcRequest(payload, callback);
   }
@@ -228,8 +264,8 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    */
   protected _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
     super._handleDisconnect(isRecoverable, errorMessage);
-    if (this.networkVersion && !isRecoverable) {
-      this.networkVersion = null;
+    if (this.#networkVersion && !isRecoverable) {
+      this.#networkVersion = null;
     }
   }
 
@@ -283,7 +319,10 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @returns A Promise that resolves with the JSON-RPC response object for the
    * request.
    */
-  send<T>(method: string, params?: T[]): Promise<JsonRpcResponse<T>>;
+  send<T extends Json>(
+    method: string,
+    params?: T[],
+  ): Promise<JsonRpcResponse<T>>;
 
   /**
    * Submits an RPC request per the given JSON-RPC request object.
@@ -293,8 +332,8 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @param callback - An error-first callback that will receive the JSON-RPC
    * response object.
    */
-  send<T>(
-    payload: JsonRpcRequest<unknown>,
+  send<T extends Json>(
+    payload: JsonRpcRequest,
     callback: (error: Error | null, result?: JsonRpcResponse<T>) => void,
   ): void;
 
@@ -306,7 +345,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @param payload - A JSON-RPC request object.
    * @returns A JSON-RPC response object.
    */
-  send<T>(payload: SendSyncJsonRpcRequest): JsonRpcResponse<T>;
+  send<T extends Json>(payload: SendSyncJsonRpcRequest): JsonRpcResponse<T>;
 
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
@@ -335,7 +374,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
       typeof callbackOrArgs === 'function'
     ) {
       return this._rpcRequest(
-        methodOrPayload as JsonRpcRequest<unknown>,
+        methodOrPayload as JsonRpcRequest,
         callbackOrArgs as (...args: unknown[]) => void,
       );
     }
@@ -366,7 +405,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
         break;
 
       case 'net_version':
-        result = this.networkVersion ?? null;
+        result = this.#networkVersion ?? null;
         break;
 
       default:
@@ -412,7 +451,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
          */
         requestBatch: async (requests: UnvalidatedJsonRpcRequest[]) => {
           if (!Array.isArray(requests)) {
-            throw ethErrors.rpc.invalidRequest({
+            throw rpcErrors.invalidRequest({
               message:
                 'Batch requests must be made with an array of request objects.',
               data: requests,
@@ -454,10 +493,10 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     // networkVersion is 'loading'.
     super._handleChainChanged({ chainId, networkVersion });
 
-    if (this._state.isConnected && networkVersion !== this.networkVersion) {
-      this.networkVersion = networkVersion as string;
+    if (this._state.isConnected && networkVersion !== this.#networkVersion) {
+      this.#networkVersion = networkVersion as string;
       if (this._state.initialized) {
-        this.emit('networkChanged', this.networkVersion);
+        this.emit('networkChanged', this.#networkVersion);
       }
     }
   }

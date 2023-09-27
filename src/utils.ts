@@ -1,9 +1,9 @@
-import { ethErrors } from 'eth-rpc-errors';
 import {
   createIdRemapMiddleware,
   JsonRpcMiddleware,
-  PendingJsonRpcResponse,
-} from 'json-rpc-engine';
+} from '@metamask/json-rpc-engine';
+import { rpcErrors } from '@metamask/rpc-errors';
+import { Json, JsonRpcParams, PendingJsonRpcResponse } from '@metamask/utils';
 
 import { createRpcWarningMiddleware } from './middleware/createRpcWarningMiddleware';
 
@@ -27,7 +27,7 @@ export const EMITTED_NOTIFICATIONS = Object.freeze([
  * remapping middleware and an error middleware.
  *
  * @param logger - The logger to use in the error middleware.
- * @returns An array of json-rpc-engine middleware functions.
+ * @returns An array of @metamask/json-rpc-engine middleware functions.
  */
 export const getDefaultExternalMiddleware = (logger: ConsoleLike = console) => [
   createIdRemapMiddleware(),
@@ -40,15 +40,15 @@ export const getDefaultExternalMiddleware = (logger: ConsoleLike = console) => [
  * method.
  *
  * @param log - The logging API to use.
- * @returns A json-rpc-engine middleware function.
+ * @returns A @metamask/json-rpc-engine middleware function.
  */
 function createErrorMiddleware(
   log: ConsoleLike,
-): JsonRpcMiddleware<unknown, unknown> {
+): JsonRpcMiddleware<JsonRpcParams, Json> {
   return (request, response, next) => {
     // json-rpc-engine will terminate the request when it notices this error
     if (typeof request.method !== 'string' || !request.method) {
-      response.error = ethErrors.rpc.invalidRequest({
+      response.error = rpcErrors.invalidRequest({
         message: `The request 'method' must be a non-empty string.`,
         data: request,
       });
@@ -72,7 +72,7 @@ export const getRpcPromiseCallback =
     reject: (error?: Error) => void,
     unwrapResult = true,
   ) =>
-  (error: Error, response: PendingJsonRpcResponse<unknown>): void => {
+  (error: Error, response: PendingJsonRpcResponse<Json>): void => {
     if (error || response.error) {
       reject(error || response.error);
     } else {

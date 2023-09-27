@@ -1,4 +1,4 @@
-import { JsonRpcRequest } from 'json-rpc-engine';
+import { JsonRpcRequest } from '@metamask/utils';
 
 import messages from './messages';
 import {
@@ -58,7 +58,7 @@ async function getInitializedProvider({
   onMethodCalled?: {
     substream: string;
     method: string;
-    callback: (data: JsonRpcRequest<unknown>) => void;
+    callback: (data: JsonRpcRequest) => void;
   }[];
 } = {}): Promise<InitializedProviderDetails> {
   const onWrite = jest.fn();
@@ -1068,6 +1068,99 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
       const { provider } = await getInitializedProvider();
 
       expect(provider.isMetaMask).toBe(true);
+    });
+  });
+
+  describe('chainId', () => {
+    let provider: any | MetaMaskInpageProvider;
+
+    beforeEach(async () => {
+      provider = (
+        await getInitializedProvider({
+          initialState: {
+            chainId: '0x5',
+          },
+        })
+      ).provider;
+    });
+
+    it('should warn the first time chainId is accessed', async () => {
+      const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
+
+      expect(provider.chainId).toBe('0x5');
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        messages.warnings.chainIdDeprecation,
+      );
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not allow chainId to be modified', () => {
+      expect(() => (provider.chainId = '0x539')).toThrow(
+        'Cannot set property chainId',
+      );
+      expect(provider.chainId).toBe('0x5');
+    });
+  });
+
+  describe('networkVersion', () => {
+    let provider: any | MetaMaskInpageProvider;
+
+    beforeEach(async () => {
+      provider = (
+        await getInitializedProvider({
+          initialState: {
+            networkVersion: '5',
+          },
+        })
+      ).provider;
+    });
+
+    it('should warn the first time networkVersion is accessed', async () => {
+      const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
+
+      expect(provider.networkVersion).toBe('5');
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        messages.warnings.networkVersionDeprecation,
+      );
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not allow networkVersion to be modified', () => {
+      expect(() => (provider.networkVersion = '1337')).toThrow(
+        'Cannot set property networkVersion',
+      );
+      expect(provider.networkVersion).toBe('5');
+    });
+  });
+
+  describe('selectedAddress', () => {
+    let provider: any | MetaMaskInpageProvider;
+
+    beforeEach(async () => {
+      provider = (
+        await getInitializedProvider({
+          initialState: {
+            accounts: ['0xdeadbeef'],
+          },
+        })
+      ).provider;
+    });
+
+    it('should warn the first time selectedAddress is accessed', async () => {
+      const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
+
+      expect(provider.selectedAddress).toBe('0xdeadbeef');
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        messages.warnings.selectedAddressDeprecation,
+      );
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not allow selectedAddress to be modified', () => {
+      expect(() => (provider.selectedAddress = '0x12345678')).toThrow(
+        'Cannot set property selectedAddress',
+      );
+      expect(provider.selectedAddress).toBe('0xdeadbeef');
     });
   });
 });

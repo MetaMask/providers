@@ -63,6 +63,11 @@ export function initializeProvider({
   const proxiedProvider = new Proxy(provider, {
     // some common libraries, e.g. web3@1.x, mess with our API
     deleteProperty: () => true,
+    // fix issue with Proxy unable to access private variables from getters
+    // https://stackoverflow.com/a/73051482
+    get(target, propName: 'chainId' | 'networkVersion' | 'selectedAddress') {
+      return target[propName];
+    },
   });
 
   if (shouldAnnounceProviderInfo) {

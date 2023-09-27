@@ -1,9 +1,10 @@
+import type { JsonRpcMiddleware } from '@metamask/json-rpc-engine';
 import ObjectMultiplex from '@metamask/object-multiplex';
 import SafeEventEmitter from '@metamask/safe-event-emitter';
+import { Json, JsonRpcParams } from '@metamask/utils';
 import { duplex as isDuplex } from 'is-stream';
-import type { JsonRpcMiddleware } from 'json-rpc-engine';
 import { createStreamMiddleware } from 'json-rpc-middleware-stream';
-import pump from 'pump';
+import { pipeline } from 'stream';
 import type { Duplex } from 'stream';
 
 import { BaseProvider, BaseProviderOptions } from './BaseProvider';
@@ -23,7 +24,7 @@ export type StreamProviderOptions = {
 
 export type JsonRpcConnection = {
   events: SafeEventEmitter;
-  middleware: JsonRpcMiddleware<unknown, unknown>;
+  middleware: JsonRpcMiddleware<JsonRpcParams, Json>;
   stream: Duplex;
 };
 
@@ -67,7 +68,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
 
     // Set up connectionStream multiplexing
     const mux = new ObjectMultiplex();
-    pump(
+    pipeline(
       connectionStream,
       mux as unknown as Duplex,
       connectionStream,
@@ -81,7 +82,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
       retryOnMessage: 'METAMASK_EXTENSION_CONNECT_CAN_RETRY',
     }) as unknown as JsonRpcConnection;
 
-    pump(
+    pipeline(
       this._jsonRpcConnection.stream,
       mux.createStream(jsonRpcStreamName) as unknown as Duplex,
       this._jsonRpcConnection.stream,
@@ -150,7 +151,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
    * disconnected.
    */
   // eslint-disable-next-line no-restricted-syntax
-  private _handleStreamDisconnect(streamName: string, error: Error) {
+  private _handleStreamDisconnect(streamName: string, error: Error | null) {
     let warningMsg = `MetaMask: Lost connection to "${streamName}".`;
     if (error?.stack) {
       warningMsg += `\n${error.stack}`;

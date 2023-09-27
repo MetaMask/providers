@@ -1,14 +1,15 @@
+import { JsonRpcEngine, JsonRpcMiddleware } from '@metamask/json-rpc-engine';
+import { rpcErrors, JsonRpcError } from '@metamask/rpc-errors';
 import SafeEventEmitter from '@metamask/safe-event-emitter';
-import { ethErrors, EthereumRpcError } from 'eth-rpc-errors';
-import dequal from 'fast-deep-equal';
 import {
-  JsonRpcEngine,
   JsonRpcRequest,
   JsonRpcId,
-  JsonRpcVersion,
+  JsonRpcVersion2,
   JsonRpcSuccess,
-  JsonRpcMiddleware,
-} from 'json-rpc-engine';
+  JsonRpcParams,
+  Json,
+} from '@metamask/utils';
+import dequal from 'fast-deep-equal';
 
 import messages from './messages';
 import {
@@ -20,7 +21,7 @@ import {
 
 export type UnvalidatedJsonRpcRequest = {
   id?: JsonRpcId;
-  jsonrpc?: JsonRpcVersion;
+  jsonrpc?: JsonRpcVersion2;
   method: string;
   params?: unknown;
 };
@@ -37,10 +38,10 @@ export type BaseProviderOptions = {
   maxEventListeners?: number;
 
   /**
-   * `json-rpc-engine` middleware. The middleware will be inserted in the given
+   * `@metamask/json-rpc-engine` middleware. The middleware will be inserted in the given
    * order immediately after engine initialization.
    */
-  rpcMiddleware?: JsonRpcMiddleware<unknown, unknown>[];
+  rpcMiddleware?: JsonRpcMiddleware<JsonRpcParams, Json>[];
 };
 
 export type RequestArguments = {
@@ -88,14 +89,14 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * The chain ID of the currently connected Ethereum chain.
    * See [chainId.network]{@link https://chainid.network} for more information.
    */
-  public chainId: string | null;
+  #chainId: string | null;
 
   /**
    * The user's currently selected Ethereum address.
    * If null, MetaMask is either locked or the user has not permitted any
    * addresses to be viewed.
    */
-  public selectedAddress: string | null;
+  #selectedAddress: string | null;
 
   /**
    * Create a new instance of the provider.
@@ -123,8 +124,8 @@ export abstract class BaseProvider extends SafeEventEmitter {
     };
 
     // Public state
-    this.selectedAddress = null;
-    this.chainId = null;
+    this.#selectedAddress = null;
+    this.#chainId = null;
 
     // Bind functions to prevent consumers from making unbound calls
     this._handleAccountsChanged = this._handleAccountsChanged.bind(this);
@@ -142,6 +143,18 @@ export abstract class BaseProvider extends SafeEventEmitter {
     const rpcEngine = new JsonRpcEngine();
     rpcMiddleware.forEach((middleware) => rpcEngine.push(middleware));
     this._rpcEngine = rpcEngine;
+  }
+
+  //====================
+  // Public Properties
+  //====================
+
+  get chainId(): string | null {
+    return this.#chainId;
+  }
+
+  get selectedAddress(): string | null {
+    return this.#selectedAddress;
   }
 
   //====================
@@ -169,7 +182,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
    */
   async request<T>(args: RequestArguments): Promise<Maybe<T>> {
     if (!args || typeof args !== 'object' || Array.isArray(args)) {
-      throw ethErrors.rpc.invalidRequest({
+      throw rpcErrors.invalidRequest({
         message: messages.errors.invalidRequestArgs(),
         data: args,
       });
@@ -178,7 +191,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     const { method, params } = args;
 
     if (typeof method !== 'string' || method.length === 0) {
-      throw ethErrors.rpc.invalidRequest({
+      throw rpcErrors.invalidRequest({
         message: messages.errors.invalidRequestMethod(),
         data: args,
       });
@@ -189,7 +202,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
       !Array.isArray(params) &&
       (typeof params !== 'object' || params === null)
     ) {
-      throw ethErrors.rpc.invalidRequest({
+      throw rpcErrors.invalidRequest({
         message: messages.errors.invalidRequestParams(),
         data: args,
       });
@@ -285,15 +298,9 @@ export abstract class BaseProvider extends SafeEventEmitter {
           callback(error, response);
         };
       }
-      return this._rpcEngine.handle(
-        payload as JsonRpcRequest<unknown>,
-        callbackWrapper,
-      );
+      return this._rpcEngine.handle(payload as JsonRpcRequest, callbackWrapper);
     }
-    return this._rpcEngine.handle(
-      payload as JsonRpcRequest<unknown>[],
-      callbackWrapper,
-    );
+    return this._rpcEngine.handle(payload as JsonRpcRequest[], callbackWrapper);
   }
 
   /**
@@ -331,20 +338,20 @@ export abstract class BaseProvider extends SafeEventEmitter {
 
       let error;
       if (isRecoverable) {
-        error = new EthereumRpcError(
+        error = new JsonRpcError(
           1013, // Try again later
           errorMessage ?? messages.errors.disconnected(),
         );
         this._log.debug(error);
       } else {
-        error = new EthereumRpcError(
+        error = new JsonRpcError(
           1011, // Internal error
           errorMessage ?? messages.errors.permanentlyDisconnected(),
         );
         this._log.error(error);
-        this.chainId = null;
+        this.#chainId = null;
         this._state.accounts = null;
-        this.selectedAddress = null;
+        this.#selectedAddress = null;
         this._state.isUnlocked = false;
         this._state.isPermanentlyDisconnected = true;
       }
@@ -377,10 +384,10 @@ export abstract class BaseProvider extends SafeEventEmitter {
 
     this._handleConnect(chainId);
 
-    if (chainId !== this.chainId) {
-      this.chainId = chainId;
+    if (chainId !== this.#chainId) {
+      this.#chainId = chainId;
       if (this._state.initialized) {
-        this.emit('chainChanged', this.chainId);
+        this.emit('chainChanged', this.#chainId);
       }
     }
   }
@@ -433,8 +440,8 @@ export abstract class BaseProvider extends SafeEventEmitter {
       this._state.accounts = _accounts as string[];
 
       // handle selectedAddress
-      if (this.selectedAddress !== _accounts[0]) {
-        this.selectedAddress = (_accounts[0] as string) || null;
+      if (this.#selectedAddress !== _accounts[0]) {
+        this.#selectedAddress = (_accounts[0] as string) || null;
       }
 
       // finally, after all state has been updated, emit the event
