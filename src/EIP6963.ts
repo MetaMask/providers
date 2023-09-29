@@ -73,13 +73,16 @@ export function requestProvider<HandlerReturnType>(
   window.dispatchEvent(new Event(EIP6963EventNames.Request));
 }
 
+// https://caniuse.com/js-regexp-lookbehind
+// MetaMask Mobile, which uses Safari for the in-app browser, does NOT support lookbehind regexes.
+
 // https://github.com/thenativeweb/uuidv4/blob/bdcf3a3138bef4fb7c51f389a170666f9012c478/lib/uuidv4.ts#L5
 const UUID_V4_REGEX =
   /(?:^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}$)|(?:^0{8}-0{4}-0{4}-0{4}-0{12}$)/u;
 
 // https://stackoverflow.com/a/20204811
 const FQDN_REGEX =
-  /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)/u;
+  /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\.)+[a-zA-Z]{2,63}$)/u;
 
 /**
  * Announces a provider by dispatching an {@link EIP6963AnnounceProviderEvent}, and
