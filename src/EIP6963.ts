@@ -2,6 +2,9 @@ import { isObject } from '@metamask/utils';
 
 import { BaseProvider } from './BaseProvider';
 
+/**
+ * Describes the possible EIP-6963 event names
+ */
 enum EIP6963EventNames {
   Announce = 'eip6963:announceProvider',
   Request = 'eip6963:requestProvider', // eslint-disable-line @typescript-eslint/no-shadow
@@ -17,44 +20,61 @@ declare global {
 
 /**
  * Represents the assets needed to display and identify a wallet.
+ *
+ * @type EIP6963ProviderInfo
+ * @property uuid - A locally unique identifier for the wallet. MUST be a v4 UUID.
+ * @property name - The name of the wallet.
+ * @property icon - The icon for the wallet. MUST be data URI.
+ * @property rdns - The reverse syntax domain name identifier for the wallet.
  */
 export type EIP6963ProviderInfo = {
-  /**
-   * A locally unique identifier for the wallet. MUST be a v4 UUID.
-   */
   uuid: string;
-  /**
-   * The name of the wallet.
-   */
   name: string;
-  /**
-   * The icon for the wallet. MUST be data URI.
-   */
   icon: string;
-  /**
-   * The reverse syntax domain name identifier for the wallet.
-   */
   rdns: string;
 };
 
 /**
  * Represents a provider and the information relevant for the dapp.
+ *
+ * @type EIP6963ProviderDetail
+ * @property info - The EIP6963ProviderInfo object.
+ * @property provider - The provider instance.
  */
 export type EIP6963ProviderDetail = {
   info: EIP6963ProviderInfo;
   provider: BaseProvider;
 };
 
-// Requesting an EVM provider
+/**
+ * Event for requesting an EVM provider
+ *
+ * @type EIP6963RequestProviderEvent
+ * @property type - The name of the event.
+ */
 export type EIP6963RequestProviderEvent = Event & {
   type: EIP6963EventNames.Request;
 };
 
-// Annoucing an EVM provider
+/**
+ * Event for announcing an EVM provider
+ *
+ * @type EIP6963RequestProviderEvent
+ * @property type - The name of the event.
+ * @property detail - The detail object of the event.
+ */
 export type EIP6963AnnounceProviderEvent = CustomEvent & {
   type: EIP6963EventNames.Announce;
   detail: EIP6963ProviderDetail;
 };
+
+// https://github.com/thenativeweb/uuidv4/blob/bdcf3a3138bef4fb7c51f389a170666f9012c478/lib/uuidv4.ts#L5
+const UUID_V4_REGEX =
+  /(?:^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}$)|(?:^0{8}-0{4}-0{4}-0{4}-0{12}$)/u;
+
+// https://stackoverflow.com/a/20204811
+const FQDN_REGEX =
+  /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\.)+[a-zA-Z]{2,63}$)/u;
 
 /**
  * Forwards every announced provider to the provided handler by listening for
@@ -80,14 +100,6 @@ export function requestProvider<HandlerReturnType>(
 
   window.dispatchEvent(new Event(EIP6963EventNames.Request));
 }
-
-// https://github.com/thenativeweb/uuidv4/blob/bdcf3a3138bef4fb7c51f389a170666f9012c478/lib/uuidv4.ts#L5
-const UUID_V4_REGEX =
-  /(?:^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}$)|(?:^0{8}-0{4}-0{4}-0{4}-0{12}$)/u;
-
-// https://stackoverflow.com/a/20204811
-const FQDN_REGEX =
-  /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\.)+[a-zA-Z]{2,63}$)/u;
 
 /**
  * Announces a provider by dispatching an {@link EIP6963AnnounceProviderEvent}, and
