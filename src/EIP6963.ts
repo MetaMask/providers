@@ -47,7 +47,7 @@ export type EIP6963ProviderDetail = {
 };
 
 /**
- * Event for requesting an EVM provider
+ * Event for requesting an EVM provider.
  *
  * @type EIP6963RequestProviderEvent
  * @property type - The name of the event.
@@ -57,7 +57,7 @@ export type EIP6963RequestProviderEvent = Event & {
 };
 
 /**
- * Event for announcing an EVM provider
+ * Event for announcing an EVM provider.
  *
  * @type EIP6963RequestProviderEvent
  * @property type - The name of the event.
@@ -77,9 +77,9 @@ const FQDN_REGEX =
   /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\.)+[a-zA-Z]{2,63}$)/u;
 
 /**
- * Forwards every announced provider to the provided handler by listening for
- * {@link EIP6963AnnounceProviderEvent}, and dispatches an
- * {@link EIP6963RequestProviderEvent}.
+ * Intended to be used by a dapp. Forwards every announced provider to the
+ * provided handler by listening for * {@link EIP6963AnnounceProviderEvent},
+ * and dispatches an {@link EIP6963RequestProviderEvent}.
  *
  * @param handleProvider - A function that handles an announced provider.
  */
@@ -102,8 +102,9 @@ export function requestProvider<HandlerReturnType>(
 }
 
 /**
- * Announces a provider by dispatching an {@link EIP6963AnnounceProviderEvent}, and
- * listening for {@link EIP6963RequestProviderEvent} to re-announce.
+ * Intended to be used by a wallet. Announces a provider by dispatching
+ * an {@link EIP6963AnnounceProviderEvent}, and listening for
+ * {@link EIP6963RequestProviderEvent} to re-announce.
  *
  * @throws If the {@link EIP6963ProviderDetail} is invalid.
  * @param providerDetail - The {@link EIP6963ProviderDetail} to announce.
