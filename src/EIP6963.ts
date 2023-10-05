@@ -7,6 +7,14 @@ enum EIP6963EventNames {
   Request = 'eip6963:requestProvider', // eslint-disable-line @typescript-eslint/no-shadow
 }
 
+declare global {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+  interface WindowEventMap {
+    [EIP6963EventNames.Request]: EIP6963RequestProviderEvent;
+    [EIP6963EventNames.Announce]: EIP6963AnnounceProviderEvent;
+  }
+}
+
 /**
  * Represents the assets needed to display and identify a wallet.
  */
@@ -59,7 +67,7 @@ export function requestProvider<HandlerReturnType>(
   handleProvider: (providerDetail: EIP6963ProviderDetail) => HandlerReturnType,
 ): void {
   window.addEventListener(
-    EIP6963EventNames.Announce as any,
+    EIP6963EventNames.Announce,
     (event: EIP6963AnnounceProviderEvent) => {
       if (!isValidAnnounceProviderEvent(event)) {
         throwErrorEIP6963(
@@ -72,9 +80,6 @@ export function requestProvider<HandlerReturnType>(
 
   window.dispatchEvent(new Event(EIP6963EventNames.Request));
 }
-
-// https://caniuse.com/js-regexp-lookbehind
-// MetaMask Mobile, which uses Safari for the in-app browser, does NOT support lookbehind regexes.
 
 // https://github.com/thenativeweb/uuidv4/blob/bdcf3a3138bef4fb7c51f389a170666f9012c478/lib/uuidv4.ts#L5
 const UUID_V4_REGEX =
@@ -108,7 +113,7 @@ export function announceProvider(providerDetail: EIP6963ProviderDetail): void {
 
   _announceProvider();
   window.addEventListener(
-    EIP6963EventNames.Request as any,
+    EIP6963EventNames.Request,
     (event: EIP6963RequestProviderEvent) => {
       if (!isValidRequestProviderEvent(event)) {
         throwErrorEIP6963(
@@ -129,12 +134,7 @@ export function announceProvider(providerDetail: EIP6963ProviderDetail): void {
 function isValidRequestProviderEvent(
   event: unknown,
 ): event is EIP6963RequestProviderEvent {
-  const providerEvent = event as EIP6963RequestProviderEvent;
-
-  return (
-    providerEvent instanceof Event &&
-    providerEvent.type === EIP6963EventNames.Request
-  );
+  return event instanceof Event && event.type === EIP6963EventNames.Request;
 }
 
 /**
@@ -146,13 +146,11 @@ function isValidRequestProviderEvent(
 function isValidAnnounceProviderEvent(
   event: unknown,
 ): event is EIP6963AnnounceProviderEvent {
-  const providerEvent = event as EIP6963AnnounceProviderEvent;
-
   return (
-    providerEvent instanceof CustomEvent &&
-    providerEvent.type === EIP6963EventNames.Announce &&
-    Object.isFrozen(providerEvent.detail) &&
-    isValidProviderDetail(providerEvent.detail)
+    event instanceof CustomEvent &&
+    event.type === EIP6963EventNames.Announce &&
+    Object.isFrozen(event.detail) &&
+    isValidProviderDetail(event.detail)
   );
 }
 
@@ -172,7 +170,7 @@ function isValidProviderDetail(
   ) {
     return false;
   }
-  const { info } = providerDetail as EIP6963ProviderDetail;
+  const { info } = providerDetail;
 
   return (
     typeof info.uuid === 'string' &&
