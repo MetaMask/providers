@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.1.0]
+### Uncategorized
+- Implement EIP-6963 ([#263](https://github.com/MetaMask/providers/pull/263))
+- Bump postcss from 8.4.23 to 8.4.31 ([#285](https://github.com/MetaMask/providers/pull/285))
+
 ## [13.0.0]
 ### Changed
 - **BREAKING**: Update `chainId`, `networkVersion`, and `selectedAddress` to be read-only ([#280](https://github.com/MetaMask/providers/pull/280))
@@ -244,7 +249,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v13.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v13.1.0...HEAD
+[13.1.0]: https://github.com/MetaMask/providers/compare/v13.0.0...v13.1.0
 [13.0.0]: https://github.com/MetaMask/providers/compare/v12.0.0...v13.0.0
 [12.0.0]: https://github.com/MetaMask/providers/compare/v11.1.2...v12.0.0
 [11.1.2]: https://github.com/MetaMask/providers/compare/v11.1.1...v11.1.2
