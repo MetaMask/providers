@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.1.0]
+### Added
+- Add support for EIP-6963 ([#263](https://github.com/MetaMask/providers/pull/263))
+  - `initializeProvider()` params object now accepts an optional `providerInfo` property with a value of [EIP6963ProviderInfo object](https://eips.ethereum.org/EIPS/eip-6963#provider-info)
+  - Add `eip6963AnnounceProvider()` which supports a wallet by announcing a provider through the `eip6963:announceProvider` event and re-announcing the provider whenever an `eip6963:requestProvider` event is received
+  - Add `eip6963RequestProvider()` which supports a dapp by dispatching an `eip6963:requestProvider` event and invoking a callback for each `eip6963:announceProvider` event received
+  - Add `EIP6963AnnounceProviderEvent` type
+  - Add `EIP6963ProviderDetail` type
+  - Add `EIP6963ProviderInfo` type
+  - Add `EIP6963RequestProviderEvent` type
+
 ## [13.0.0]
 ### Changed
 - **BREAKING**: Update `chainId`, `networkVersion`, and `selectedAddress` to be read-only ([#280](https://github.com/MetaMask/providers/pull/280))
@@ -244,7 +255,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v13.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v13.1.0...HEAD
+[13.1.0]: https://github.com/MetaMask/providers/compare/v13.0.0...v13.1.0
 [13.0.0]: https://github.com/MetaMask/providers/compare/v12.0.0...v13.0.0
 [12.0.0]: https://github.com/MetaMask/providers/compare/v11.1.2...v12.0.0
 [11.1.2]: https://github.com/MetaMask/providers/compare/v11.1.1...v11.1.2
