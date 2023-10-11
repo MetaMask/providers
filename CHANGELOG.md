@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `initializeProvider()` params object now accepts an optional `providerInfo` property with a value of [EIP6963ProviderInfo object](https://eips.ethereum.org/EIPS/eip-6963#provider-info)
   - Add `eip6963AnnounceProvider()` which supports a wallet by announcing a provider through the `eip6963:announceProvider` event and re-announcing the provider whenever an `eip6963:requestProvider` event is received
   - Add `eip6963RequestProvider()` which supports a dapp by dispatching an `eip6963:requestProvider` event and invoking a callback for each `eip6963:announceProvider` event received
+  - Add `EIP6963AnnounceProviderEvent` type
+  - Add `EIP6963ProviderDetail` type
+  - Add `EIP6963ProviderInfo` type
+  - Add `EIP6963RequestProviderEvent` type
 
 ## [13.0.0]
 ### Changed
