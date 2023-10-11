@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for EIP-6963 ([#263](https://github.com/MetaMask/providers/pull/263))
   - `initializeProvider()` params object now accepts an optional `providerInfo` property with a value of [EIP6963ProviderInfo object](https://eips.ethereum.org/EIPS/eip-6963#provider-info)
   - Add `eip6963AnnounceProvider()` which supports a wallet by announcing a provider through the `eip6963:announceProvider` event and re-announcing the provider whenever an `eip6963:requestProvider` event is received
-  - Add `eip6963RequestProvider()` which supports a dapp by dispatching an `eip6963:requestProvider` event and invoking a callback for each `eip6963:annoucneProvider` event received
+  - Add `eip6963RequestProvider()` which supports a dapp by dispatching an `eip6963:requestProvider` event and invoking a callback for each `eip6963:announceProvider` event received
 
 ## [13.0.0]
 ### Changed
