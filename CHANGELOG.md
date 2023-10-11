@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [13.1.0]
 ### Added
 - Add support for EIP-6963 ([#263](https://github.com/MetaMask/providers/pull/263))
-  - `initializeProvider()` params object now accepts an optional `providerInfo` property
+  - `initializeProvider()` params object now accepts an optional `providerInfo` property with a value of [EIP6963ProviderInfo object](https://eips.ethereum.org/EIPS/eip-6963#provider-info)
 
 ### Changed
 - Bump postcss from 8.4.23 to 8.4.31 ([#285](https://github.com/MetaMask/providers/pull/285))
