@@ -13,9 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `eip6963AnnounceProvider()` which supports a wallet by announcing a provider through the `eip6963:announceProvider` event and re-announcing the provider whenever an `eip6963:requestProvider` event is received
   - Add `eip6963RequestProvider()` which supports a dapp by dispatching an `eip6963:requestProvider` event and invoking a callback for each `eip6963:annoucneProvider` event received
 
-### Changed
-- Bump postcss from 8.4.23 to 8.4.31 ([#285](https://github.com/MetaMask/providers/pull/285))
-
 ## [13.0.0]
 ### Changed
 - **BREAKING**: Update `chainId`, `networkVersion`, and `selectedAddress` to be read-only ([#280](https://github.com/MetaMask/providers/pull/280))
