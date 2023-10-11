@@ -45,10 +45,10 @@ const baseConfig = {
   // An object that configures minimum threshold enforcement for coverage results
   coverageThreshold: {
     global: {
-      branches: 61.9,
-      functions: 61.79,
-      lines: 65.18,
-      statements: 65.3,
+      branches: 64.78,
+      functions: 65.65,
+      lines: 66.66,
+      statements: 66.74,
     },
   },
 
@@ -222,8 +222,12 @@ const browserConfig = {
   ...baseConfig,
   displayName: 'Browser Providers',
   testEnvironment: 'jsdom',
-  testMatch: ['**/*InpageProvider.test.ts', '**/*ExtensionProvider.test.ts'],
-  setupFilesAfterEnv: ['./jest.setup.js'],
+  testMatch: [
+    '**/*InpageProvider.test.ts',
+    '**/*ExtensionProvider.test.ts',
+    '**/EIP6963.test.ts',
+  ],
+  setupFilesAfterEnv: ['./jest.setup.browser.js'],
 };
 
 module.exports = {
