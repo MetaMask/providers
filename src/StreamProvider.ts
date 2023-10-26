@@ -2,7 +2,7 @@ import type { JsonRpcMiddleware } from '@metamask/json-rpc-engine';
 import ObjectMultiplex from '@metamask/object-multiplex';
 import SafeEventEmitter from '@metamask/safe-event-emitter';
 import { Json, JsonRpcParams } from '@metamask/utils';
-import { isDuplexStream } from 'is-stream';
+import { duplex as isDuplex } from 'is-stream';
 import { createStreamMiddleware } from 'json-rpc-middleware-stream';
 import { pipeline } from 'readable-stream';
 import type { Duplex } from 'readable-stream';
@@ -59,7 +59,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
   ) {
     super({ logger, maxEventListeners, rpcMiddleware });
 
-    if (!isDuplexStream(connectionStream)) {
+    if (!isDuplex(connectionStream)) {
       throw new Error(messages.errors.invalidDuplexStream());
     }
 

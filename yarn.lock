@@ -1123,7 +1123,7 @@ __metadata:
     eslint-plugin-prettier: ^4.2.1
     extension-port-stream: ^2.1.1
     fast-deep-equal: ^3.1.3
-    is-stream: ^3.0.0
+    is-stream: ^2.0.0
     jest: ^28.1.3
     jest-chrome: ^0.7.1
     jest-environment-jsdom: ^29.5.0
@@ -4226,13 +4226,6 @@ __metadata:
   version: 2.0.0
   resolution: "is-stream@npm:2.0.0"
   checksum: 4dc47738e26bc4f1b3be9070b6b9e39631144f204fc6f87db56961220add87c10a999ba26cf81699f9ef9610426f69cb08a4713feff8deb7d8cadac907826935
-  languageName: node
-  linkType: hard
-
-"is-stream@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "is-stream@npm:3.0.0"
-  checksum: 172093fe99119ffd07611ab6d1bcccfe8bc4aa80d864b15f43e63e54b7abc71e779acd69afdb854c4e2a67fdc16ae710e370eda40088d1cfc956a50ed82d8f16
   languageName: node
   linkType: hard
 
