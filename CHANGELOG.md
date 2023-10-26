@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.0.0]
+### Uncategorized
+- Bump @babel/traverse from 7.21.4 to 7.23.2 ([#287](https://github.com/MetaMask/providers/pull/287))
+
 ## [13.1.0]
 ### Added
 - Add support for EIP-6963 ([#263](https://github.com/MetaMask/providers/pull/263))
@@ -255,7 +259,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v13.1.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v14.0.0...HEAD
+[14.0.0]: https://github.com/MetaMask/providers/compare/v13.1.0...v14.0.0
 [13.1.0]: https://github.com/MetaMask/providers/compare/v13.0.0...v13.1.0
 [13.0.0]: https://github.com/MetaMask/providers/compare/v12.0.0...v13.0.0
 [12.0.0]: https://github.com/MetaMask/providers/compare/v11.1.2...v12.0.0
