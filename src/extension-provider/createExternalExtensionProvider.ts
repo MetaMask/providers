@@ -1,6 +1,6 @@
 import { detect } from 'detect-browser';
 import PortStream from 'extension-port-stream';
-import { Duplex } from 'stream';
+import { Duplex } from 'readable-stream';
 import type { Runtime } from 'webextension-polyfill';
 
 import config from './external-extension-config.json';

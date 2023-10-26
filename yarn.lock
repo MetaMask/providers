@@ -1108,7 +1108,6 @@ __metadata:
     "@types/chrome": ^0.0.233
     "@types/jest": ^28.1.6
     "@types/node": ^17.0.23
-    "@types/readable-stream": ^2.3.15
     "@types/uuid": ^9.0.1
     "@types/webextension-polyfill": ^0.10.0
     "@typescript-eslint/eslint-plugin": ^5.43.0
@@ -1132,6 +1131,7 @@ __metadata:
     json-rpc-middleware-stream: ^5.0.1
     prettier: ^2.7.1
     prettier-plugin-packagejson: ^2.3.0
+    readable-stream: ^3.6.2
     rimraf: ^3.0.2
     ts-jest: ^28.0.7
     ts-node: ^10.7.0
@@ -1599,16 +1599,6 @@ __metadata:
   version: 2.7.2
   resolution: "@types/prettier@npm:2.7.2"
   checksum: b47d76a5252265f8d25dd2fe2a5a61dc43ba0e6a96ffdd00c594cb4fd74c1982c2e346497e3472805d97915407a09423804cc2110a0b8e1b22cffcab246479b7
-  languageName: node
-  linkType: hard
-
-"@types/readable-stream@npm:^2.3.15":
-  version: 2.3.15
-  resolution: "@types/readable-stream@npm:2.3.15"
-  dependencies:
-    "@types/node": "*"
-    safe-buffer: ~5.1.1
-  checksum: ec36f525cad09b6c65a1dafcb5ad99b9e2ed824ec49b7aa23180ac427e5d35b8a0706193ecd79ab4253a283ad485ba03d5917a98daaaa144f0ea34f4823e9d82
   languageName: node
   linkType: hard
 

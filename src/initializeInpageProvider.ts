@@ -1,4 +1,4 @@
-import { Duplex } from 'stream';
+import { Duplex } from 'readable-stream';
 
 import { EIP6963ProviderInfo, announceProvider } from './EIP6963';
 import {
