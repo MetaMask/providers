@@ -17,6 +17,13 @@ module.exports = {
     },
 
     {
+      files: ['*.d.ts'],
+      rules: {
+        'import/unambiguous': 'off',
+      },
+    },
+
+    {
       files: ['*.js'],
       parserOptions: {
         ecmaVersion: 2020,
