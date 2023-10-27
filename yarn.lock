@@ -1121,7 +1121,7 @@ __metadata:
     eslint-plugin-jsdoc: ^39.6.2
     eslint-plugin-node: ^11.1.0
     eslint-plugin-prettier: ^4.2.1
-    extension-port-stream: ^2.1.1
+    extension-port-stream: ^3.0.0
     fast-deep-equal: ^3.1.3
     is-stream: ^2.0.0
     jest: ^28.1.3
@@ -3393,12 +3393,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"extension-port-stream@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "extension-port-stream@npm:2.1.1"
+"extension-port-stream@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "extension-port-stream@npm:3.0.0"
   dependencies:
+    readable-stream: ^3.6.2 || ^4.4.2
     webextension-polyfill: ">=0.10.0 <1.0"
-  checksum: aee8bbeb2ed6f69a62f58a89580e0e9002dadb11062edbaedb7bb04cfc5a5e0b0d3980bfeaa1c3ee7e08dec7e5fac26e25497fc2f82000db7653442bd5eca157
+  checksum: 4f51d2258a96154c2d916a8a5425636a2b0817763e9277f7dc378d08b6f050c90d185dbde4313d27cf66ad99d4b3116479f9f699c40358c64cccfa524d2b55bf
   languageName: node
   linkType: hard
 
