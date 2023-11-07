@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [14.0.0]
 ### Changed
-- **BREAKING**: Update to streams3 API [#288](https://github.com/MetaMask/providers/pull/288))
+- **BREAKING**: Update to streams3 API ([#288](https://github.com/MetaMask/providers/pull/288))
   - Update extension-port-stream from ^2.1.1 to ^3.0.0
      - Force subdependency readable-stream to ^3.6.2 in resolutions
   - Update json-rpc-middleware-stream from ^4.2.3 to ^5.0.1
