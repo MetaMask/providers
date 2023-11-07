@@ -1,6 +1,6 @@
 import { rpcErrors } from '@metamask/rpc-errors';
 import type { Json, JsonRpcRequest, JsonRpcResponse } from '@metamask/utils';
-import type { Duplex } from 'stream';
+import type { Duplex } from 'readable-stream';
 
 import { UnvalidatedJsonRpcRequest } from './BaseProvider';
 import messages from './messages';

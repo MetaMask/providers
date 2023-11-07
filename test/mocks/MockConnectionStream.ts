@@ -4,7 +4,7 @@ import {
   JsonRpcRequest,
   JsonRpcResponse,
 } from '@metamask/utils';
-import { Duplex } from 'stream';
+import { Duplex } from 'readable-stream';
 
 /**
  * A mock multiplexed JSON-RPC stream that represents the connection from the

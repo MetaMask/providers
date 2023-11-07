@@ -4,8 +4,8 @@ import SafeEventEmitter from '@metamask/safe-event-emitter';
 import { Json, JsonRpcParams } from '@metamask/utils';
 import { duplex as isDuplex } from 'is-stream';
 import { createStreamMiddleware } from 'json-rpc-middleware-stream';
-import { pipeline } from 'stream';
-import type { Duplex } from 'stream';
+import { pipeline } from 'readable-stream';
+import type { Duplex } from 'readable-stream';
 
 import { BaseProvider, BaseProviderOptions } from './BaseProvider';
 import messages from './messages';
