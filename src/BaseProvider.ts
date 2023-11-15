@@ -208,11 +208,18 @@ export abstract class BaseProvider extends SafeEventEmitter {
       });
     }
 
+    const payload =
+      params === undefined
+        ? {
+            method,
+          }
+        : {
+            method,
+            params,
+          };
+
     return new Promise<T>((resolve, reject) => {
-      this._rpcRequest(
-        { method, params },
-        getRpcPromiseCallback(resolve, reject),
-      );
+      this._rpcRequest(payload, getRpcPromiseCallback(resolve, reject));
     });
   }
 
