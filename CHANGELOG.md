@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.0.1]
+### Uncategorized
+- Don't send undefined params ([#290](https://github.com/MetaMask/providers/pull/290))
+
 ## [14.0.0]
 ### Changed
 - **BREAKING**: Update to streams3 API ([#288](https://github.com/MetaMask/providers/pull/288))
@@ -265,7 +269,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v14.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v14.0.1...HEAD
+[14.0.1]: https://github.com/MetaMask/providers/compare/v14.0.0...v14.0.1
 [14.0.0]: https://github.com/MetaMask/providers/compare/v13.1.0...v14.0.0
 [13.1.0]: https://github.com/MetaMask/providers/compare/v13.0.0...v13.1.0
 [13.0.0]: https://github.com/MetaMask/providers/compare/v12.0.0...v13.0.0
