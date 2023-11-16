@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [14.0.1]
-### Uncategorized
-- Don't send undefined params ([#290](https://github.com/MetaMask/providers/pull/290))
+### Fixed
+- Don't send `undefined` params to underlying provider ([#290](https://github.com/MetaMask/providers/pull/290))
 
 ## [14.0.0]
 ### Changed
