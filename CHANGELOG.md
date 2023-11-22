@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [14.0.2]
-### Uncategorized
-- Strip `params` if `null` is passed ([#292](https://github.com/MetaMask/providers/pull/292))
+### Fixed
+- Don't send `null` params to underlying provider ([#292](https://github.com/MetaMask/providers/pull/292))
 
 ## [14.0.1]
 ### Fixed
