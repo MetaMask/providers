@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.0.2]
+### Fixed
+- Don't send `null` params to underlying provider ([#292](https://github.com/MetaMask/providers/pull/292))
+
 ## [14.0.1]
 ### Fixed
 - Don't send `undefined` params to underlying provider ([#290](https://github.com/MetaMask/providers/pull/290))
@@ -269,7 +273,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v14.0.1...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v14.0.2...HEAD
+[14.0.2]: https://github.com/MetaMask/providers/compare/v14.0.1...v14.0.2
 [14.0.1]: https://github.com/MetaMask/providers/compare/v14.0.0...v14.0.1
 [14.0.0]: https://github.com/MetaMask/providers/compare/v13.1.0...v14.0.0
 [13.1.0]: https://github.com/MetaMask/providers/compare/v13.0.0...v13.1.0
