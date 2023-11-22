@@ -209,7 +209,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     }
 
     const payload =
-      params === undefined
+      params === undefined || params === null
         ? {
             method,
           }
