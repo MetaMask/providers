@@ -1,11 +1,13 @@
 import { BaseProvider } from './BaseProvider';
-import {
-  announceProvider as eip6963AnnounceProvider,
-  requestProvider as eip6963RequestProvider,
+import type {
   EIP6963AnnounceProviderEvent,
   EIP6963ProviderDetail,
   EIP6963ProviderInfo,
   EIP6963RequestProviderEvent,
+} from './EIP6963';
+import {
+  announceProvider as eip6963AnnounceProvider,
+  requestProvider as eip6963RequestProvider,
 } from './EIP6963';
 import { createExternalExtensionProvider } from './extension-provider/createExternalExtensionProvider';
 import {

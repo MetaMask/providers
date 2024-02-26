@@ -1,5 +1,5 @@
 import type { JsonRpcMiddleware } from '@metamask/json-rpc-engine';
-import { Json, JsonRpcParams } from '@metamask/utils';
+import type { Json, JsonRpcParams } from '@metamask/utils';
 
 import messages from './messages';
 import { StreamProvider } from './StreamProvider';
@@ -90,7 +90,7 @@ describe('StreamProvider', () => {
         jest
           .spyOn((streamProvider as any)._rpcEngine, 'handle')
           .mockImplementation((_payload, callback: any) =>
-            // eslint-disable-next-line node/no-callback-literal
+            // eslint-disable-next-line n/no-callback-literal
             callback(...mockRpcEngineResponse()),
           );
       });
@@ -145,7 +145,7 @@ describe('StreamProvider', () => {
           .spyOn(streamProvider as any, '_rpcRequest')
           .mockImplementation(
             (_payload: unknown, callback: any, _isInternal: unknown) =>
-              // eslint-disable-next-line node/no-callback-literal
+              // eslint-disable-next-line n/no-callback-literal
               callback(...mockRpcRequestResponse()),
           );
       });
@@ -263,7 +263,7 @@ describe('StreamProvider', () => {
         jest
           .spyOn((streamProvider as any)._rpcEngine, 'handle')
           .mockImplementation((_payload, callback: any) =>
-            // eslint-disable-next-line node/no-callback-literal
+            // eslint-disable-next-line n/no-callback-literal
             callback(...mockRpcEngineResponse()),
           );
       });
