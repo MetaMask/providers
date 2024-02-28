@@ -1,5 +1,5 @@
 import { JsonRpcEngine } from '@metamask/json-rpc-engine';
-import {
+import type {
   Json,
   JsonRpcFailure,
   JsonRpcParams,

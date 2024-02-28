@@ -1,4 +1,4 @@
-import { JsonRpcRequest } from '@metamask/utils';
+import type { JsonRpcRequest } from '@metamask/utils';
 
 import messages from './messages';
 import {
@@ -142,7 +142,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       jest
         .spyOn(provider._rpcEngine, 'handle')
         .mockImplementation((_payload, callback: any) =>
-          // eslint-disable-next-line node/no-callback-literal
+          // eslint-disable-next-line n/no-callback-literal
           callback(...mockRpcEngineResponse()),
         );
     });
@@ -347,7 +347,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       jest
         .spyOn(provider, '_rpcRequest')
         .mockImplementation((_payload, callback: any, _isInternal) =>
-          // eslint-disable-next-line node/no-callback-literal
+          // eslint-disable-next-line n/no-callback-literal
           callback(...mockRpcRequestResponse()),
         );
     });
@@ -458,7 +458,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       jest
         .spyOn(provider._rpcEngine, 'handle')
         .mockImplementation((_payload, callback: any) =>
-          // eslint-disable-next-line node/no-callback-literal
+          // eslint-disable-next-line n/no-callback-literal
           callback(...mockRpcEngineResponse()),
         );
     });
@@ -574,7 +574,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       jest
         .spyOn(provider, '_rpcRequest')
         .mockImplementation((_payload, callback: any, _isInternal) =>
-          // eslint-disable-next-line node/no-callback-literal
+          // eslint-disable-next-line n/no-callback-literal
           callback(...mockRpcRequestResponse()),
         );
     });
@@ -724,12 +724,12 @@ describe('MetaMaskInpageProvider: RPC', () => {
 
     it('throws on unsupported sync method', () => {
       expect(() => provider.send({ method: 'foo', params: ['bar'] })).toThrow(
-        // eslint-disable-next-line node/no-sync
+        // eslint-disable-next-line n/no-sync
         messages.errors.unsupportedSync('foo'),
       );
 
       expect(() => provider.send({ method: 'foo' })).toThrow(
-        // eslint-disable-next-line node/no-sync
+        // eslint-disable-next-line n/no-sync
         messages.errors.unsupportedSync('foo'),
       );
     });

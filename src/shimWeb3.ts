@@ -1,5 +1,5 @@
-import { MetaMaskInpageProvider } from './MetaMaskInpageProvider';
-import { ConsoleLike } from './utils';
+import type { MetaMaskInpageProvider } from './MetaMaskInpageProvider';
+import type { ConsoleLike } from './utils';
 
 /**
  * If no existing window.web3 is found, this function injects a web3 "shim" to

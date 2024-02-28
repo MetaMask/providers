@@ -1,10 +1,9 @@
-import { Duplex } from 'readable-stream';
+import type { Duplex } from 'readable-stream';
 
-import { EIP6963ProviderInfo, announceProvider } from './EIP6963';
-import {
-  MetaMaskInpageProvider,
-  MetaMaskInpageProviderOptions,
-} from './MetaMaskInpageProvider';
+import type { EIP6963ProviderInfo } from './EIP6963';
+import { announceProvider } from './EIP6963';
+import type { MetaMaskInpageProviderOptions } from './MetaMaskInpageProvider';
+import { MetaMaskInpageProvider } from './MetaMaskInpageProvider';
 import { shimWeb3 } from './shimWeb3';
 
 type InitializeProviderOptions = {

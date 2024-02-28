@@ -1,7 +1,8 @@
-import { JsonRpcEngine } from '@metamask/json-rpc-engine';
+import type { JsonRpcEngine } from '@metamask/json-rpc-engine';
 
 import messages from './messages';
-import { ConsoleLike, NOOP } from './utils';
+import type { ConsoleLike } from './utils';
+import { NOOP } from './utils';
 
 /**
  * Sends site metadata over an RPC request.
