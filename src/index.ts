@@ -1,4 +1,5 @@
 import { BaseProvider } from './BaseProvider';
+import type { RequestArguments } from './BaseProvider';
 import type {
   EIP6963AnnounceProviderEvent,
   EIP6963ProviderDetail,
@@ -20,8 +21,11 @@ import {
 } from './MetaMaskInpageProvider';
 import { shimWeb3 } from './shimWeb3';
 import { StreamProvider } from './StreamProvider';
+import type { ConsoleLike } from './utils';
 
 export type {
+  ConsoleLike,
+  RequestArguments,
   EIP6963AnnounceProviderEvent,
   EIP6963ProviderDetail,
   EIP6963ProviderInfo,
