@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [15.0.0]
+
+### Uncategorized
+
+- Update repository to match module template (February 2024) ([#296](https://github.com/MetaMask/providers/pull/296))
+- Bump ip from 2.0.0 to 2.0.1 ([#295](https://github.com/MetaMask/providers/pull/295))
+
 ## [14.0.2]
 
 ### Fixed
@@ -355,7 +362,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v14.0.2...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v15.0.0...HEAD
+[15.0.0]: https://github.com/MetaMask/providers/compare/v14.0.2...v15.0.0
 [14.0.2]: https://github.com/MetaMask/providers/compare/v14.0.1...v14.0.2
 [14.0.1]: https://github.com/MetaMask/providers/compare/v14.0.0...v14.0.1
 [14.0.0]: https://github.com/MetaMask/providers/compare/v13.1.0...v14.0.0
