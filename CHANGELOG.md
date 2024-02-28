@@ -9,10 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [15.0.0]
 
-### Uncategorized
+### Added
 
-- Update repository to match module template (February 2024) ([#296](https://github.com/MetaMask/providers/pull/296))
-- Bump ip from 2.0.0 to 2.0.1 ([#295](https://github.com/MetaMask/providers/pull/295))
+- **BREAKING:** Add ESM build ([#296](https://github.com/MetaMask/providers/pull/296))
+  - It's no longer possible to import files from the `dist` folder directly, with the exception of `./dist/StreamProvider`
+
+### Changed
+
+- Bump several MetaMask dependencies ([#304](https://github.com/MetaMask/providers/pull/304))
+- Export `RequestArguments` and `ConsoleLike` types ([#302](https://github.com/MetaMask/providers/pull/302))
 
 ## [14.0.2]
 
