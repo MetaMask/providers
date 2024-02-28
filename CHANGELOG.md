@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [15.0.0]
+
+### Added
+
+- **BREAKING:** Add ESM build ([#296](https://github.com/MetaMask/providers/pull/296))
+  - It's no longer possible to import files from the `dist` folder directly, with the exception of `./dist/StreamProvider`
+
+### Changed
+
+- Bump several MetaMask dependencies ([#304](https://github.com/MetaMask/providers/pull/304))
+- Export `RequestArguments` and `ConsoleLike` types ([#302](https://github.com/MetaMask/providers/pull/302))
+
 ## [14.0.2]
 
 ### Fixed
@@ -355,7 +367,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v14.0.2...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v15.0.0...HEAD
+[15.0.0]: https://github.com/MetaMask/providers/compare/v14.0.2...v15.0.0
 [14.0.2]: https://github.com/MetaMask/providers/compare/v14.0.1...v14.0.2
 [14.0.1]: https://github.com/MetaMask/providers/compare/v14.0.0...v14.0.1
 [14.0.0]: https://github.com/MetaMask/providers/compare/v13.1.0...v14.0.0
