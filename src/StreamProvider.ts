@@ -1,9 +1,9 @@
 import type { JsonRpcMiddleware } from '@metamask/json-rpc-engine';
+import { createStreamMiddleware } from '@metamask/json-rpc-middleware-stream';
 import ObjectMultiplex from '@metamask/object-multiplex';
 import type SafeEventEmitter from '@metamask/safe-event-emitter';
 import type { Json, JsonRpcParams } from '@metamask/utils';
 import { duplex as isDuplex } from 'is-stream';
-import { createStreamMiddleware } from 'json-rpc-middleware-stream';
 import { pipeline } from 'readable-stream';
 import type { Duplex } from 'readable-stream';
 
