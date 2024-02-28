@@ -24,6 +24,11 @@
       "require": "./dist/index.js",
       "types": "./dist/types/index.d.ts"
     },
+    "./dist/StreamProvider": {
+      "import": "./dist/StreamProvider.mjs",
+      "require": "./dist/StreamProvider.js",
+      "types": "./dist/types/StreamProvider.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.js",
