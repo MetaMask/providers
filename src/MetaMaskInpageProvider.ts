@@ -15,11 +15,7 @@ import {
 } from './utils';
 
 export type SendSyncJsonRpcRequest = {
-  method:
-    | 'eth_accounts'
-    | 'eth_coinbase'
-    | 'eth_uninstallFilter'
-    | 'net_version';
+  method: 'eth_accounts' | 'eth_coinbase' | 'eth_uninstallFilter';
 } & JsonRpcRequest;
 
 type WarningEventName = keyof SentWarningsState['events'];
@@ -34,10 +30,6 @@ export type MetaMaskInpageProviderOptions = {
 } & Partial<Omit<StreamProviderOptions, 'rpcMiddleware'>>;
 
 type SentWarningsState = {
-  // properties
-  chainId: boolean;
-  networkVersion: boolean;
-  selectedAddress: boolean;
   // methods
   enable: boolean;
   experimentalMethods: boolean;
@@ -46,7 +38,6 @@ type SentWarningsState = {
   events: {
     close: boolean;
     data: boolean;
-    networkChanged: boolean;
     notification: boolean;
   };
 };
@@ -58,10 +49,6 @@ export const MetaMaskInpageProviderStreamName = 'metamask-provider';
 
 export class MetaMaskInpageProvider extends AbstractStreamProvider {
   protected _sentWarnings: SentWarningsState = {
-    // properties
-    chainId: false,
-    networkVersion: false,
-    selectedAddress: false,
     // methods
     enable: false,
     experimentalMethods: false,
@@ -70,7 +57,6 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     events: {
       close: false,
       data: false,
-      networkChanged: false,
       notification: false,
     },
   };
@@ -81,8 +67,6 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   public readonly _metamask: ReturnType<
     MetaMaskInpageProvider['_getExperimentalApi']
   >;
-
-  #networkVersion: string | null;
 
   /**
    * Indicating that this provider is a MetaMask provider.
@@ -124,7 +108,6 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this._initializeStateAsync();
 
-    this.#networkVersion = null;
     this.isMetaMask = true;
 
     this._sendSync = this._sendSync.bind(this);
@@ -167,31 +150,15 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   }
 
   //====================
-  // Deprecated Properties
+  // Removed Properties
   //====================
 
   get chainId(): string | null {
-    if (!this._sentWarnings.chainId) {
-      this._log.warn(messages.warnings.chainIdDeprecation);
-      this._sentWarnings.chainId = true;
-    }
-    return super.chainId;
-  }
-
-  get networkVersion(): string | null {
-    if (!this._sentWarnings.networkVersion) {
-      this._log.warn(messages.warnings.networkVersionDeprecation);
-      this._sentWarnings.networkVersion = true;
-    }
-    return this.#networkVersion;
+    throw new Error(messages.errors.invalidPropertyChainId())
   }
 
   get selectedAddress(): string | null {
-    if (!this._sentWarnings.selectedAddress) {
-      this._log.warn(messages.warnings.selectedAddressDeprecation);
-      this._sentWarnings.selectedAddress = true;
-    }
-    return super.selectedAddress;
+    throw new Error(messages.errors.invalidPropertySelectedAddress())
   }
 
   //====================
@@ -248,24 +215,6 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   //====================
   // Private Methods
   //====================
-
-  /**
-   * When the provider becomes disconnected, updates internal state and emits
-   * required events. Idempotent with respect to the isRecoverable parameter.
-   *
-   * Error codes per the CloseEvent status codes as required by EIP-1193:
-   * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes.
-   *
-   * @param isRecoverable - Whether the disconnection is recoverable.
-   * @param errorMessage - A custom error message.
-   * @fires BaseProvider#disconnect - If the disconnection is not recoverable.
-   */
-  protected _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
-    super._handleDisconnect(isRecoverable, errorMessage);
-    if (this.#networkVersion && !isRecoverable) {
-      this.#networkVersion = null;
-    }
-  }
 
   /**
    * Warns of deprecation for the given event, if applicable.
@@ -392,20 +341,16 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     let result;
     switch (payload.method) {
       case 'eth_accounts':
-        result = this.selectedAddress ? [this.selectedAddress] : [];
+        result = super.selectedAddress ? [super.selectedAddress] : [];
         break;
 
       case 'eth_coinbase':
-        result = this.selectedAddress ?? null;
+        result = super.selectedAddress ?? null;
         break;
 
       case 'eth_uninstallFilter':
         this._rpcRequest(payload, NOOP);
         result = true;
-        break;
-
-      case 'net_version':
-        result = this.#networkVersion ?? null;
         break;
 
       default:
@@ -473,31 +418,5 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
         },
       },
     );
-  }
-
-  /**
-   * Upon receipt of a new chainId and networkVersion, emits corresponding
-   * events and sets relevant public state. Does nothing if neither the chainId
-   * nor the networkVersion are different from existing values.
-   *
-   * @fires MetamaskInpageProvider#networkChanged
-   * @param networkInfo - An object with network info.
-   * @param networkInfo.chainId - The latest chain ID.
-   * @param networkInfo.networkVersion - The latest network ID.
-   */
-  protected _handleChainChanged({
-    chainId,
-    networkVersion,
-  }: { chainId?: string; networkVersion?: string } = {}) {
-    // This will validate the params and disconnect the provider if the
-    // networkVersion is 'loading'.
-    super._handleChainChanged({ chainId, networkVersion });
-
-    if (this._state.isConnected && networkVersion !== this.#networkVersion) {
-      this.#networkVersion = networkVersion as string;
-      if (this._state.initialized) {
-        this.emit('networkChanged', this.#networkVersion);
-      }
-    }
   }
 }
