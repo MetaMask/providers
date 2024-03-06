@@ -154,11 +154,11 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   //====================
 
   get chainId(): string | null {
-    throw new Error(messages.errors.invalidPropertyChainId())
+    throw new Error(messages.errors.invalidPropertyChainId());
   }
 
   get selectedAddress(): string | null {
-    throw new Error(messages.errors.invalidPropertySelectedAddress())
+    throw new Error(messages.errors.invalidPropertySelectedAddress());
   }
 
   //====================

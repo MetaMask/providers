@@ -18,8 +18,10 @@ const messages = {
     invalidLoggerObject: () => `'args.logger' must be an object if provided.`,
     invalidLoggerMethod: (method: string) =>
       `'args.logger' must include required method '${method}'.`,
-    invalidPropertyChainId: () => `MetaMask: 'ethereum.chainId' has been removed. Please use the 'eth_chainId' RPC method instead.\nFor more information, see: https://github.com/MetaMask/metamask-improvement-proposals/discussions/23`,
-    invalidPropertySelectedAddress: () => `MetaMask: 'ethereum.selectedAddress' has been removed. Please use the 'eth_accounts' RPC method instead.\nFor more information, see: https://github.com/MetaMask/metamask-improvement-proposals/discussions/23`,
+    invalidPropertyChainId: () =>
+      `MetaMask: 'ethereum.chainId' has been removed. Please use the 'eth_chainId' RPC method instead.\nFor more information, see: https://github.com/MetaMask/metamask-improvement-proposals/discussions/23`,
+    invalidPropertySelectedAddress: () =>
+      `MetaMask: 'ethereum.selectedAddress' has been removed. Please use the 'eth_accounts' RPC method instead.\nFor more information, see: https://github.com/MetaMask/metamask-improvement-proposals/discussions/23`,
   },
   info: {
     connected: (chainId: string) =>
