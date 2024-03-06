@@ -10,11 +10,7 @@ import type { Duplex } from 'readable-stream';
 import type { BaseProviderOptions } from './BaseProvider';
 import { BaseProvider } from './BaseProvider';
 import messages from './messages';
-import {
-  EMITTED_NOTIFICATIONS,
-  isValidChainId,
-  isValidNetworkVersion,
-} from './utils';
+import { EMITTED_NOTIFICATIONS, isValidChainId } from './utils';
 
 export type StreamProviderOptions = {
   /**
@@ -167,39 +163,27 @@ export abstract class AbstractStreamProvider extends BaseProvider {
   }
 
   /**
-   * Upon receipt of a new chainId and networkVersion, emits corresponding
-   * events and sets relevant public state. This class does not have a
-   * `networkVersion` property, but we rely on receiving a `networkVersion`
-   * with the value of `loading` to detect when the network is changing and
-   * a recoverable `disconnect` even has occurred. Child classes that use the
-   * `networkVersion` for other purposes must implement additional handling
-   * therefore.
+   * Upon receipt of a new chainId, emits corresponding
+   * events and sets relevant public state.
    *
    * @fires BaseProvider#chainChanged
    * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
-   * @param networkInfo.networkVersion - The latest network ID.
    */
   protected _handleChainChanged({
     chainId,
-    networkVersion,
   }: {
     chainId?: string | undefined;
-    networkVersion?: string | undefined;
   } = {}) {
-    if (!isValidChainId(chainId) || !isValidNetworkVersion(networkVersion)) {
+    if (!isValidChainId(chainId)) {
       this._log.error(messages.errors.invalidNetworkParams(), {
         chainId,
-        networkVersion,
       });
       return;
     }
 
-    if (networkVersion === 'loading') {
-      this._handleDisconnect(true);
-    } else {
-      super._handleChainChanged({ chainId });
-    }
+    // should disconnect/state reset happen somehow still?
+    super._handleChainChanged({ chainId });
   }
 }
 

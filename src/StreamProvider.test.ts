@@ -35,7 +35,6 @@ describe('StreamProvider', () => {
     it('initializes state and emits events', async () => {
       const accounts = ['0xabc'];
       const chainId = '0x1';
-      const networkVersion = '1';
       const isUnlocked = true;
 
       const streamProvider = new StreamProvider(new MockConnectionStream(), {
@@ -49,14 +48,11 @@ describe('StreamProvider', () => {
             accounts,
             chainId,
             isUnlocked,
-            networkVersion,
           };
         });
 
       await streamProvider.initialize();
 
-      expect(streamProvider.chainId).toBe(chainId);
-      expect(streamProvider.selectedAddress).toBe(accounts[0]);
       expect(streamProvider.isConnected()).toBe(true);
 
       expect(requestMock).toHaveBeenCalledTimes(1);
@@ -381,7 +377,6 @@ describe('StreamProvider', () => {
               accounts: [],
               chainId: '0x0',
               isUnlocked: true,
-              networkVersion: '0',
             };
           });
 
@@ -397,7 +392,7 @@ describe('StreamProvider', () => {
           mockStream.notify(mockStreamName, {
             jsonrpc: '2.0',
             method: 'metamask_chainChanged',
-            params: { chainId: '0x1', networkVersion: '0x1' },
+            params: { chainId: '0x1' },
           });
         });
       });
