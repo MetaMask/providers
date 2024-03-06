@@ -324,36 +324,23 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * Error codes per the CloseEvent status codes as required by EIP-1193:
    * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes.
    *
-   * @param isRecoverable - Whether the disconnection is recoverable.
    * @param errorMessage - A custom error message.
-   * @fires BaseProvider#disconnect - If the disconnection is not recoverable.
+   * @fires BaseProvider#disconnect
    */
-  protected _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
-    if (
-      this._state.isConnected ||
-      (!this._state.isPermanentlyDisconnected && !isRecoverable)
-    ) {
+  protected _handleDisconnect(errorMessage?: string) {
+    if (this._state.isConnected || !this._state.isPermanentlyDisconnected) {
       this._state.isConnected = false;
 
-      let error;
-      if (isRecoverable) {
-        error = new JsonRpcError(
-          1013, // Try again later
-          errorMessage ?? messages.errors.disconnected(),
-        );
-        this._log.debug(error);
-      } else {
-        error = new JsonRpcError(
-          1011, // Internal error
-          errorMessage ?? messages.errors.permanentlyDisconnected(),
-        );
-        this._log.error(error);
-        this.#chainId = null;
-        this._state.accounts = null;
-        this.#selectedAddress = null;
-        this._state.isUnlocked = false;
-        this._state.isPermanentlyDisconnected = true;
-      }
+      const error = new JsonRpcError(
+        1011, // Internal error
+        errorMessage ?? messages.errors.permanentlyDisconnected(),
+      );
+      this._log.error(error);
+      this.#chainId = null;
+      this._state.accounts = null;
+      this.#selectedAddress = null;
+      this._state.isUnlocked = false;
+      this._state.isPermanentlyDisconnected = true;
 
       this.emit('disconnect', error);
     }

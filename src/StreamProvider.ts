@@ -159,7 +159,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
       this.emit('error', warningMsg);
     }
 
-    this._handleDisconnect(false, error ? error.message : undefined);
+    this._handleDisconnect(error ? error.message : undefined);
   }
 
   /**
@@ -182,7 +182,6 @@ export abstract class AbstractStreamProvider extends BaseProvider {
       return;
     }
 
-    // should disconnect/state reset happen somehow still?
     super._handleChainChanged({ chainId });
   }
 }

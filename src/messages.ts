@@ -1,7 +1,5 @@
 const messages = {
   errors: {
-    disconnected: () =>
-      'MetaMask: Disconnected from chain. Attempting to connect.',
     permanentlyDisconnected: () =>
       'MetaMask: Disconnected from MetaMask background. Page reload required.',
     sendSiteMetadata: () =>

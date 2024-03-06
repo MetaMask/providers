@@ -150,7 +150,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   }
 
   //====================
-  // Removed Properties
+  // Private Properties
   //====================
 
   get chainId(): string | null {
