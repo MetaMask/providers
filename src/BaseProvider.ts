@@ -1,7 +1,8 @@
-import { JsonRpcEngine, JsonRpcMiddleware } from '@metamask/json-rpc-engine';
+import type { JsonRpcMiddleware } from '@metamask/json-rpc-engine';
+import { JsonRpcEngine } from '@metamask/json-rpc-engine';
 import { rpcErrors, JsonRpcError } from '@metamask/rpc-errors';
 import SafeEventEmitter from '@metamask/safe-event-emitter';
-import {
+import type {
   JsonRpcRequest,
   JsonRpcId,
   JsonRpcVersion2,
@@ -12,12 +13,8 @@ import {
 import dequal from 'fast-deep-equal';
 
 import messages from './messages';
-import {
-  getRpcPromiseCallback,
-  ConsoleLike,
-  Maybe,
-  isValidChainId,
-} from './utils';
+import type { ConsoleLike, Maybe } from './utils';
+import { getRpcPromiseCallback, isValidChainId } from './utils';
 
 export type UnvalidatedJsonRpcRequest = {
   id?: JsonRpcId;
@@ -180,7 +177,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * @returns A Promise that resolves with the result of the RPC method,
    * or rejects if an error is encountered.
    */
-  async request<T>(args: RequestArguments): Promise<Maybe<T>> {
+  async request<Type>(args: RequestArguments): Promise<Maybe<Type>> {
     if (!args || typeof args !== 'object' || Array.isArray(args)) {
       throw rpcErrors.invalidRequest({
         message: messages.errors.invalidRequestArgs(),
@@ -218,7 +215,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
             params,
           };
 
-    return new Promise<T>((resolve, reject) => {
+    return new Promise<Type>((resolve, reject) => {
       this._rpcRequest(payload, getRpcPromiseCallback(resolve, reject));
     });
   }

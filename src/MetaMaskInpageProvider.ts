@@ -2,13 +2,11 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import type { Json, JsonRpcRequest, JsonRpcResponse } from '@metamask/utils';
 import type { Duplex } from 'readable-stream';
 
-import { UnvalidatedJsonRpcRequest } from './BaseProvider';
+import type { UnvalidatedJsonRpcRequest } from './BaseProvider';
 import messages from './messages';
 import { sendSiteMetadata } from './siteMetadata';
-import {
-  AbstractStreamProvider,
-  StreamProviderOptions,
-} from './StreamProvider';
+import type { StreamProviderOptions } from './StreamProvider';
+import { AbstractStreamProvider } from './StreamProvider';
 import {
   EMITTED_NOTIFICATIONS,
   getDefaultExternalMiddleware,
@@ -319,10 +317,10 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @returns A Promise that resolves with the JSON-RPC response object for the
    * request.
    */
-  send<T extends Json>(
+  send<Type extends Json>(
     method: string,
-    params?: T[],
-  ): Promise<JsonRpcResponse<T>>;
+    params?: Type[],
+  ): Promise<JsonRpcResponse<Type>>;
 
   /**
    * Submits an RPC request per the given JSON-RPC request object.
@@ -332,9 +330,9 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @param callback - An error-first callback that will receive the JSON-RPC
    * response object.
    */
-  send<T extends Json>(
+  send<Type extends Json>(
     payload: JsonRpcRequest,
-    callback: (error: Error | null, result?: JsonRpcResponse<T>) => void,
+    callback: (error: Error | null, result?: JsonRpcResponse<Type>) => void,
   ): void;
 
   /**
@@ -345,7 +343,9 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @param payload - A JSON-RPC request object.
    * @returns A JSON-RPC response object.
    */
-  send<T extends Json>(payload: SendSyncJsonRpcRequest): JsonRpcResponse<T>;
+  send<Type extends Json>(
+    payload: SendSyncJsonRpcRequest,
+  ): JsonRpcResponse<Type>;
 
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {

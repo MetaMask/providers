@@ -1,13 +1,15 @@
-import {
-  createIdRemapMiddleware,
-  JsonRpcMiddleware,
-} from '@metamask/json-rpc-engine';
+import type { JsonRpcMiddleware } from '@metamask/json-rpc-engine';
+import { createIdRemapMiddleware } from '@metamask/json-rpc-engine';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { Json, JsonRpcParams, PendingJsonRpcResponse } from '@metamask/utils';
+import type {
+  Json,
+  JsonRpcParams,
+  PendingJsonRpcResponse,
+} from '@metamask/utils';
 
 import { createRpcWarningMiddleware } from './middleware/createRpcWarningMiddleware';
 
-export type Maybe<T> = Partial<T> | null | undefined;
+export type Maybe<Type> = Partial<Type> | null | undefined;
 
 export type ConsoleLike = Pick<
   Console,

@@ -1,6 +1,6 @@
 import { isObject } from '@metamask/utils';
 
-import { BaseProvider } from './BaseProvider';
+import type { BaseProvider } from './BaseProvider';
 
 /**
  * Describes the possible EIP-6963 event names
