@@ -44,12 +44,7 @@ type InitializedProviderDetails = {
  * can be used to inspect message sent by the provider.
  */
 async function getInitializedProvider({
-  initialState: {
-    accounts = [],
-    chainId = '0x0',
-    isUnlocked = true,
-    networkVersion = '0',
-  } = {},
+  initialState: { accounts = [], chainId = '0x0', isUnlocked = true } = {},
   onMethodCalled = [],
 }: {
   initialState?: Partial<
@@ -78,7 +73,6 @@ async function getInitializedProvider({
             accounts,
             chainId,
             isUnlocked,
-            networkVersion,
           },
         }),
       );
@@ -713,13 +707,6 @@ describe('MetaMaskInpageProvider: RPC', () => {
           expect.any(Function),
         );
       });
-
-      it('net_version', () => {
-        const result = provider.send({ method: 'net_version' });
-        expect(result).toMatchObject({
-          result: null,
-        });
-      });
     });
 
     it('throws on unsupported sync method', () => {
@@ -748,84 +735,9 @@ describe('MetaMaskInpageProvider: RPC', () => {
         connectionStream.notify(MetaMaskInpageProviderStreamName, {
           jsonrpc: '2.0',
           method: 'metamask_chainChanged',
-          params: { chainId: '0x1', networkVersion: '1' },
+          params: { chainId: '0x1' },
         });
       });
-    });
-
-    it('calls networkChanged when receiving a new networkVersion', async () => {
-      const { provider, connectionStream } = await getInitializedProvider();
-
-      await new Promise((resolve) => {
-        provider.once('networkChanged', (newNetworkId) => {
-          expect(newNetworkId).toBe('1');
-          resolve(undefined);
-        });
-
-        connectionStream.notify(MetaMaskInpageProviderStreamName, {
-          jsonrpc: '2.0',
-          method: 'metamask_chainChanged',
-          params: { chainId: '0x1', networkVersion: '1' },
-        });
-      });
-    });
-
-    it('handles chain changes with intermittent disconnection', async () => {
-      const { provider, connectionStream } = await getInitializedProvider();
-
-      // We check this mostly for the readability of this test.
-      expect(provider.isConnected()).toBe(true);
-      expect(provider.chainId).toBe('0x0');
-      expect(provider.networkVersion).toBe('0');
-
-      const emitSpy = jest.spyOn(provider, 'emit');
-
-      await new Promise<void>((resolve) => {
-        provider.once('disconnect', (error) => {
-          expect((error as any).code).toBe(1013);
-          resolve();
-        });
-
-        connectionStream.notify(MetaMaskInpageProviderStreamName, {
-          jsonrpc: '2.0',
-          method: 'metamask_chainChanged',
-          // A "loading" networkVersion indicates the network is changing.
-          // Although the chainId is different, chainChanged should not be
-          // emitted in this case.
-          params: { chainId: '0x1', networkVersion: 'loading' },
-        });
-      });
-
-      // Only once, for "disconnect".
-      expect(emitSpy).toHaveBeenCalledTimes(1);
-      emitSpy.mockClear(); // Clear the mock to avoid keeping a count.
-
-      expect(provider.isConnected()).toBe(false);
-      // These should be unchanged.
-      expect(provider.chainId).toBe('0x0');
-      expect(provider.networkVersion).toBe('0');
-
-      await new Promise<void>((resolve) => {
-        provider.once('chainChanged', (newChainId) => {
-          expect(newChainId).toBe('0x1');
-          resolve();
-        });
-
-        connectionStream.notify(MetaMaskInpageProviderStreamName, {
-          jsonrpc: '2.0',
-          method: 'metamask_chainChanged',
-          params: { chainId: '0x1', networkVersion: '1' },
-        });
-      });
-
-      expect(emitSpy).toHaveBeenCalledTimes(3);
-      expect(emitSpy).toHaveBeenNthCalledWith(1, 'connect', { chainId: '0x1' });
-      expect(emitSpy).toHaveBeenCalledWith('chainChanged', '0x1');
-      expect(emitSpy).toHaveBeenCalledWith('networkChanged', '1');
-
-      expect(provider.isConnected()).toBe(true);
-      expect(provider.chainId).toBe('0x1');
-      expect(provider.networkVersion).toBe('1');
     });
   });
 
@@ -1028,7 +940,6 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
             accounts: ['0xabc'],
             chainId: '0x0',
             isUnlocked: true,
-            networkVersion: '0',
           };
         });
 
@@ -1037,9 +948,6 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
 
       await new Promise<void>((resolve) => setTimeout(() => resolve(), 1));
       expect(requestMock).toHaveBeenCalledTimes(1);
-      expect(inpageProvider.chainId).toBe('0x0');
-      expect(inpageProvider.networkVersion).toBe('0');
-      expect(inpageProvider.selectedAddress).toBe('0xabc');
       expect(inpageProvider.isConnected()).toBe(true);
     });
   });
@@ -1084,21 +992,10 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
       ).provider;
     });
 
-    it('should warn the first time chainId is accessed', async () => {
-      const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
-
-      expect(provider.chainId).toBe('0x5');
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        messages.warnings.chainIdDeprecation,
+    it('should throw an error when accessing chainId', () => {
+      expect(() => provider.chainId).toThrow(
+        `'ethereum.chainId' has been removed`,
       );
-      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not allow chainId to be modified', () => {
-      expect(() => (provider.chainId = '0x539')).toThrow(
-        'Cannot set property chainId',
-      );
-      expect(provider.chainId).toBe('0x5');
     });
   });
 
@@ -1106,30 +1003,13 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
     let provider: any | MetaMaskInpageProvider;
 
     beforeEach(async () => {
-      provider = (
-        await getInitializedProvider({
-          initialState: {
-            networkVersion: '5',
-          },
-        })
-      ).provider;
+      provider = (await getInitializedProvider()).provider;
     });
 
-    it('should warn the first time networkVersion is accessed', async () => {
-      const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
-
-      expect(provider.networkVersion).toBe('5');
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        messages.warnings.networkVersionDeprecation,
+    it('should throw an error when accessing networkVersion', () => {
+      expect(() => provider.networkVersion).toThrow(
+        `'ethereum.networkVersion' has been removed`,
       );
-      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not allow networkVersion to be modified', () => {
-      expect(() => (provider.networkVersion = '1337')).toThrow(
-        'Cannot set property networkVersion',
-      );
-      expect(provider.networkVersion).toBe('5');
     });
   });
 
@@ -1146,21 +1026,10 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
       ).provider;
     });
 
-    it('should warn the first time selectedAddress is accessed', async () => {
-      const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
-
-      expect(provider.selectedAddress).toBe('0xdeadbeef');
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        messages.warnings.selectedAddressDeprecation,
+    it('should throw an error when accessing selectedAddress', () => {
+      expect(() => provider.selectedAddress).toThrow(
+        `'ethereum.selectedAddress' has been removed`,
       );
-      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not allow selectedAddress to be modified', () => {
-      expect(() => (provider.selectedAddress = '0x12345678')).toThrow(
-        'Cannot set property selectedAddress',
-      );
-      expect(provider.selectedAddress).toBe('0xdeadbeef');
     });
   });
 });
