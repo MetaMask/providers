@@ -999,6 +999,20 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
     });
   });
 
+  describe('networkVersion', () => {
+    let provider: any | MetaMaskInpageProvider;
+
+    beforeEach(async () => {
+      provider = (await getInitializedProvider()).provider;
+    });
+
+    it('should throw an error when accessing networkVersion', () => {
+      expect(() => provider.networkVersion).toThrow(
+        `'ethereum.networkVersion' has been removed`,
+      );
+    });
+  });
+
   describe('selectedAddress', () => {
     let provider: any | MetaMaskInpageProvider;
 

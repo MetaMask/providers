@@ -157,6 +157,10 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     throw new Error(messages.errors.invalidPropertyChainId());
   }
 
+  get networkVersion(): string | null {
+    throw new Error(messages.errors.invalidPropertyNetworkVersion());
+  }
+
   get selectedAddress(): string | null {
     throw new Error(messages.errors.invalidPropertySelectedAddress());
   }
