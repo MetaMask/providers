@@ -9,10 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [16.0.0]
 
-### Uncategorized
+### Removed
 
-- Remove deprecated properties, networkChanged event, and offline send() net_version support ([#306](https://github.com/MetaMask/providers/pull/306))
-- Enabling MetaMask security code scanner ([#297](https://github.com/MetaMask/providers/pull/297))
+- **BREAKING:** Remove deprecated properties, networkChanged event, and offline send() net_version support ([#306](https://github.com/MetaMask/providers/pull/306))
+  - `window.ethereum.chainId` has been removed. Use the 'eth_chainId' RPC method instead.
+  - `window.ethereum.networkVersion` has been removed. Use the 'net_version' RPC method instead.
+  - `window.ethereum.selectedAddress` has been removed. Use the 'eth_accounts' RPC method instead.
+  - `networkChanged` event has been removed. The closest equivalent is the `chainChanged` event.
+  - `window.ethereum.send()` no longer resolves `net_version` offline (from cache)
+
+## Changed
+
 - Bump @metamask/json-rpc-engine from 7.3.2 to 7.3.3 ([#305](https://github.com/MetaMask/providers/pull/305))
 
 ## [15.0.0]
