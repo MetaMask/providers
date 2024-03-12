@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `window.ethereum.networkVersion` has been removed. Use the 'net_version' RPC method instead.
   - `window.ethereum.selectedAddress` has been removed. Use the 'eth_accounts' RPC method instead.
   - `networkChanged` event has been removed. The closest equivalent is the `chainChanged` event.
-  - `window.ethereum.send()` no longer resolves `net_version` offline (from cache)
+  - `window.ethereum.send()` no longer resolves `net_version` offline (from cache).
 
 ## Changed
 
