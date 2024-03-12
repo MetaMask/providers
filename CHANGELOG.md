@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [16.0.0]
+
+### Removed
+
+- **BREAKING:** Remove deprecated properties, networkChanged event, and offline send() net_version support ([#306](https://github.com/MetaMask/providers/pull/306))
+  - `window.ethereum.chainId` has been removed. Use the 'eth_chainId' RPC method instead.
+  - `window.ethereum.networkVersion` has been removed. Use the 'net_version' RPC method instead.
+  - `window.ethereum.selectedAddress` has been removed. Use the 'eth_accounts' RPC method instead.
+  - `networkChanged` event has been removed. The closest equivalent is the `chainChanged` event.
+  - `window.ethereum.send()` no longer resolves `net_version` offline (from cache).
+
+## Changed
+
+- Bump @metamask/json-rpc-engine from 7.3.2 to 7.3.3 ([#305](https://github.com/MetaMask/providers/pull/305))
+
 ## [15.0.0]
 
 ### Added
@@ -367,7 +382,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v15.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v16.0.0...HEAD
+[16.0.0]: https://github.com/MetaMask/providers/compare/v15.0.0...v16.0.0
 [15.0.0]: https://github.com/MetaMask/providers/compare/v14.0.2...v15.0.0
 [14.0.2]: https://github.com/MetaMask/providers/compare/v14.0.1...v14.0.2
 [14.0.1]: https://github.com/MetaMask/providers/compare/v14.0.0...v14.0.1
