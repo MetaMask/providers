@@ -230,10 +230,14 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * Sets initial state if provided and marks this provider as initialized.
    * Throws if called more than once.
    *
+   * Permits the `networkVersion` field in the parameter object for
+   * compatibility with child classes that use this value.
+   *
    * @param initialState - The provider's initial state.
    * @param initialState.accounts - The user's accounts.
    * @param initialState.chainId - The chain ID.
    * @param initialState.isUnlocked - Whether the user has unlocked MetaMask.
+   * @param initialState.networkVersion - The network version.
    * @fires BaseProvider#_initialized - If `initialState` is defined.
    * @fires BaseProvider#connect - If `initialState` is defined.
    */
@@ -241,17 +245,18 @@ export abstract class BaseProvider extends SafeEventEmitter {
     accounts: string[];
     chainId: string;
     isUnlocked: boolean;
+    networkVersion?: string;
   }) {
     if (this._state.initialized) {
       throw new Error('Provider already initialized.');
     }
 
     if (initialState) {
-      const { accounts, chainId, isUnlocked } = initialState;
+      const { accounts, chainId, isUnlocked, networkVersion } = initialState;
 
       // EIP-1193 connect
       this._handleConnect(chainId);
-      this._handleChainChanged({ chainId });
+      this._handleChainChanged({ chainId, networkVersion });
       this._handleUnlockStateChanged({ accounts, isUnlocked });
       this._handleAccountsChanged(accounts);
     }
@@ -324,23 +329,36 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * Error codes per the CloseEvent status codes as required by EIP-1193:
    * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes.
    *
+   * @param isRecoverable - Whether the disconnection is recoverable.
    * @param errorMessage - A custom error message.
-   * @fires BaseProvider#disconnect
+   * @fires BaseProvider#disconnect - If the disconnection is not recoverable.
    */
-  protected _handleDisconnect(errorMessage?: string) {
-    if (this._state.isConnected || !this._state.isPermanentlyDisconnected) {
+  protected _handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
+    if (
+      this._state.isConnected ||
+      (!this._state.isPermanentlyDisconnected && !isRecoverable)
+    ) {
       this._state.isConnected = false;
 
-      const error = new JsonRpcError(
-        1011, // Internal error
-        errorMessage ?? messages.errors.permanentlyDisconnected(),
-      );
-      this._log.error(error);
-      this.#chainId = null;
-      this._state.accounts = null;
-      this.#selectedAddress = null;
-      this._state.isUnlocked = false;
-      this._state.isPermanentlyDisconnected = true;
+      let error;
+      if (isRecoverable) {
+        error = new JsonRpcError(
+          1013, // Try again later
+          errorMessage ?? messages.errors.disconnected(),
+        );
+        this._log.debug(error);
+      } else {
+        error = new JsonRpcError(
+          1011, // Internal error
+          errorMessage ?? messages.errors.permanentlyDisconnected(),
+        );
+        this._log.error(error);
+        this.#chainId = null;
+        this._state.accounts = null;
+        this.#selectedAddress = null;
+        this._state.isUnlocked = false;
+        this._state.isPermanentlyDisconnected = true;
+      }
 
       this.emit('disconnect', error);
     }
@@ -351,13 +369,18 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * and sets relevant public state. Does nothing if the given `chainId` is
    * equivalent to the existing value.
    *
+   * Permits the `networkVersion` field in the parameter object for
+   * compatibility with child classes that use this value.
+   *
    * @fires BaseProvider#chainChanged
    * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
    */
   protected _handleChainChanged({
     chainId,
-  }: { chainId?: string | undefined } | undefined = {}) {
+  }:
+    | { chainId?: string | undefined; networkVersion?: string | undefined }
+    | undefined = {}) {
     if (!isValidChainId(chainId)) {
       this._log.error(messages.errors.invalidNetworkParams(), { chainId });
       return;
