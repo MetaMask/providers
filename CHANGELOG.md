@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [17.0.0]
+
+### Uncategorized
+
+- Revert "Remove deprecated properties, networkChanged event, and offli… ([#312](https://github.com/MetaMask/providers/pull/312))
+- Bump MetaMask dependencies ([#310](https://github.com/MetaMask/providers/pull/310))
+- Bump @metamask/safe-event-emitter from 3.0.0 to 3.1.1 ([#309](https://github.com/MetaMask/providers/pull/309))
+
 ## [16.0.0]
 
 ### Removed
@@ -382,7 +390,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v16.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v17.0.0...HEAD
+[17.0.0]: https://github.com/MetaMask/providers/compare/v16.0.0...v17.0.0
 [16.0.0]: https://github.com/MetaMask/providers/compare/v15.0.0...v16.0.0
 [15.0.0]: https://github.com/MetaMask/providers/compare/v14.0.2...v15.0.0
 [14.0.2]: https://github.com/MetaMask/providers/compare/v14.0.1...v14.0.2
