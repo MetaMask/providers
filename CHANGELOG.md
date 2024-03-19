@@ -9,11 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [17.0.0]
 
-### Uncategorized
+### Changed
 
-- Revert "Remove deprecated properties, networkChanged event, and offli… ([#312](https://github.com/MetaMask/providers/pull/312))
 - Bump MetaMask dependencies ([#310](https://github.com/MetaMask/providers/pull/310))
 - Bump @metamask/safe-event-emitter from 3.0.0 to 3.1.1 ([#309](https://github.com/MetaMask/providers/pull/309))
+
+### Removed
+
+- **BREAKING:** Revert Remove deprecated properties, networkChanged event, and offline send() net_version support ([#312](https://github.com/MetaMask/providers/pull/312))
 
 ## [16.0.0]
 
