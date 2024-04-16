@@ -4,7 +4,7 @@ import type { Duplex } from 'readable-stream';
 import type { Runtime } from 'webextension-polyfill';
 
 import config from './external-extension-config.json';
-import { MetaMaskInpageProviderStreamName } from '../MetaMaskInpageProvider';
+import { MetaMaskInpageProviderRetryMessageName, MetaMaskInpageProviderStreamName } from '../MetaMaskInpageProvider';
 import { StreamProvider } from '../StreamProvider';
 import { getDefaultExternalMiddleware } from '../utils';
 
@@ -30,6 +30,7 @@ export function createExternalExtensionProvider(
     const pluginStream = new PortStream(metamaskPort);
     provider = new StreamProvider(pluginStream as unknown as Duplex, {
       jsonRpcStreamName: MetaMaskInpageProviderStreamName,
+      retryMessageName: MetaMaskInpageProviderRetryMessageName,
       logger: console,
       rpcMiddleware: getDefaultExternalMiddleware(console),
     });

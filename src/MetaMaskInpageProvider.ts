@@ -57,6 +57,11 @@ type SentWarningsState = {
  */
 export const MetaMaskInpageProviderStreamName = 'metamask-provider';
 
+/**
+ * The name of the internal retry requests method consumed by {@link MetaMaskInpageProvider}.
+ */
+export const MetaMaskInpageProviderRetryMessageName = 'METAMASK_EXTENSION_CONNECT_CAN_RETRY';
+
 export class MetaMaskInpageProvider extends AbstractStreamProvider {
   protected _sentWarnings: SentWarningsState = {
     // properties
