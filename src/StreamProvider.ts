@@ -21,6 +21,10 @@ export type StreamProviderOptions = {
    * The name of the stream used to connect to the wallet.
    */
   jsonRpcStreamName: string;
+  /**
+   * The name of the method received when the wallet connection is ready to retry requests.
+   */
+  retryMessageName: string;
 } & BaseProviderOptions;
 
 export type JsonRpcConnection = {
@@ -44,6 +48,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
    * @param connectionStream - A Node.js duplex stream.
    * @param options - An options bag.
    * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
+   * @param options.retryMessageName - The name of the internal retry requests method.
    * @param options.logger - The logging API to use. Default: `console`.
    * @param options.maxEventListeners - The maximum number of event
    * listeners. Default: 100.
@@ -53,6 +58,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
     connectionStream: Duplex,
     {
       jsonRpcStreamName,
+      retryMessageName,
       logger = console,
       maxEventListeners = 100,
       rpcMiddleware = [],
@@ -80,7 +86,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
     // Typecast: The type of `Duplex` is incompatible with the type of
     // `JsonRpcConnection`.
     this._jsonRpcConnection = createStreamMiddleware({
-      retryOnMessage: 'METAMASK_EXTENSION_CONNECT_CAN_RETRY',
+      retryOnMessage: retryMessageName,
     }) as unknown as JsonRpcConnection;
 
     pipeline(

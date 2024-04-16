@@ -31,6 +31,7 @@ export type MetaMaskInpageProviderOptions = {
   shouldSendMetadata?: boolean;
 
   jsonRpcStreamName?: string | undefined;
+  retryMessageName?: string | undefined;
 } & Partial<Omit<StreamProviderOptions, 'rpcMiddleware'>>;
 
 type SentWarningsState = {
@@ -96,6 +97,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @param options - An options bag.
    * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
    * Default: `metamask-provider`.
+   * @param options.retryMessageName - The name of the internal retry requests method.
    * @param options.logger - The logging API to use. Default: `console`.
    * @param options.maxEventListeners - The maximum number of event
    * listeners. Default: 100.
@@ -106,6 +108,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     connectionStream: Duplex,
     {
       jsonRpcStreamName = MetaMaskInpageProviderStreamName,
+      retryMessageName = 'METAMASK_EXTENSION_CONNECT_CAN_RETRY',
       logger = console,
       maxEventListeners = 100,
       shouldSendMetadata,
@@ -113,6 +116,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   ) {
     super(connectionStream, {
       jsonRpcStreamName,
+      retryMessageName,
       logger,
       maxEventListeners,
       rpcMiddleware: getDefaultExternalMiddleware(logger),
@@ -144,6 +148,16 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
         this.emit('data', payload);
         // deprecated
         this.emit('notification', payload.params.result);
+      }
+
+      if (method === retryMessageName) {
+        // DRY this method name?
+        if (shouldSendMetadata) {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          sendSiteMetadata(this._rpcEngine, this._log);
+        }
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this._initializeStateAsync();
       }
     });
 
