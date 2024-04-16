@@ -60,7 +60,8 @@ export const MetaMaskInpageProviderStreamName = 'metamask-provider';
 /**
  * The name of the internal retry requests method consumed by {@link MetaMaskInpageProvider}.
  */
-export const MetaMaskInpageProviderRetryMessageName = 'METAMASK_EXTENSION_CONNECT_CAN_RETRY';
+export const MetaMaskInpageProviderRetryMessageName =
+  'METAMASK_EXTENSION_CONNECT_CAN_RETRY';
 
 export class MetaMaskInpageProvider extends AbstractStreamProvider {
   protected _sentWarnings: SentWarningsState = {
@@ -155,14 +156,9 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
         this.emit('notification', payload.params.result);
       }
 
-      if (method === retryMessageName) {
-        // DRY this method name?
-        if (shouldSendMetadata) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          sendSiteMetadata(this._rpcEngine, this._log);
-        }
+      if (shouldSendMetadata && method === retryMessageName) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this._initializeStateAsync();
+        sendSiteMetadata(this._rpcEngine, this._log);
       }
     });
 

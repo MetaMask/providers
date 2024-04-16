@@ -4,7 +4,10 @@ import type { Duplex } from 'readable-stream';
 import type { Runtime } from 'webextension-polyfill';
 
 import config from './external-extension-config.json';
-import { MetaMaskInpageProviderRetryMessageName, MetaMaskInpageProviderStreamName } from '../MetaMaskInpageProvider';
+import {
+  MetaMaskInpageProviderRetryMessageName,
+  MetaMaskInpageProviderStreamName,
+} from '../MetaMaskInpageProvider';
 import { StreamProvider } from '../StreamProvider';
 import { getDefaultExternalMiddleware } from '../utils';
 
