@@ -53,7 +53,20 @@ export function createExternalExtensionProvider(
  * @returns The extension ID.
  */
 function getExtensionId(typeOrId: ExtensionType) {
-  const ids =
-    browser?.name === 'firefox' ? config.firefoxIds : config.chromeIds;
+  let ids: {
+    stable: string;
+    beta: string;
+    flask: string;
+  };
+  switch (browser?.name) {
+    case 'edge-chromium':
+      ids = config.edgeChromiumIds;
+      break;
+    case 'firefox':
+      ids = config.firefoxIds;
+      break;
+    default:
+      ids = config.chromeIds;
+  }
   return ids[typeOrId as keyof typeof ids] ?? typeOrId;
 }
