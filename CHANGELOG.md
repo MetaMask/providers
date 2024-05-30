@@ -18,6 +18,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **BREAKING**: Change webextension-polyfill from dependency to peerDependency ([#319](https://github.com/MetaMask/providers/pull/319))
   - Users are now expected to have the polyfill in their environment
 
+## [16.1.0]
+
+### Added
+
+- Restore deprecated properties, networkChanged event, and offline send() net_version support ([#312](https://github.com/MetaMask/providers/pull/312))
+- Bump MetaMask dependencies ([#310](https://github.com/MetaMask/providers/pull/310))
+- Bump @metamask/safe-event-emitter from 3.0.0 to 3.1.1 ([#309](https://github.com/MetaMask/providers/pull/309))
+- Bump @metamask/utils from 8.3.0 to 8.4.0 ([#311](https://github.com/MetaMask/providers/pull/311))
+- Bump tar from 6.1.13 to 6.2.1 ([#314](https://github.com/MetaMask/providers/pull/314))
+
 ## [16.0.0]
 
 ### Removed
