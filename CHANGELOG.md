@@ -9,11 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [16.1.1]
 
-### Uncategorized
+### Changed
 
-- feat: Modify provider RPC error log severity from `error` to `warn` ([#323](https://github.com/MetaMask/providers/pull/323))
-- fix(deps): move webextension-polyfill to peerDeps + devDeps ([#319](https://github.com/MetaMask/providers/pull/319))
-- Bump @metamask/json-rpc-engine from 8.0.1 to 8.0.2 ([#317](https://github.com/MetaMask/providers/pull/317))
+- Change provider RPC error log severity from `error` to `warn` ([#323](https://github.com/MetaMask/providers/pull/323))
+
+### Fixed
+
+- Change webextension-polyfill from dependency to peerDependency ([#319](https://github.com/MetaMask/providers/pull/319))
+  - Users are now expected to have the polyfill in their environment
 
 ## [16.1.0]
 
