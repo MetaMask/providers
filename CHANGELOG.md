@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [16.1.1]
+
+### Uncategorized
+
+- feat: Modify provider RPC error log severity from `error` to `warn` ([#323](https://github.com/MetaMask/providers/pull/323))
+- fix(deps): move webextension-polyfill to peerDeps + devDeps ([#319](https://github.com/MetaMask/providers/pull/319))
+- Bump @metamask/json-rpc-engine from 8.0.1 to 8.0.2 ([#317](https://github.com/MetaMask/providers/pull/317))
+
 ## [16.1.0]
 
 ### Added
@@ -392,7 +400,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v16.1.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v16.1.1...HEAD
+[16.1.1]: https://github.com/MetaMask/providers/compare/v16.1.0...v16.1.1
 [16.1.0]: https://github.com/MetaMask/providers/compare/v16.0.0...v16.1.0
 [16.0.0]: https://github.com/MetaMask/providers/compare/v15.0.0...v16.0.0
 [15.0.0]: https://github.com/MetaMask/providers/compare/v14.0.2...v15.0.0
