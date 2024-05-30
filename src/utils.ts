@@ -61,7 +61,7 @@ function createErrorMiddleware(
       if (!error) {
         return done();
       }
-      log.debug(`MetaMask - RPC Error: ${error.message}`, error);
+      log.warn(`MetaMask - RPC Error: ${error.message}`, error);
       return done();
     });
   };
