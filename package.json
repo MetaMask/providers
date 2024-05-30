@@ -70,7 +70,7 @@
     "readable-stream": "^3.6.2"
   },
   "devDependencies": {
-    "@lavamoat/allow-scripts": "^3.0.0",
+    "@lavamoat/allow-scripts": "^3.0.4",
     "@lavamoat/preinstall-always-fail": "^2.0.0",
     "@metamask/auto-changelog": "^3.4.3",
     "@metamask/eslint-config": "^12.2.0",
