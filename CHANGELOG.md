@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [17.0.0]
+
+### Changed
+
+- Change provider RPC error log severity from `error` to `warn` ([#323](https://github.com/MetaMask/providers/pull/323))
+
+### Fixed
+
+- **BREAKING**: Change webextension-polyfill from dependency to peerDependency ([#319](https://github.com/MetaMask/providers/pull/319))
+  - Users are now expected to have the polyfill in their environment
+
 ## [16.1.0]
 
 ### Added
@@ -392,7 +403,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v16.1.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v17.0.0...HEAD
+[17.0.0]: https://github.com/MetaMask/providers/compare/v16.1.0...v17.0.0
 [16.1.0]: https://github.com/MetaMask/providers/compare/v16.0.0...v16.1.0
 [16.0.0]: https://github.com/MetaMask/providers/compare/v15.0.0...v16.0.0
 [15.0.0]: https://github.com/MetaMask/providers/compare/v14.0.2...v15.0.0
