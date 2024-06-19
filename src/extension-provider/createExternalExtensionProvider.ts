@@ -1,5 +1,5 @@
 import { detect } from 'detect-browser';
-import PortStream from 'extension-port-stream';
+import { PortDuplexStream as PortStream } from 'extension-port-stream';
 import type { Duplex } from 'readable-stream';
 import type { Runtime } from 'webextension-polyfill';
 
