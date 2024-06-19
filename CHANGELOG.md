@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [17.0.1]
+
+### Uncategorized
+
+- refactor: Use named `extension-port-stream` import for Vite compatibility ([#331](https://github.com/MetaMask/providers/pull/331))
+- Bump @metamask/utils from 8.4.0 to 8.5.0 ([#329](https://github.com/MetaMask/providers/pull/329))
+- Bump @metamask/rpc-errors from 6.2.1 to 6.3.0 ([#326](https://github.com/MetaMask/providers/pull/326))
+- Bump ws from 8.13.0 to 8.17.1 in the npm_and_yarn group across 1 directory ([#333](https://github.com/MetaMask/providers/pull/333))
+- Bump braces from 3.0.2 to 3.0.3 in the npm_and_yarn group across 1 directory ([#332](https://github.com/MetaMask/providers/pull/332))
+- chore(devdeps): @lavamoat/allow-scripts@^3.0.0->^3.0.4 ([#322](https://github.com/MetaMask/providers/pull/322))
+
 ## [17.0.0]
 
 ### Changed
@@ -403,7 +414,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v17.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v17.0.1...HEAD
+[17.0.1]: https://github.com/MetaMask/providers/compare/v17.0.0...v17.0.1
 [17.0.0]: https://github.com/MetaMask/providers/compare/v16.1.0...v17.0.0
 [16.1.0]: https://github.com/MetaMask/providers/compare/v16.0.0...v16.1.0
 [16.0.0]: https://github.com/MetaMask/providers/compare/v15.0.0...v16.0.0
