@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "@metamask/json-rpc-engine": "^9.0.0",
-    "@metamask/json-rpc-middleware-stream": "^7.0.1",
+    "@metamask/json-rpc-middleware-stream": "^8.0.0",
     "@metamask/object-multiplex": "^2.0.0",
     "@metamask/rpc-errors": "^6.2.1",
     "@metamask/safe-event-emitter": "^3.1.1",
