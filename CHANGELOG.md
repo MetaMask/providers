@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump `@metamask/rpc-errors` from `^6.2.1` to `^6.3.0` ([#326](https://github.com/MetaMask/providers/pull/326))
 
 ### Fixed
+
 - Produce and export ESM-compatible TypeScript type declaration files in addition to CommonJS-compatible declaration files ([#336](https://github.com/MetaMask/providers/pull/336))
   - This fixes the issue of this package being unusable by any TypeScript project that uses `Node16` or `NodeNext` as its `moduleResolution` option.
   - Previously, this package shipped with only one variant of type declaration files, and these files were only CommonJS-compatible, and the `exports` field in `package.json` linked to these files. This is an anti-pattern and was rightfully flagged by the ["Are the Types Wrong?"](https://arethetypeswrong.github.io/) tool as ["masquerading as CJS"](https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/FalseCJS.md). All of the ATTW checks now pass.
