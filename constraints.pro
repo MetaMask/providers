@@ -65,7 +65,6 @@ gen_enforced_field(WorkspaceCwd, 'repository.url', 'https://github.com/MetaMask/
 % The license for the package must be specified.
 gen_enforced_field(WorkspaceCwd, 'license').
 
-% The type definitions entrypoint the package must be `./dist/types/index.d.cts`.
 % The type definitions entrypoint the package must be `./dist/index.d.cts`.
 gen_enforced_field(WorkspaceCwd, 'types', './dist/index.d.cts').
 
