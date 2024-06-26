@@ -9,17 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [17.1.0]
 
-### Uncategorized
+### Changed
 
-- Replace `tsup` with `ts-bridge` as build tool ([#336](https://github.com/MetaMask/providers/pull/336))
-- Bump @metamask/json-rpc-middleware-stream from 7.0.1 to 8.0.0 ([#327](https://github.com/MetaMask/providers/pull/327))
-- Bump @metamask/json-rpc-engine from 8.0.2 to 9.0.0 ([#328](https://github.com/MetaMask/providers/pull/328))
-- refactor: Use named `extension-port-stream` import for Vite compatibility ([#331](https://github.com/MetaMask/providers/pull/331))
-- Bump @metamask/utils from 8.4.0 to 8.5.0 ([#329](https://github.com/MetaMask/providers/pull/329))
-- Bump @metamask/rpc-errors from 6.2.1 to 6.3.0 ([#326](https://github.com/MetaMask/providers/pull/326))
-- Bump ws from 8.13.0 to 8.17.1 in the npm_and_yarn group across 1 directory ([#333](https://github.com/MetaMask/providers/pull/333))
-- Bump braces from 3.0.2 to 3.0.3 in the npm_and_yarn group across 1 directory ([#332](https://github.com/MetaMask/providers/pull/332))
-- chore(devdeps): @lavamoat/allow-scripts@^3.0.0->^3.0.4 ([#322](https://github.com/MetaMask/providers/pull/322))
+- Bump `@metamask/json-rpc-middleware-stream` from `^7.0.1` to `^8.0.0` ([#327](https://github.com/MetaMask/providers/pull/327))
+- Bump `@metamask/json-rpc-engine` from `^8.0.2` to `^9.0.0` ([#328](https://github.com/MetaMask/providers/pull/328))
+- Bump `extension-port-stream` from `^3.0.0` to `^4.1.0` ([#331](https://github.com/MetaMask/providers/pull/331))
+- Bump `@metamask/utils` from `^8.4.0` to `^8.5.0` ([#329](https://github.com/MetaMask/providers/pull/329))
+- Bump `@metamask/rpc-errors` from `^6.2.1` to `^6.3.0` ([#326](https://github.com/MetaMask/providers/pull/326))
+
+### Fixed
+- Produce and export ESM-compatible TypeScript type declaration files in addition to CommonJS-compatible declaration files ([#336](https://github.com/MetaMask/providers/pull/336))
+  - This fixes the issue of this package being unusable by any TypeScript project that uses `Node16` or `NodeNext` as its `moduleResolution` option.
+  - Previously, this package shipped with only one variant of type declaration files, and these files were only CommonJS-compatible, and the `exports` field in `package.json` linked to these files. This is an anti-pattern and was rightfully flagged by the ["Are the Types Wrong?"](https://arethetypeswrong.github.io/) tool as ["masquerading as CJS"](https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/FalseCJS.md). All of the ATTW checks now pass.
+- Remove chunk files ([#336](https://github.com/MetaMask/providers/pull/336)).
+  - Previously, the build tool we used to generate JavaScript files extracted common code to "chunk" files. While this was intended to make this package more tree-shakeable, it also made debugging more difficult for our development teams. These chunk files are no longer present.
+- Use named `extension-port-stream` import to ensure compatibility with bundlers such as Vite ([#331](https://github.com/MetaMask/providers/pull/331))
 
 ## [17.0.0]
 
