@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [17.1.0]
+
+### Changed
+
+- Bump `@metamask/json-rpc-middleware-stream` from `^7.0.1` to `^8.0.0` ([#327](https://github.com/MetaMask/providers/pull/327))
+- Bump `@metamask/json-rpc-engine` from `^8.0.2` to `^9.0.0` ([#328](https://github.com/MetaMask/providers/pull/328))
+- Bump `extension-port-stream` from `^3.0.0` to `^4.1.0` ([#331](https://github.com/MetaMask/providers/pull/331))
+- Bump `@metamask/utils` from `^8.4.0` to `^8.5.0` ([#329](https://github.com/MetaMask/providers/pull/329))
+- Bump `@metamask/rpc-errors` from `^6.2.1` to `^6.3.0` ([#326](https://github.com/MetaMask/providers/pull/326))
+
+### Fixed
+
+- Produce and export ESM-compatible TypeScript type declaration files in addition to CommonJS-compatible declaration files ([#336](https://github.com/MetaMask/providers/pull/336))
+  - This fixes the issue of this package being unusable by any TypeScript project that uses `Node16` or `NodeNext` as its `moduleResolution` option.
+  - Previously, this package shipped with only one variant of type declaration files, and these files were only CommonJS-compatible, and the `exports` field in `package.json` linked to these files. This is an anti-pattern and was rightfully flagged by the ["Are the Types Wrong?"](https://arethetypeswrong.github.io/) tool as ["masquerading as CJS"](https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/FalseCJS.md).
+- Remove chunk files ([#336](https://github.com/MetaMask/providers/pull/336)).
+  - Previously, the build tool we used to generate JavaScript files extracted common code to "chunk" files. While this was intended to make this package more tree-shakeable, it also made debugging more difficult for our development teams. These chunk files are no longer present.
+- Use named `extension-port-stream` import to ensure compatibility with bundlers such as Vite ([#331](https://github.com/MetaMask/providers/pull/331))
+
 ## [17.0.0]
 
 ### Changed
@@ -403,7 +422,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v17.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v17.1.0...HEAD
+[17.1.0]: https://github.com/MetaMask/providers/compare/v17.0.0...v17.1.0
 [17.0.0]: https://github.com/MetaMask/providers/compare/v16.1.0...v17.0.0
 [16.1.0]: https://github.com/MetaMask/providers/compare/v16.0.0...v16.1.0
 [16.0.0]: https://github.com/MetaMask/providers/compare/v15.0.0...v16.0.0
