@@ -3,7 +3,7 @@ import { PortDuplexStream as PortStream } from 'extension-port-stream';
 import type { Duplex } from 'readable-stream';
 import type { Runtime } from 'webextension-polyfill';
 
-import config from './external-extension-config.json';
+import config from './external-extension-config';
 import { MetaMaskInpageProviderStreamName } from '../MetaMaskInpageProvider';
 import { StreamProvider } from '../StreamProvider';
 import { getDefaultExternalMiddleware } from '../utils';

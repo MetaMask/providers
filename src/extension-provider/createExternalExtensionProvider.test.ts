@@ -1,7 +1,7 @@
 import type { JsonRpcRequest } from '@metamask/utils';
 
 import { createExternalExtensionProvider } from './createExternalExtensionProvider';
-import config from './external-extension-config.json';
+import config from './external-extension-config';
 import { MockPort } from '../../test/mocks/MockPort';
 import type { BaseProvider } from '../BaseProvider';
 import messages from '../messages';
