@@ -4,6 +4,11 @@
     "beta": "pbbkamfgmaedccnfkmjcofcecjhfgldn",
     "flask": "ljfoeinjpaedjfecbmggjgodbgkmjkjk"
   },
+  "edgeChromiumIds": {
+    "stable": "ejbalbakoplchlghecdalmeeeajnimhm",
+    "beta": "pbbkamfgmaedccnfkmjcofcecjhfgldn",
+    "flask": "ljfoeinjpaedjfecbmggjgodbgkmjkjk"
+  },
   "firefoxIds": {
     "stable": "webextension@metamask.io",
     "beta": "webextension-beta@metamask.io",
