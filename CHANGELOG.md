@@ -9,11 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [17.1.1]
 
-### Uncategorized
+### Changed
 
-- Bump `@metamask/utils` to `^9.0.0`, bump `@metamask/{json-rpc-engine,json-rpc-middleware-stream,rpc-errors}` ([#345](https://github.com/MetaMask/providers/pull/345))
-- Bump `@ts-bridge/cli` to `^0.2.0` ([#343](https://github.com/MetaMask/providers/pull/343))
-- Bump @metamask/superstruct from 3.0.0 to 3.1.0 ([#338](https://github.com/MetaMask/providers/pull/338))
+- Bump `@metamask/json-rpc-engine` to `^9.0.1` ([#345](https://github.com/MetaMask/providers/pull/345))
+- Bump `@metamask/json-rpc-middleware-stream` to `^8.0.1` ([#345](https://github.com/MetaMask/providers/pull/345))
+- Bump `@metamask/rpc-errors` to `^6.3.1` ([#345](https://github.com/MetaMask/providers/pull/345))
+- Bump `@metamask/superstruct` to `^3.1.0` ([#338](https://github.com/MetaMask/providers/pull/338))
+- Bump `@metamask/utils` to `^9.0.0` ([#345](https://github.com/MetaMask/providers/pull/345))
+
+### Fixed
+
+- Bump devDependency `@ts-bridge/cli` to `^0.2.0` ([#343](https://github.com/MetaMask/providers/pull/343))
+  - Fixes incorrect handling of `json` file imports, where an extension was appended to the file name after compilation (e.g. `*.json.cjs` or `*.json.mjs`).
 
 ## [17.1.0]
 
