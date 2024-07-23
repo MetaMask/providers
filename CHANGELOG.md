@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [17.1.2]
+
+### Uncategorized
+
+- Bump @metamask/utils from 9.0.0 to 9.1.0 ([#348](https://github.com/MetaMask/providers/pull/348))
+- Add `/stream-provider` export ([#351](https://github.com/MetaMask/providers/pull/351))
+
 ## [17.1.1]
 
 ### Changed
@@ -437,7 +444,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v17.1.1...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v17.1.2...HEAD
+[17.1.2]: https://github.com/MetaMask/providers/compare/v17.1.1...v17.1.2
 [17.1.1]: https://github.com/MetaMask/providers/compare/v17.1.0...v17.1.1
 [17.1.0]: https://github.com/MetaMask/providers/compare/v17.0.0...v17.1.0
 [17.0.0]: https://github.com/MetaMask/providers/compare/v16.1.0...v17.0.0
