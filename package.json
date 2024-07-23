@@ -39,13 +39,24 @@
         "default": "./dist/StreamProvider.cjs"
       }
     },
+    "./stream-provider": {
+      "import": {
+        "types": "./dist/StreamProvider.d.mts",
+        "default": "./dist/StreamProvider.mjs"
+      },
+      "require": {
+        "types": "./dist/StreamProvider.d.cts",
+        "default": "./dist/StreamProvider.cjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.cts",
   "files": [
-    "dist"
+    "dist",
+    "stream-provider.js"
   ],
   "scripts": {
     "build": "ts-bridge --project tsconfig.build.json --clean",

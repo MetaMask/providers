@@ -82,7 +82,7 @@ gen_enforced_field(WorkspaceCwd, 'exports["./package.json"]', './package.json').
 
 % The list of files included in the package must only include files generated
 % during the build step.
-gen_enforced_field(WorkspaceCwd, 'files', ['dist']).
+gen_enforced_field(WorkspaceCwd, 'files', ['dist', 'stream-provider.js']).
 
 % If a dependency is listed under "dependencies", it should not be listed under
 % "devDependencies".
