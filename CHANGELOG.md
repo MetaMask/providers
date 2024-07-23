@@ -9,10 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [17.1.2]
 
-### Uncategorized
+### Added
 
-- Bump @metamask/utils from 9.0.0 to 9.1.0 ([#348](https://github.com/MetaMask/providers/pull/348))
-- Add `/stream-provider` export ([#351](https://github.com/MetaMask/providers/pull/351))
+- Add `@metamask/providers/stream-provider` export ([#351](https://github.com/MetaMask/providers/pull/351))
+  - This replaces the `@metamask/providers/dist/StreamProvider` export. It still exists for backwards compatibility, but will be removed in a future major release.
+
+### Changed
+
+- Bump `@metamask/utils` from `9.0.0` to `9.1.0` ([#348](https://github.com/MetaMask/providers/pull/348))
 
 ## [17.1.1]
 
