@@ -1037,16 +1037,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/eslint-config-typescript@npm:^12.1.0":
-  version: 12.1.0
-  resolution: "@metamask/eslint-config-typescript@npm:12.1.0"
+"@metamask/eslint-config-typescript@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@metamask/eslint-config-typescript@npm:13.0.0"
   peerDependencies:
-    "@metamask/eslint-config": ^12.0.0
-    "@typescript-eslint/eslint-plugin": ^5.42.1
-    "@typescript-eslint/parser": ^5.42.1
-    eslint: ^8.27.0
-    typescript: ~4.8.4 || ~5.0 || ~5.1
-  checksum: a854574e4c2ca7b036d0a2a454aecb93ba538d1b92c1615878dfe06a14972df6af2fcdd5e2911ef369b3b2eeb04b8c6879bd037c618a35f6cb98950cdab84d50
+    "@metamask/eslint-config": ^13.0.0
+    "@typescript-eslint/eslint-plugin": ^8.1.0
+    "@typescript-eslint/parser": ^8.1.0
+    eslint: ^8.57.0
+    typescript: ">=4.8.4 <5.6"
+  checksum: d05f1be8f86edbaf6961176379939a1e4a0f51bc7c32430589b25333726372cea56b9e5af00a735f248ac4424aa10496989fc92e32bfc3194a963fd3c5d0fde5
   languageName: node
   linkType: hard
 
@@ -1108,7 +1108,7 @@ __metadata:
     "@metamask/eslint-config": ^12.2.0
     "@metamask/eslint-config-jest": ^12.1.0
     "@metamask/eslint-config-nodejs": ^12.1.0
-    "@metamask/eslint-config-typescript": ^12.1.0
+    "@metamask/eslint-config-typescript": ^13.0.0
     "@metamask/json-rpc-engine": ^9.0.1
     "@metamask/json-rpc-middleware-stream": ^8.0.1
     "@metamask/object-multiplex": ^2.0.0
