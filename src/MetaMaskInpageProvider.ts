@@ -34,10 +34,6 @@ export type MetaMaskInpageProviderOptions = {
 } & Partial<Omit<StreamProviderOptions, 'rpcMiddleware'>>;
 
 type SentWarningsState = {
-  // properties
-  chainId: boolean;
-  networkVersion: boolean;
-  selectedAddress: boolean;
   // methods
   enable: boolean;
   experimentalMethods: boolean;
@@ -58,10 +54,6 @@ export const MetaMaskInpageProviderStreamName = 'metamask-provider';
 
 export class MetaMaskInpageProvider extends AbstractStreamProvider {
   protected _sentWarnings: SentWarningsState = {
-    // properties
-    chainId: false,
-    networkVersion: false,
-    selectedAddress: false,
     // methods
     enable: false,
     experimentalMethods: false,
@@ -167,30 +159,18 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   }
 
   //====================
-  // Deprecated Properties
+  // Read-only Properties
   //====================
 
   get chainId(): string | null {
-    if (!this._sentWarnings.chainId) {
-      this._log.warn(messages.warnings.chainIdDeprecation);
-      this._sentWarnings.chainId = true;
-    }
     return super.chainId;
   }
 
   get networkVersion(): string | null {
-    if (!this._sentWarnings.networkVersion) {
-      this._log.warn(messages.warnings.networkVersionDeprecation);
-      this._sentWarnings.networkVersion = true;
-    }
     return this.#networkVersion;
   }
 
   get selectedAddress(): string | null {
-    if (!this._sentWarnings.selectedAddress) {
-      this._log.warn(messages.warnings.selectedAddressDeprecation);
-      this._sentWarnings.selectedAddress = true;
-    }
     return super.selectedAddress;
   }
 
