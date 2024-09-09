@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [17.2.0]
+
+### Uncategorized
+
+- Remove deprecated properties warning ([#360](https://github.com/MetaMask/providers/pull/360))
+- Bump @metamask/utils from 9.1.0 to 9.2.1 ([#357](https://github.com/MetaMask/providers/pull/357))
+- Bump micromatch from 4.0.5 to 4.0.8 in the npm_and_yarn group ([#359](https://github.com/MetaMask/providers/pull/359))
+
 ## [17.1.2]
 
 ### Added
@@ -448,7 +456,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v17.1.2...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v17.2.0...HEAD
+[17.2.0]: https://github.com/MetaMask/providers/compare/v17.1.2...v17.2.0
 [17.1.2]: https://github.com/MetaMask/providers/compare/v17.1.1...v17.1.2
 [17.1.1]: https://github.com/MetaMask/providers/compare/v17.1.0...v17.1.1
 [17.1.0]: https://github.com/MetaMask/providers/compare/v17.0.0...v17.1.0
