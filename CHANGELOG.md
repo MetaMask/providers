@@ -9,11 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [17.2.0]
 
-### Uncategorized
+### Changed
 
-- Remove deprecated properties warning ([#360](https://github.com/MetaMask/providers/pull/360))
 - Bump @metamask/utils from 9.1.0 to 9.2.1 ([#357](https://github.com/MetaMask/providers/pull/357))
 - Bump micromatch from 4.0.5 to 4.0.8 in the npm_and_yarn group ([#359](https://github.com/MetaMask/providers/pull/359))
+
+### Removed
+
+- Remove deprecation console warnings when accessing `window.ethereum.chainId`, `window.ethereum.networkVersion`, and `window.ethereum.selectedAddress` ([#360](https://github.com/MetaMask/providers/pull/360))
 
 ## [17.1.2]
 
