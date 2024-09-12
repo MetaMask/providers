@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [17.2.1]
+
 ### Fixed
 
-- Added support for edge-chromium to `createExternalExtensionProvider` ([#318](https://github.com/MetaMask/providers/pull/318))
+- Add support for edge-chromium to `createExternalExtensionProvider` ([#318](https://github.com/MetaMask/providers/pull/318), [#368](https://github.com/MetaMask/providers/pull/368))
+- Fix ESM-related build issues ([#362](https://github.com/MetaMask/providers/pull/362), [#363](https://github.com/MetaMask/providers/pull/363))
 
 ## [17.2.0]
 
@@ -463,7 +466,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v17.2.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v17.2.1...HEAD
+[17.2.1]: https://github.com/MetaMask/providers/compare/v17.2.0...v17.2.1
 [17.2.0]: https://github.com/MetaMask/providers/compare/v17.1.2...v17.2.0
 [17.1.2]: https://github.com/MetaMask/providers/compare/v17.1.1...v17.1.2
 [17.1.1]: https://github.com/MetaMask/providers/compare/v17.1.0...v17.1.1
