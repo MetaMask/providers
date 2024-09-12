@@ -1115,7 +1115,7 @@ __metadata:
     "@metamask/rpc-errors": ^6.3.1
     "@metamask/safe-event-emitter": ^3.1.1
     "@metamask/utils": ^9.0.0
-    "@ts-bridge/cli": ^0.5.0
+    "@ts-bridge/cli": ^0.5.1
     "@types/chrome": ^0.0.233
     "@types/jest": ^28.1.6
     "@types/node": ^20.14.9
@@ -1453,9 +1453,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ts-bridge/cli@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "@ts-bridge/cli@npm:0.5.0"
+"@ts-bridge/cli@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "@ts-bridge/cli@npm:0.5.1"
   dependencies:
     "@ts-bridge/resolver": ^0.1.2
     chalk: ^5.3.0
@@ -1466,7 +1466,7 @@ __metadata:
   bin:
     ts-bridge: ./dist/index.js
     tsbridge: ./dist/index.js
-  checksum: d70726dd4d70dded1db35a415686627ba228363790f59afa44a1aaa5c5c341bc1ee4d831869ab5a9a53b90c79e68795db0c45432229096ea3a4c9d83bbea76bd
+  checksum: 8c07137e79f376c760022cda84af42d6e63a6751913260f5c04f42cc00f2e945c0d62f1609b040adc1d3cce0524ca024ce1e40cd4fa791334cd5a81a3841de8d
   languageName: node
   linkType: hard
 

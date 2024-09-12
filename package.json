@@ -98,7 +98,7 @@
     "@metamask/eslint-config-jest": "^12.1.0",
     "@metamask/eslint-config-nodejs": "^12.1.0",
     "@metamask/eslint-config-typescript": "^12.1.0",
-    "@ts-bridge/cli": "^0.5.0",
+    "@ts-bridge/cli": "^0.5.1",
     "@types/chrome": "^0.0.233",
     "@types/jest": "^28.1.6",
     "@types/node": "^20.14.9",
