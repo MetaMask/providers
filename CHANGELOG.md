@@ -11,6 +11,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added support for edge-chromium to `createExternalExtensionProvider` ([#318](https://github.com/MetaMask/providers/pull/318))
 
+## [17.2.0]
+
+### Changed
+
+- Bump @metamask/utils from 9.1.0 to 9.2.1 ([#357](https://github.com/MetaMask/providers/pull/357))
+- Bump micromatch from 4.0.5 to 4.0.8 in the npm_and_yarn group ([#359](https://github.com/MetaMask/providers/pull/359))
+
+### Removed
+
+- Remove deprecation console warnings when accessing `window.ethereum.chainId`, `window.ethereum.networkVersion`, and `window.ethereum.selectedAddress` ([#360](https://github.com/MetaMask/providers/pull/360))
+
+## [17.1.2]
+
+### Added
+
+- Add `@metamask/providers/stream-provider` export ([#351](https://github.com/MetaMask/providers/pull/351))
+  - This replaces the `@metamask/providers/dist/StreamProvider` export. It still exists for backwards compatibility, but will be removed in a future major release.
+
+### Changed
+
+- Bump `@metamask/utils` from `9.0.0` to `9.1.0` ([#348](https://github.com/MetaMask/providers/pull/348))
+
+## [17.1.1]
+
+### Changed
+
+- Bump `@metamask/json-rpc-engine` to `^9.0.1` ([#345](https://github.com/MetaMask/providers/pull/345))
+- Bump `@metamask/json-rpc-middleware-stream` to `^8.0.1` ([#345](https://github.com/MetaMask/providers/pull/345))
+- Bump `@metamask/rpc-errors` to `^6.3.1` ([#345](https://github.com/MetaMask/providers/pull/345))
+- Bump `@metamask/superstruct` to `^3.1.0` ([#338](https://github.com/MetaMask/providers/pull/338))
+- Bump `@metamask/utils` to `^9.0.0` ([#345](https://github.com/MetaMask/providers/pull/345))
+
+### Fixed
+
+- Bump devDependency `@ts-bridge/cli` to `^0.2.0` ([#343](https://github.com/MetaMask/providers/pull/343))
+  - Fixes incorrect handling of `json` file imports, where an extension was appended to the file name after compilation (e.g. `*.json.cjs` or `*.json.mjs`).
+
 ## [17.1.0]
 
 ### Changed
@@ -426,7 +463,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v17.1.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v17.2.0...HEAD
+[17.2.0]: https://github.com/MetaMask/providers/compare/v17.1.2...v17.2.0
+[17.1.2]: https://github.com/MetaMask/providers/compare/v17.1.1...v17.1.2
+[17.1.1]: https://github.com/MetaMask/providers/compare/v17.1.0...v17.1.1
 [17.1.0]: https://github.com/MetaMask/providers/compare/v17.0.0...v17.1.0
 [17.0.0]: https://github.com/MetaMask/providers/compare/v16.1.0...v17.0.0
 [16.1.0]: https://github.com/MetaMask/providers/compare/v16.0.0...v16.1.0
