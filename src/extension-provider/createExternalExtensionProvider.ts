@@ -55,9 +55,10 @@ export function createExternalExtensionProvider(
 function getExtensionId(typeOrId: ExtensionType) {
   let ids: {
     stable: string;
-    beta: string;
-    flask: string;
+    beta?: string;
+    flask?: string;
   };
+
   switch (browser?.name) {
     case 'edge-chromium':
       ids = config.edgeChromiumIds;
@@ -68,5 +69,6 @@ function getExtensionId(typeOrId: ExtensionType) {
     default:
       ids = config.chromeIds;
   }
+
   return ids[typeOrId as keyof typeof ids] ?? typeOrId;
 }
