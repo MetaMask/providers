@@ -5,9 +5,7 @@
     "flask": "ljfoeinjpaedjfecbmggjgodbgkmjkjk"
   },
   "edgeChromiumIds": {
-    "stable": "ejbalbakoplchlghecdalmeeeajnimhm",
-    "beta": "pbbkamfgmaedccnfkmjcofcecjhfgldn",
-    "flask": "ljfoeinjpaedjfecbmggjgodbgkmjkjk"
+    "stable": "ejbalbakoplchlghecdalmeeeajnimhm"
   },
   "firefoxIds": {
     "stable": "webextension@metamask.io",
