@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Added support for edge-chromium to `createExternalExtensionProvider` ([#318](https://github.com/MetaMask/providers/pull/318))
+
 ## [17.2.0]
 
 ### Changed
