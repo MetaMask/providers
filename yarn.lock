@@ -1112,7 +1112,7 @@ __metadata:
     "@metamask/json-rpc-engine": ^9.0.1
     "@metamask/json-rpc-middleware-stream": ^8.0.1
     "@metamask/object-multiplex": ^2.0.0
-    "@metamask/rpc-errors": ^6.3.1
+    "@metamask/rpc-errors": ^7.0.0
     "@metamask/safe-event-emitter": ^3.1.1
     "@metamask/utils": ^9.0.0
     "@ts-bridge/cli": ^0.5.1
@@ -1161,6 +1161,16 @@ __metadata:
     "@metamask/utils": ^9.0.0
     fast-safe-stringify: ^2.0.6
   checksum: d0c77097f4d6ff0bafc4e4c915285c4320bdd119ef79f1833ec208deaeeb755500efefbb422f39210801b1061963449431d2e19715a5eb3d06ce0b5c150a75a1
+  languageName: node
+  linkType: hard
+
+"@metamask/rpc-errors@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@metamask/rpc-errors@npm:7.0.0"
+  dependencies:
+    "@metamask/utils": ^9.0.0
+    fast-safe-stringify: ^2.0.6
+  checksum: 07984f473e9e7c0f57abee53de8da282d113b3e293453858f44b58a43706486b36dfbe2f46de4a92324797a53730f410d32c382f138ef015e250efacb7de2081
   languageName: node
   linkType: hard
 
