@@ -475,6 +475,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@eslint/js@npm:^9.11.0":
+  version: 9.12.0
+  resolution: "@eslint/js@npm:9.12.0"
+  checksum: cad2ee0d3080a3e507e18f1846e343d4dac00cb83b0c56355fa165b05fa0780ad746e0b93540666036e50b4cf4a4ee496a730417e500dc217c201902edd7ab5b
+  languageName: node
+  linkType: hard
+
 "@ethereumjs/common@npm:^3.2.0":
   version: 3.2.0
   resolution: "@ethereumjs/common@npm:3.2.0"
@@ -1015,14 +1022,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/eslint-config-jest@npm:^12.1.0":
-  version: 12.1.0
-  resolution: "@metamask/eslint-config-jest@npm:12.1.0"
+"@metamask/eslint-config-jest@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "@metamask/eslint-config-jest@npm:14.0.0"
+  dependencies:
+    "@eslint/js": ^9.11.0
+    globals: ^15.9.0
   peerDependencies:
-    "@metamask/eslint-config": ^12.0.0
-    eslint: ^8.27.0
-    eslint-plugin-jest: ^27.1.5
-  checksum: 98f60234412051d429237dbf32b147a648a0e3b6adacafda24999ec9eb8096155c8000c62204415100c97980cc3bfe0a0fe19e4c318b8bb529eaf57e9f96e680
+    "@metamask/eslint-config": ^14.0.0
+    eslint: ^9.11.0
+    eslint-plugin-jest: ^28.8.3
+  checksum: e7c4f14ff8eae8c1311cd1a941217c39bacf249650b1953138a958472af609a8396722e7b1a0c86386d07f92d7570c3e29754335fe4ef8608a9abf03c7aff6fb
   languageName: node
   linkType: hard
 
@@ -1106,7 +1116,7 @@ __metadata:
     "@lavamoat/preinstall-always-fail": ^2.0.0
     "@metamask/auto-changelog": ^3.4.3
     "@metamask/eslint-config": ^12.2.0
-    "@metamask/eslint-config-jest": ^12.1.0
+    "@metamask/eslint-config-jest": ^14.0.0
     "@metamask/eslint-config-nodejs": ^12.1.0
     "@metamask/eslint-config-typescript": ^12.1.0
     "@metamask/json-rpc-engine": ^9.0.1
@@ -4001,6 +4011,13 @@ __metadata:
   dependencies:
     type-fest: ^0.20.2
   checksum: ad1ecf914bd051325faad281d02ea2c0b1df5d01bd94d368dcc5513340eac41d14b3c61af325768e3c7f8d44576e72780ec0b6f2d366121f8eec6e03c3a3b97a
+  languageName: node
+  linkType: hard
+
+"globals@npm:^15.9.0":
+  version: 15.11.0
+  resolution: "globals@npm:15.11.0"
+  checksum: ef32d5ef987f3d4b47fc2e389a0b235f6a46f605160c4e405722fd7b576106ca407cb867e66fd1e0fc43b631800e2e2e71847f37691026d813f96f40339da702
   languageName: node
   linkType: hard
 
