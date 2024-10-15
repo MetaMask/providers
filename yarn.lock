@@ -1000,18 +1000,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/auto-changelog@npm:^3.4.3":
-  version: 3.4.4
-  resolution: "@metamask/auto-changelog@npm:3.4.4"
+"@metamask/auto-changelog@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@metamask/auto-changelog@npm:4.0.0"
   dependencies:
     diff: ^5.0.0
     execa: ^5.1.1
-    prettier: ^2.8.8
     semver: ^7.3.5
     yargs: ^17.0.1
+  peerDependencies:
+    prettier: ">=3.0.0"
   bin:
     auto-changelog: dist/cli.js
-  checksum: 4876ab3ec98f6d0c00a0679f9e44e1ee79d335ae97e18336a638ac19484cac30d2f3750e6875121ee07b0da128f8609490bed0e195c8153c2b74866f34e405ed
+  checksum: 918275babb1dd5dfcb47e9a0d0e5e896ab0e6696d6cf67b7af9fce996d9d7db2d6117208f1ff8ad09588602e0829b76d3b0bdf5208975c77ec91b9c26854382d
   languageName: node
   linkType: hard
 
@@ -1104,7 +1105,7 @@ __metadata:
   dependencies:
     "@lavamoat/allow-scripts": ^3.0.4
     "@lavamoat/preinstall-always-fail": ^2.0.0
-    "@metamask/auto-changelog": ^3.4.3
+    "@metamask/auto-changelog": ^4.0.0
     "@metamask/eslint-config": ^12.2.0
     "@metamask/eslint-config-jest": ^12.1.0
     "@metamask/eslint-config-nodejs": ^12.1.0
@@ -6328,7 +6329,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.7.1, prettier@npm:^2.8.8":
+"prettier@npm:^2.7.1":
   version: 2.8.8
   resolution: "prettier@npm:2.8.8"
   bin:
