@@ -138,7 +138,7 @@ describe('createRpcWarningMiddleware', () => {
           method,
         })) as JsonRpcFailure;
 
-        expect(result.error.message).toBe('Internal JSON-RPC error.');
+        expect(result.error.message).toBe('Failure!');
       });
     },
   );
@@ -194,7 +194,7 @@ describe('createRpcWarningMiddleware', () => {
         params,
       } as JsonRpcRequest)) as JsonRpcFailure;
 
-      expect(result.error.message).toBe('Internal JSON-RPC error.');
+      expect(result.error.message).toBe('Failure!');
     });
   });
 });
