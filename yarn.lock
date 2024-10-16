@@ -1065,26 +1065,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/json-rpc-engine@npm:^9.0.1, @metamask/json-rpc-engine@npm:^9.0.3":
-  version: 9.0.3
-  resolution: "@metamask/json-rpc-engine@npm:9.0.3"
+"@metamask/json-rpc-engine@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "@metamask/json-rpc-engine@npm:10.0.0"
   dependencies:
-    "@metamask/rpc-errors": ^6.3.1
+    "@metamask/rpc-errors": ^7.0.0
     "@metamask/safe-event-emitter": ^3.0.0
     "@metamask/utils": ^9.1.0
-  checksum: 519680dccba47bde30b1d8733765d4ebeb489e950b24b09d885b394eacd8e8a29d76c601be72021491c38bd0fc188d76eddcfaf81835ea053c1696f2367865ab
+  checksum: 0ed1cabe62774d7140c7e27b4485d0a536a95194628ab90f6543cdd7e0a80b80e2789929900c161728b25fb29782d048a18c981d728516e643f4b3be4d971663
   languageName: node
   linkType: hard
 
-"@metamask/json-rpc-middleware-stream@npm:^8.0.1":
-  version: 8.0.3
-  resolution: "@metamask/json-rpc-middleware-stream@npm:8.0.3"
+"@metamask/json-rpc-middleware-stream@npm:^8.0.4":
+  version: 8.0.4
+  resolution: "@metamask/json-rpc-middleware-stream@npm:8.0.4"
   dependencies:
-    "@metamask/json-rpc-engine": ^9.0.3
+    "@metamask/json-rpc-engine": ^10.0.0
     "@metamask/safe-event-emitter": ^3.0.0
     "@metamask/utils": ^9.1.0
     readable-stream: ^3.6.2
-  checksum: d396bedc119259b6507449d52df30f62be131f42d85f6bfb556ea920cbd92711f9dd94f20c9a8600f0f0d385dfdf7c4c0f71cdd896fb8c3463ee48689ee51ce4
+  checksum: 36ca3881d6900c4f00ba0c671f006f275401e6bee5555da20cf2fda897d01f9ef4e5346b83c97824ab9f4bd8b877b39083b236c5e5843b32e01368574247f7f7
   languageName: node
   linkType: hard
 
@@ -1109,8 +1109,8 @@ __metadata:
     "@metamask/eslint-config-jest": ^12.1.0
     "@metamask/eslint-config-nodejs": ^12.1.0
     "@metamask/eslint-config-typescript": ^12.1.0
-    "@metamask/json-rpc-engine": ^9.0.1
-    "@metamask/json-rpc-middleware-stream": ^8.0.1
+    "@metamask/json-rpc-engine": ^10.0.0
+    "@metamask/json-rpc-middleware-stream": ^8.0.4
     "@metamask/object-multiplex": ^2.0.0
     "@metamask/rpc-errors": ^7.0.0
     "@metamask/safe-event-emitter": ^3.1.1
@@ -1153,16 +1153,6 @@ __metadata:
     webextension-polyfill: ^0.10.0 || ^0.11.0 || ^0.12.0
   languageName: unknown
   linkType: soft
-
-"@metamask/rpc-errors@npm:^6.3.1":
-  version: 6.4.0
-  resolution: "@metamask/rpc-errors@npm:6.4.0"
-  dependencies:
-    "@metamask/utils": ^9.0.0
-    fast-safe-stringify: ^2.0.6
-  checksum: d0c77097f4d6ff0bafc4e4c915285c4320bdd119ef79f1833ec208deaeeb755500efefbb422f39210801b1061963449431d2e19715a5eb3d06ce0b5c150a75a1
-  languageName: node
-  linkType: hard
 
 "@metamask/rpc-errors@npm:^7.0.0":
   version: 7.0.0
