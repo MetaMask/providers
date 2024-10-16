@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [18.0.0]
+
+### Uncategorized
+
+- deps: @metamask/json-rpc-engine@^9.0.1->^10.0.0 ([#378](https://github.com/MetaMask/providers/pull/378))
+- Bump @metamask/object-multiplex from 2.0.0 to 2.1.0 ([#375](https://github.com/MetaMask/providers/pull/375))
+- Bump @metamask/utils from 9.2.1 to 9.3.0 ([#370](https://github.com/MetaMask/providers/pull/370))
+- Bump @metamask/rpc-errors from 6.4.0 to 7.0.0 ([#373](https://github.com/MetaMask/providers/pull/373))
+
 ## [17.2.1]
 
 ### Fixed
@@ -466,7 +475,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v17.2.1...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v18.0.0...HEAD
+[18.0.0]: https://github.com/MetaMask/providers/compare/v17.2.1...v18.0.0
 [17.2.1]: https://github.com/MetaMask/providers/compare/v17.2.0...v17.2.1
 [17.2.0]: https://github.com/MetaMask/providers/compare/v17.1.2...v17.2.0
 [17.1.2]: https://github.com/MetaMask/providers/compare/v17.1.1...v17.1.2
