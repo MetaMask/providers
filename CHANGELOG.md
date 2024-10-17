@@ -9,12 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [18.0.0]
 
-### Uncategorized
+### Changed
 
-- deps: @metamask/json-rpc-engine@^9.0.1->^10.0.0 ([#378](https://github.com/MetaMask/providers/pull/378))
-- Bump @metamask/object-multiplex from 2.0.0 to 2.1.0 ([#375](https://github.com/MetaMask/providers/pull/375))
-- Bump @metamask/utils from 9.2.1 to 9.3.0 ([#370](https://github.com/MetaMask/providers/pull/370))
-- Bump @metamask/rpc-errors from 6.4.0 to 7.0.0 ([#373](https://github.com/MetaMask/providers/pull/373))
+- **BREAKING**: Bump `@metamask/json-rpc-engine` from `^9.0.1` to `^10.0.0` ([#378](https://github.com/MetaMask/providers/pull/378))
+- **BREAKING**: Bump `@metamask/rpc-errors` from `^6.4.0` to `^7.0.0` ([#373](https://github.com/MetaMask/providers/pull/373))
+- Bump @metamask/object-multiplex from `^2.0.0` to `^2.1.0` ([#375](https://github.com/MetaMask/providers/pull/375))
+- Bump @metamask/utils from `^9.2.1` to `^9.3.0` ([#370](https://github.com/MetaMask/providers/pull/370))
 
 ## [17.2.1]
 
