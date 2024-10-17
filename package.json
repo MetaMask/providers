@@ -39,6 +39,16 @@
         "default": "./dist/StreamProvider.cjs"
       }
     },
+    "./dist/initializeInpageProvider": {
+      "import": {
+        "types": "./dist/initializeInpageProvider.d.mts",
+        "default": "./dist/initializeInpageProvider.mjs"
+      },
+      "require": {
+        "types": "./dist/initializeInpageProvider.d.cts",
+        "default": "./dist/initializeInpageProvider.cjs"
+      }
+    },
     "./stream-provider": {
       "import": {
         "types": "./dist/StreamProvider.d.mts",
