@@ -52,6 +52,9 @@ export function initializeProvider({
   shouldSetOnWindow = true,
   shouldShimWeb3 = false,
 }: InitializeProviderOptions): MetaMaskInpageProvider {
+  if (!jsonRpcStreamName) {
+    throw new Error('Required paramater: jsonRpcStreamName');
+  }
   const provider = new MetaMaskInpageProvider(connectionStream, {
     jsonRpcStreamName,
     logger,
