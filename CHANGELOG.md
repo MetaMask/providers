@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [18.1.0]
 
+### Added
+
+- Add intializeInpageProvider as package export ([#380](https://github.com/MetaMask/providers/pull/380))
+
 ### Fixed
 
 - Remove spurious typescript reference ([#381](https://github.com/MetaMask/providers/pull/381))
