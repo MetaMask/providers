@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [18.1.0]
 
-### Uncategorized
+### Fixed
 
-- devDeps: typescript@~5.3.3->~5.6.3 ([#381](https://github.com/MetaMask/providers/pull/381))
+- Remove spurious typescript reference ([#381](https://github.com/MetaMask/providers/pull/381))
 
 ## [18.0.0]
 
