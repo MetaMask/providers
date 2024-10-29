@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [18.1.1]
+
+### Uncategorized
+
+- Bump MetaMask dependencies ([#385](https://github.com/MetaMask/providers/pull/385))
+- Bump @metamask/rpc-errors from 7.0.0 to 7.0.1 ([#384](https://github.com/MetaMask/providers/pull/384))
+- Bump @metamask/safe-event-emitter from 3.1.1 to 3.1.2 ([#383](https://github.com/MetaMask/providers/pull/383))
+
 ## [18.1.0]
 
 ### Added
@@ -485,7 +493,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v18.1.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v18.1.1...HEAD
+[18.1.1]: https://github.com/MetaMask/providers/compare/v18.1.0...v18.1.1
 [18.1.0]: https://github.com/MetaMask/providers/compare/v18.0.0...v18.1.0
 [18.0.0]: https://github.com/MetaMask/providers/compare/v17.2.1...v18.0.0
 [17.2.1]: https://github.com/MetaMask/providers/compare/v17.2.0...v17.2.1
