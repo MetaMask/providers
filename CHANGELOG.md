@@ -9,11 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [18.1.1]
 
-### Uncategorized
+### Changed
 
-- Bump MetaMask dependencies ([#385](https://github.com/MetaMask/providers/pull/385))
-- Bump @metamask/rpc-errors from 7.0.0 to 7.0.1 ([#384](https://github.com/MetaMask/providers/pull/384))
-- Bump @metamask/safe-event-emitter from 3.1.1 to 3.1.2 ([#383](https://github.com/MetaMask/providers/pull/383))
+- Bump MetaMask dependencies ([#385](https://github.com/MetaMask/providers/pull/385), [#384](https://github.com/MetaMask/providers/pull/384), [#383](https://github.com/MetaMask/providers/pull/383))
 
 ## [18.1.0]
 
