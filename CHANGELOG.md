@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [18.2.0]
+
+### Added
+
+- Add new export for `initializeInpageProvider` with legacy build system support ([#391](https://github.com/MetaMask/providers/pull/391))
+  - Previously this module could be imported from `/dist/initializeInpageProvider`, but this only worked with build systems that support the `exports` field (e.g. browserify).
+  - This new `initializeInpageProvider` export has a JavaScript redirect for older build systems, so it should work correctly in all cases.
+
 ## [18.1.2]
 
 ### Fixed
@@ -498,7 +506,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v18.1.2...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v18.2.0...HEAD
+[18.2.0]: https://github.com/MetaMask/providers/compare/v18.1.2...v18.2.0
 [18.1.2]: https://github.com/MetaMask/providers/compare/v18.1.1...v18.1.2
 [18.1.1]: https://github.com/MetaMask/providers/compare/v18.1.0...v18.1.1
 [18.1.0]: https://github.com/MetaMask/providers/compare/v18.0.0...v18.1.0
