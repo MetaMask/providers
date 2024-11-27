@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [18.1.2]
+
+### Fixed
+
+- Allow optional `jsonRpcStreamName` for `initializeInpageProvider` ([#390](https://github.com/MetaMask/providers/pull/390))
+  - This parameter was accidentally made required in v18.1.0
+
 ## [18.1.1]
 
 ### Changed
@@ -491,7 +498,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v18.1.1...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v18.1.2...HEAD
+[18.1.2]: https://github.com/MetaMask/providers/compare/v18.1.1...v18.1.2
 [18.1.1]: https://github.com/MetaMask/providers/compare/v18.1.0...v18.1.1
 [18.1.0]: https://github.com/MetaMask/providers/compare/v18.0.0...v18.1.0
 [18.0.0]: https://github.com/MetaMask/providers/compare/v17.2.1...v18.0.0
