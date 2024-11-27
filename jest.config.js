@@ -45,10 +45,10 @@ const baseConfig = {
   // An object that configures minimum threshold enforcement for coverage results
   coverageThreshold: {
     global: {
-      branches: 64.35,
+      branches: 64.65,
       functions: 65.65,
-      lines: 65.21,
-      statements: 65.32,
+      lines: 65.51,
+      statements: 65.61,
     },
   },
 
