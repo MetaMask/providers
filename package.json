@@ -49,6 +49,10 @@
         "default": "./dist/initializeInpageProvider.cjs"
       }
     },
+    "./dist/initializeInpageProvider.cjs": {
+      "types": "./dist/initializeInpageProvider.d.cts",
+      "default": "./dist/initializeInpageProvider.cjs"
+    },
     "./stream-provider": {
       "import": {
         "types": "./dist/StreamProvider.d.mts",
