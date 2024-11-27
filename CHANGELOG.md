@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [18.2.0]
 
-### Uncategorized
+### Added
 
-- feat: Add new export for `initializeInpageProvider` ([#391](https://github.com/MetaMask/providers/pull/391))
+- Add new export for `initializeInpageProvider` with legacy build system support ([#391](https://github.com/MetaMask/providers/pull/391))
+  - Previously this module could be imported from `/dist/initializeInpageProvider`, but this only worked with build systems that support the `exports` field (e.g. browserify).
+  - This new `initializeInpageProvider` export has a JavaScript redirect for older build systems, so it should work correctly in all cases.
 
 ## [18.1.2]
 
