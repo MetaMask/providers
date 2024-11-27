@@ -9,10 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [18.1.2]
 
-### Uncategorized
+### Fixed
 
-- fix: Allow optional `jsonRpcStreamName` for inpage provider ([#390](https://github.com/MetaMask/providers/pull/390))
-- yarn.lock: Bump @metamask/utils from 10.0.0 to 10.0.1 ([#387](https://github.com/MetaMask/providers/pull/387))
+- Allow optional `jsonRpcStreamName` for `initializeInpageProvider` ([#390](https://github.com/MetaMask/providers/pull/390))
+  - This parameter was accidentally made required in v18.1.0
 
 ## [18.1.1]
 
