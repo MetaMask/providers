@@ -49,9 +49,15 @@
         "default": "./dist/initializeInpageProvider.cjs"
       }
     },
-    "./dist/initializeInpageProvider.cjs": {
-      "types": "./dist/initializeInpageProvider.d.cts",
-      "default": "./dist/initializeInpageProvider.cjs"
+    "./initializeInpageProvider": {
+      "import": {
+        "types": "./dist/initializeInpageProvider.d.mts",
+        "default": "./dist/initializeInpageProvider.mjs"
+      },
+      "require": {
+        "types": "./dist/initializeInpageProvider.d.cts",
+        "default": "./dist/initializeInpageProvider.cjs"
+      }
     },
     "./stream-provider": {
       "import": {
@@ -70,6 +76,8 @@
   "types": "./dist/index.d.cts",
   "files": [
     "dist",
+    "initializeInpageProvider.d.ts",
+    "initializeInpageProvider.js",
     "stream-provider.js"
   ],
   "scripts": {
