@@ -52,7 +52,7 @@ export function createExternalExtensionProvider(
  * @param typeOrId - The extension type or ID.
  * @returns The extension ID.
  */
-function getExtensionId(typeOrId: ExtensionType) {
+export function getExtensionId(typeOrId: ExtensionType) {
   let ids: {
     stable: string;
     beta?: string;
@@ -71,4 +71,19 @@ function getExtensionId(typeOrId: ExtensionType) {
   }
 
   return ids[typeOrId as keyof typeof ids] ?? typeOrId;
+}
+
+/**
+ * Gets the type or id for the given build name.
+ *
+ * @param rdns - The reverse syntax domain name identifier for the wallet.
+ * @returns The type or ID.
+ */
+export function getTypeOrId(rdns: string): string {
+  const rndsToIdDefinition: Record<string, string> = {
+    'io.metamask': 'stable',
+    'io.metamask.beta': 'beta',
+    'io.metamask.flask': 'flask',
+  };
+  return rndsToIdDefinition[rdns] ?? 'stable';
 }

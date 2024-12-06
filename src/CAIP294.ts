@@ -1,0 +1,213 @@
+import { isObject } from '@metamask/utils';
+
+import { FQDN_REGEX, UUID_V4_REGEX } from './utils';
+
+/**
+ * Describes the possible CAIP-294 event names
+ */
+export enum CAIP294EventNames {
+  Announce = 'caip294:wallet_announce',
+  Prompt = 'caip294:wallet_prompt',
+}
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+  interface WindowEventMap {
+    [CAIP294EventNames.Prompt]: CAIP294RequestWalletEvent;
+    [CAIP294EventNames.Announce]: CAIP294AnnounceWalletEvent;
+  }
+}
+
+/**
+ * Represents the assets needed to display and identify a wallet.
+ * @type CAIP294WalletData
+ * @property uuid - A locally unique identifier for the wallet. MUST be a v4 UUID.
+ * @property name - The name of the wallet.
+ * @property icon - The icon for the wallet. MUST be data URI.
+ * @property rdns - The reverse syntax domain name identifier for the wallet.
+ * @property extensionId - The canonical extension ID of the wallet provider for the active browser.
+ */
+export type CAIP294WalletData = {
+  uuid: string;
+  name: string;
+  icon: string;
+  rdns: string;
+  extensionId?: string;
+};
+
+/**
+ * Event for requesting a wallet.
+ *
+ * @type CAIP294RequestWalletEvent
+ * @property detail - The detail object of the event.
+ * @property type - The name of the event.
+ */
+export type CAIP294RequestWalletEvent = CustomEvent & {
+  detail: {
+    id: number;
+    jsonrpc: '2.0';
+    method: 'wallet_prompt';
+    params: Record<string, any>;
+  };
+  type: CAIP294EventNames.Prompt;
+};
+
+/**
+ * Event for announcing a wallet.
+ *
+ * @type CAIP294AnnounceWalletEvent
+ * @property detail - The detail object of the event.
+ * @property type - The name of the event.
+ */
+export type CAIP294AnnounceWalletEvent = CustomEvent & {
+  detail: {
+    id: number;
+    jsonrpc: '2.0';
+    method: 'wallet_announce';
+    params: CAIP294WalletData;
+  };
+  type: CAIP294EventNames.Announce;
+};
+
+/**
+ * Validates an {@link CAIP294RequestWalletEvent} object.
+ *
+ * @param event - The {@link CAIP294RequestWalletEvent} to validate.
+ * @returns Whether the {@link CAIP294RequestWalletEvent} is valid.
+ */
+function isValidRequestWalletEvent(
+  event: unknown,
+): event is CAIP294RequestWalletEvent {
+  return (
+    event instanceof CustomEvent &&
+    event.type === CAIP294EventNames.Prompt &&
+    isObject(event.detail) &&
+    event.detail.method === 'wallet_prompt'
+  );
+}
+
+/**
+ * Validates an {@link CAIP294AnnounceWalletEvent} object.
+ *
+ * @param event - The {@link CAIP294AnnounceWalletEvent} to validate.
+ * @returns Whether the {@link CAIP294AnnounceWalletEvent} is valid.
+ */
+function isValidAnnounceWalletEvent(
+  event: unknown,
+): event is CAIP294AnnounceWalletEvent {
+  return (
+    event instanceof CustomEvent &&
+    event.type === CAIP294EventNames.Announce &&
+    isObject(event.detail) &&
+    event.detail.method === 'wallet_announce' &&
+    isValidWalletData(event.detail.params)
+  );
+}
+
+/**
+ * Validates an {@link CAIP294WalletData} object.
+ *
+ * @param data - The {@link CAIP294WalletData} to validate.
+ * @returns Whether the {@link CAIP294WalletData} is valid.
+ */
+function isValidWalletData(data: unknown): data is CAIP294WalletData {
+  return (
+    isObject(data) &&
+    typeof data.uuid === 'string' &&
+    UUID_V4_REGEX.test(data.uuid) &&
+    typeof data.name === 'string' &&
+    Boolean(data.name) &&
+    typeof data.icon === 'string' &&
+    data.icon.startsWith('data:image') &&
+    typeof data.rdns === 'string' &&
+    FQDN_REGEX.test(data.rdns) &&
+    (data.extensionId === undefined || typeof data.extensionId === 'string')
+  );
+}
+
+/**
+ * Intended to be used by a wallet. Announces a wallet by dispatching
+ * an {@link CAIP294AnnounceWalletEvent}, and listening for
+ * {@link CAIP294RequestWalletEvent} to re-announce.
+ *
+ * @throws If the {@link CAIP294WalletData} is invalid.
+ * @param walletData - The {@link CAIP294WalletData} to announce.
+ */
+export function announceWallet(walletData: CAIP294WalletData): void {
+  if (!isValidWalletData(walletData)) {
+    throwErrorCAIP294(
+      `Invalid CAIP-294 WalletData object received from ${CAIP294EventNames.Prompt}.`,
+    );
+  }
+
+  const _announceWallet = () =>
+    window.dispatchEvent(
+      new CustomEvent(CAIP294EventNames.Announce, {
+        detail: {
+          id: 1,
+          jsonrpc: '2.0',
+          method: 'wallet_announce',
+          params: walletData,
+        },
+      }),
+    );
+
+  _announceWallet();
+  window.addEventListener(
+    CAIP294EventNames.Prompt,
+    (event: CAIP294RequestWalletEvent) => {
+      if (!isValidRequestWalletEvent(event)) {
+        throwErrorCAIP294(
+          `Invalid CAIP-294 RequestWalletEvent object received from ${CAIP294EventNames.Prompt}.`,
+        );
+      }
+      _announceWallet();
+    },
+  );
+}
+
+/**
+ * Intended to be used by a dapp. Forwards announced wallet to the
+ * provided handler by listening for * {@link CAIP294AnnounceWalletEvent},
+ * and dispatches an {@link CAIP294RequestWalletEvent}.
+ *
+ * @param handleWallet - A function that handles an announced wallet.
+ */
+export function requestWallet<HandlerReturnType>(
+  handleWallet: (walletData: CAIP294WalletData) => HandlerReturnType,
+): void {
+  window.addEventListener(
+    CAIP294EventNames.Announce,
+    (event: CAIP294AnnounceWalletEvent) => {
+      if (!isValidAnnounceWalletEvent(event)) {
+        throwErrorCAIP294(
+          `Invalid CAIP-294 WalletData object received from ${CAIP294EventNames.Announce}.`,
+        );
+      }
+      handleWallet(event.detail);
+    },
+  );
+
+  window.dispatchEvent(
+    new CustomEvent(CAIP294EventNames.Prompt, {
+      detail: {
+        id: 1,
+        jsonrpc: '2.0',
+        method: 'wallet_prompt',
+        params: {},
+      },
+    }),
+  );
+}
+
+/**
+ * Throws an error with link to CAIP-294 specifications.
+ *
+ * @param message - The message to include.
+ * @throws a friendly error with a link to CAIP-294.
+ */
+function throwErrorCAIP294(message: string) {
+  throw new Error(
+    `${message} See https://github.com/ChainAgnostic/CAIPs/blob/bc4942857a8e04593ed92f7dc66653577a1c4435/CAIPs/caip-294.md for requirements.`,
+  );
+}

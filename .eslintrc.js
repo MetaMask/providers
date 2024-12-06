@@ -41,7 +41,7 @@ module.exports = {
     },
 
     {
-      files: ['EIP6963.test.ts', 'jest.setup.browser.js'],
+      files: ['EIP6963.test.ts', 'CAIP294.test.ts', 'jest.setup.browser.js'],
       rules: {
         // We're mixing Node and browser environments in these files.
         'no-restricted-globals': 'off',

@@ -1,7 +1,12 @@
 import type { Duplex } from 'readable-stream';
 
-import type { EIP6963ProviderInfo } from './EIP6963';
+import type { CAIP294WalletData } from './CAIP294';
+import { announceWallet } from './CAIP294';
 import { announceProvider } from './EIP6963';
+import {
+  getExtensionId,
+  getTypeOrId,
+} from './extension-provider/createExternalExtensionProvider';
 import type { MetaMaskInpageProviderOptions } from './MetaMaskInpageProvider';
 import { MetaMaskInpageProvider } from './MetaMaskInpageProvider';
 import { shimWeb3 } from './shimWeb3';
@@ -13,9 +18,9 @@ type InitializeProviderOptions = {
   connectionStream: Duplex;
 
   /**
-   * The EIP-6963 provider info that should be announced if set.
+   * The EIP-6963 provider info / CAIP-294 wallet data that should be announced if set.
    */
-  providerInfo?: EIP6963ProviderInfo;
+  providerInfo?: CAIP294WalletData;
 
   /**
    * Whether the provider should be set as window.ethereum.
@@ -35,7 +40,7 @@ type InitializeProviderOptions = {
  * @param options.connectionStream - A Node.js stream.
  * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
  * @param options.maxEventListeners - The maximum number of event listeners.
- * @param options.providerInfo - The EIP-6963 provider info that should be announced if set.
+ * @param options.providerInfo - The EIP-6963 provider info / CAIP-294 wallet data that should be announced if set.
  * @param options.shouldSendMetadata - Whether the provider should send page metadata.
  * @param options.shouldSetOnWindow - Whether the provider should be set as window.ethereum.
  * @param options.shouldShimWeb3 - Whether a window.web3 shim should be injected.
@@ -70,6 +75,10 @@ export function initializeProvider({
   });
 
   if (providerInfo) {
+    // TODO: Bring up with Jiexi & Alex, if externally_connectable isn't defined, we do not want these CAIP-294 announcements to be made,
+    const typeOrId = getTypeOrId(providerInfo.rdns);
+    const extensionId = getExtensionId(typeOrId);
+    announceWallet({ extensionId, ...providerInfo });
     announceProvider({
       info: providerInfo,
       provider: proxiedProvider,
