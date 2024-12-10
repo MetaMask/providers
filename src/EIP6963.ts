@@ -1,7 +1,7 @@
 import { isObject } from '@metamask/utils';
 
 import type { BaseProvider } from './BaseProvider';
-import type { CAIP294WalletData } from './CAIP294';
+import type { BaseProviderInfo } from './types';
 import { FQDN_REGEX, UUID_V4_REGEX } from './utils';
 
 /**
@@ -29,7 +29,7 @@ declare global {
  * @property icon - The icon for the wallet. MUST be data URI.
  * @property rdns - The reverse syntax domain name identifier for the wallet.
  */
-export type EIP6963ProviderInfo = Omit<CAIP294WalletData, 'extensionId'>;
+export type EIP6963ProviderInfo = BaseProviderInfo;
 
 /**
  * Represents a provider and the information relevant for the dapp.

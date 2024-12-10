@@ -1,5 +1,6 @@
 import { isObject } from '@metamask/utils';
 
+import type { BaseProviderInfo } from './types';
 import { FQDN_REGEX, UUID_V4_REGEX } from './utils';
 
 /**
@@ -27,12 +28,8 @@ declare global {
  * @property rdns - The reverse syntax domain name identifier for the wallet.
  * @property extensionId - The canonical extension ID of the wallet provider for the active browser.
  */
-export type CAIP294WalletData = {
-  uuid: string;
-  name: string;
-  icon: string;
-  rdns: string;
-  extensionId?: string;
+export type CAIP294WalletData = BaseProviderInfo & {
+  extensionId?: string | undefined;
 };
 
 /**

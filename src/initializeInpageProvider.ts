@@ -1,15 +1,19 @@
+import { type Browser, detect } from 'detect-browser';
 import type { Duplex } from 'readable-stream';
 
 import type { CAIP294WalletData } from './CAIP294';
 import { announceWallet } from './CAIP294';
-import { announceProvider } from './EIP6963';
+import { announceProvider as announceEip6963Provider } from './EIP6963';
 import {
   getExtensionId,
-  getTypeOrId,
+  getBuildType,
 } from './extension-provider/createExternalExtensionProvider';
 import type { MetaMaskInpageProviderOptions } from './MetaMaskInpageProvider';
 import { MetaMaskInpageProvider } from './MetaMaskInpageProvider';
 import { shimWeb3 } from './shimWeb3';
+import type { BaseProviderInfo } from './types';
+
+const browser = detect();
 
 type InitializeProviderOptions = {
   /**
@@ -20,7 +24,7 @@ type InitializeProviderOptions = {
   /**
    * The EIP-6963 provider info / CAIP-294 wallet data that should be announced if set.
    */
-  providerInfo?: CAIP294WalletData;
+  providerInfo?: BaseProviderInfo;
 
   /**
    * Whether the provider should be set as window.ethereum.
@@ -75,11 +79,8 @@ export function initializeProvider({
   });
 
   if (providerInfo) {
-    // TODO: Bring up with Jiexi & Alex, if externally_connectable isn't defined, we do not want these CAIP-294 announcements to be made,
-    const typeOrId = getTypeOrId(providerInfo.rdns);
-    const extensionId = getExtensionId(typeOrId);
-    announceWallet({ extensionId, ...providerInfo });
-    announceProvider({
+    announceCaip294WalletData(providerInfo);
+    announceEip6963Provider({
       info: providerInfo,
       provider: proxiedProvider,
     });
@@ -107,4 +108,23 @@ export function setGlobalProvider(
 ): void {
   (window as Record<string, any>).ethereum = providerInstance;
   window.dispatchEvent(new Event('ethereum#initialized'));
+}
+
+/**
+ * Announces caip294 wallet data according to build type and browser.
+ * For now, should only announce if build type is `flask`.
+ * `extensionId` is included if browser is NOT `firefox`.
+ *
+ * @param providerInfo - The provider info {@link BaseProviderInfo}that should be announced if set.
+ */
+function announceCaip294WalletData(providerInfo: CAIP294WalletData): void {
+  const buildType = getBuildType(providerInfo.rdns);
+  if (buildType !== 'flask') {
+    return;
+  }
+  const extensionId =
+    (browser?.name as Browser) === 'firefox'
+      ? undefined
+      : getExtensionId(buildType);
+  announceWallet({ extensionId, ...providerInfo });
 }
