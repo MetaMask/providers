@@ -13,8 +13,6 @@ import { MetaMaskInpageProvider } from './MetaMaskInpageProvider';
 import { shimWeb3 } from './shimWeb3';
 import type { BaseProviderInfo } from './types';
 
-const browser = detect();
-
 type InitializeProviderOptions = {
   /**
    * The stream used to connect to the wallet.
@@ -117,11 +115,15 @@ export function setGlobalProvider(
  *
  * @param providerInfo - The provider info {@link BaseProviderInfo}that should be announced if set.
  */
-function announceCaip294WalletData(providerInfo: CAIP294WalletData): void {
+export function announceCaip294WalletData(
+  providerInfo: CAIP294WalletData,
+): void {
   const buildType = getBuildType(providerInfo.rdns);
   if (buildType !== 'flask') {
     return;
   }
+
+  const browser = detect();
   const extensionId =
     (browser?.name as Browser) === 'firefox'
       ? undefined
