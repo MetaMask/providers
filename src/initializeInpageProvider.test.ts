@@ -36,7 +36,6 @@ describe('announceCaip294WalletData', () => {
   it('should announce wallet with extensionId for non-firefox browsers', () => {
     (getBuildType as jest.Mock).mockReturnValue('flask');
     (getExtensionId as jest.Mock).mockReturnValue('test-extension-id');
-    // (global as any).browser = { name: 'chrome' };
     (detect as jest.Mock).mockReturnValue({ name: 'chrome' });
 
     announceCaip294WalletData(mockProviderInfo);
