@@ -72,3 +72,18 @@ function getExtensionId(typeOrId: ExtensionType) {
 
   return ids[typeOrId as keyof typeof ids] ?? typeOrId;
 }
+
+/**
+ * Gets the build type for the given domain name identifier.
+ *
+ * @param rdns - The reverse syntax domain name identifier for the wallet.
+ * @returns The type or ID.
+ */
+export function getBuildType(rdns: string): string | undefined {
+  const rndsToIdDefinition: Record<string, string> = {
+    'io.metamask': 'stable',
+    'io.metamask.beta': 'beta',
+    'io.metamask.flask': 'flask',
+  };
+  return rndsToIdDefinition[rdns];
+}

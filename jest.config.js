@@ -45,10 +45,10 @@ const baseConfig = {
   // An object that configures minimum threshold enforcement for coverage results
   coverageThreshold: {
     global: {
-      branches: 64.65,
-      functions: 65.65,
-      lines: 65.51,
-      statements: 65.61,
+      branches: 67.63,
+      functions: 70.27,
+      lines: 69.47,
+      statements: 69.48,
     },
   },
 
@@ -226,6 +226,7 @@ const browserConfig = {
     '**/*InpageProvider.test.ts',
     '**/*ExtensionProvider.test.ts',
     '**/EIP6963.test.ts',
+    '**/CAIP294.test.ts',
   ],
   setupFilesAfterEnv: ['./jest.setup.browser.js'],
 };
