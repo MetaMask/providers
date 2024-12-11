@@ -99,26 +99,21 @@ async function getInitializedProvider({
 
   return { provider, port, onWrite };
 }
-
 describe('getBuildType', () => {
-  it('should return `beta` if payload is beta reverse syntax domain name', () => {
-    const payload = 'io.metamask.beta';
-    const result = getBuildType(payload);
+  const testCases = [
+    { payload: 'io.metamask.beta', expected: 'beta' },
+    { payload: 'io.metamask', expected: 'stable' },
+    { payload: 'io.metamask.flask', expected: 'flask' },
+    { payload: 'io.metamask.unknown', expected: undefined },
+  ];
 
-    expect(result).toBe('beta');
-  });
-  it('should return `stable` if payload is production reverse syntax domain name', () => {
-    const payload = 'io.metamask';
-    const result = getBuildType(payload);
-
-    expect(result).toBe('stable');
-  });
-  it('should return `flask` if payload is flask reverse syntax domain name', () => {
-    const payload = 'io.metamask.flask';
-    const result = getBuildType(payload);
-
-    expect(result).toBe('flask');
-  });
+  it.each(testCases)(
+    'should return $expected for payload $payload',
+    ({ payload, expected }) => {
+      const result = getBuildType(payload);
+      expect(result).toBe(expected);
+    },
+  );
 });
 
 describe('createExternalExtensionProvider', () => {
