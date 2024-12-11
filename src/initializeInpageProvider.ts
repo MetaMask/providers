@@ -1,13 +1,9 @@
-import { detect } from 'detect-browser';
 import type { Duplex } from 'readable-stream';
 
 import type { CAIP294WalletData } from './CAIP294';
 import { announceWallet } from './CAIP294';
 import { announceProvider as announceEip6963Provider } from './EIP6963';
-import {
-  getExtensionId,
-  getBuildType,
-} from './extension-provider/createExternalExtensionProvider';
+import { getBuildType } from './extension-provider/createExternalExtensionProvider';
 import type { MetaMaskInpageProviderOptions } from './MetaMaskInpageProvider';
 import { MetaMaskInpageProvider } from './MetaMaskInpageProvider';
 import { shimWeb3 } from './shimWeb3';
@@ -77,11 +73,12 @@ export function initializeProvider({
   });
 
   if (providerInfo) {
-    announceCaip294WalletData(providerInfo);
     announceEip6963Provider({
       info: providerInfo,
       provider: proxiedProvider,
     });
+    // eslint-disable-next-line no-void
+    void announceCaip294WalletData(provider, providerInfo);
   }
 
   if (shouldSetOnWindow) {
@@ -110,25 +107,29 @@ export function setGlobalProvider(
 
 /**
  * Announces [caip294](https://github.com/ChainAgnostic/CAIPs/blob/bc4942857a8e04593ed92f7dc66653577a1c4435/CAIPs/caip-294.md) wallet data according to build type and browser.
- * Until released to stable, only announces if build type is `flask`.
+ * Until released to stable, `extensionId` is only retrieved from provider state if build type is `flask`.
  * `extensionId` is included if browser is NOT `firefox` because it is only useable by browsers that support [externally_connectable](https://developer.chrome.com/docs/extensions/reference/manifest/externally-connectable).
  *
+ * @param provider - The provider {@link MetaMaskInpageProvider} used for retrieving `extensionId`.
  * @param providerInfo - The provider info {@link BaseProviderInfo} that should be announced if set.
  */
-export function announceCaip294WalletData(
+export async function announceCaip294WalletData(
+  provider: MetaMaskInpageProvider,
   providerInfo: CAIP294WalletData,
-): void {
+): Promise<void> {
   const buildType = getBuildType(providerInfo.rdns);
   if (buildType !== 'flask') {
     return;
   }
 
-  const browser = detect();
+  const providerState = await provider.request<{ extensionId: string }>({
+    method: 'metamask_getProviderState',
+  });
+  const extensionId = providerState?.extensionId;
+
   const walletData = {
     ...providerInfo,
-    ...(browser?.name !== 'firefox' && {
-      extensionId: getExtensionId(buildType),
-    }),
+    extensionId,
   };
 
   announceWallet(walletData);

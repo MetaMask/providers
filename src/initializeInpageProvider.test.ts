@@ -1,17 +1,31 @@
-import { detect } from 'detect-browser';
-
 import { announceWallet, type CAIP294WalletData } from './CAIP294';
+import { getBuildType } from './extension-provider/createExternalExtensionProvider';
 import {
-  getBuildType,
-  getExtensionId,
-} from './extension-provider/createExternalExtensionProvider';
-import { announceCaip294WalletData } from './initializeInpageProvider';
+  announceCaip294WalletData,
+  setGlobalProvider,
+} from './initializeInpageProvider';
+import type { MetaMaskInpageProvider } from './MetaMaskInpageProvider';
 
 jest.mock('./extension-provider/createExternalExtensionProvider');
 jest.mock('./CAIP294');
-jest.mock('detect-browser');
+
+describe('setGlobalProvider', () => {
+  it('should call addEventListener once', () => {
+    const mockProvider = {} as unknown as MetaMaskInpageProvider;
+    const dispatchEvent = jest.spyOn(window, 'dispatchEvent');
+    setGlobalProvider(mockProvider);
+
+    expect(dispatchEvent).toHaveBeenCalledTimes(1);
+    expect(dispatchEvent).toHaveBeenCalledWith(
+      new Event('ethereum#initialized'),
+    );
+  });
+});
 
 describe('announceCaip294WalletData', () => {
+  const mockProvider = {
+    request: jest.fn(),
+  } as unknown as MetaMaskInpageProvider;
   const mockProviderInfo: CAIP294WalletData = {
     uuid: '123e4567-e89b-12d3-a456-426614174000',
     name: 'Test Wallet',
@@ -23,57 +37,36 @@ describe('announceCaip294WalletData', () => {
     jest.clearAllMocks();
   });
 
-  it('should not announce wallet if build type is not flask', () => {
+  it('should not announce wallet if build type is not flask', async () => {
     (getBuildType as jest.Mock).mockReturnValue('stable');
 
-    announceCaip294WalletData(mockProviderInfo);
+    await announceCaip294WalletData(mockProvider, mockProviderInfo);
 
     expect(getBuildType).toHaveBeenCalledWith(mockProviderInfo.rdns);
-    expect(getExtensionId).not.toHaveBeenCalled();
     expect(announceWallet).not.toHaveBeenCalled();
   });
 
-  it('should announce wallet with extensionId for non-firefox browsers', () => {
+  it('should announce wallet with extensionId for non-firefox browsers', async () => {
+    const extensionId = 'test-extension-id';
     (getBuildType as jest.Mock).mockReturnValue('flask');
-    (getExtensionId as jest.Mock).mockReturnValue('test-extension-id');
-    (detect as jest.Mock).mockReturnValue({ name: 'chrome' });
+    (mockProvider.request as jest.Mock).mockReturnValue({ extensionId });
 
-    announceCaip294WalletData(mockProviderInfo);
+    await announceCaip294WalletData(mockProvider, mockProviderInfo);
 
     expect(getBuildType).toHaveBeenCalledWith(mockProviderInfo.rdns);
-    expect(getExtensionId).toHaveBeenCalledWith('flask');
     expect(announceWallet).toHaveBeenCalledWith({
       ...mockProviderInfo,
-      extensionId: 'test-extension-id',
+      extensionId,
     });
   });
 
-  it('should announce wallet without extensionId for firefox browser', () => {
+  it('should announce wallet without extensionId for firefox browser', async () => {
     (getBuildType as jest.Mock).mockReturnValue('flask');
-    (detect as jest.Mock).mockReturnValue({ name: 'firefox' });
+    (mockProvider.request as jest.Mock).mockReturnValue({});
 
-    announceCaip294WalletData(mockProviderInfo);
+    await announceCaip294WalletData(mockProvider, mockProviderInfo);
 
     expect(getBuildType).toHaveBeenCalledWith(mockProviderInfo.rdns);
-    expect(getExtensionId).not.toHaveBeenCalled();
-    expect(announceWallet).toHaveBeenCalledWith({
-      ...mockProviderInfo,
-      extensionId: undefined,
-    });
-  });
-
-  it('should handle undefined browser', () => {
-    (getBuildType as jest.Mock).mockReturnValue('flask');
-    (getExtensionId as jest.Mock).mockReturnValue('test-extension-id');
-    (detect as jest.Mock).mockReturnValue(undefined);
-
-    announceCaip294WalletData(mockProviderInfo);
-
-    expect(getBuildType).toHaveBeenCalledWith(mockProviderInfo.rdns);
-    expect(getExtensionId).toHaveBeenCalledWith('flask');
-    expect(announceWallet).toHaveBeenCalledWith({
-      ...mockProviderInfo,
-      extensionId: 'test-extension-id',
-    });
+    expect(announceWallet).toHaveBeenCalledWith(mockProviderInfo);
   });
 });

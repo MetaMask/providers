@@ -52,7 +52,7 @@ export function createExternalExtensionProvider(
  * @param typeOrId - The extension type or ID.
  * @returns The extension ID.
  */
-export function getExtensionId(typeOrId: ExtensionType) {
+function getExtensionId(typeOrId: ExtensionType) {
   let ids: {
     stable: string;
     beta?: string;
