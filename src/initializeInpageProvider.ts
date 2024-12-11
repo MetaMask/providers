@@ -1,4 +1,4 @@
-import { type Browser, detect } from 'detect-browser';
+import { detect } from 'detect-browser';
 import type { Duplex } from 'readable-stream';
 
 import type { CAIP294WalletData } from './CAIP294';
@@ -109,11 +109,11 @@ export function setGlobalProvider(
 }
 
 /**
- * Announces caip294 wallet data according to build type and browser.
- * For now, should only announce if build type is `flask`.
- * `extensionId` is included if browser is NOT `firefox`.
+ * Announces [caip294](https://github.com/ChainAgnostic/CAIPs/blob/bc4942857a8e04593ed92f7dc66653577a1c4435/CAIPs/caip-294.md) wallet data according to build type and browser.
+ * Until released to stable, only announces if build type is `flask`.
+ * `extensionId` is included if browser is NOT `firefox` because it is only useable by browsers that support [externally_connectable](https://developer.chrome.com/docs/extensions/reference/manifest/externally-connectable).
  *
- * @param providerInfo - The provider info {@link BaseProviderInfo}that should be announced if set.
+ * @param providerInfo - The provider info {@link BaseProviderInfo} that should be announced if set.
  */
 export function announceCaip294WalletData(
   providerInfo: CAIP294WalletData,
@@ -124,9 +124,12 @@ export function announceCaip294WalletData(
   }
 
   const browser = detect();
-  const extensionId =
-    (browser?.name as Browser) === 'firefox'
-      ? undefined
-      : getExtensionId(buildType);
-  announceWallet({ extensionId, ...providerInfo });
+  const walletData = {
+    ...providerInfo,
+    ...(browser?.name !== 'firefox' && {
+      extensionId: getExtensionId(buildType),
+    }),
+  };
+
+  announceWallet(walletData);
 }
