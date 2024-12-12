@@ -101,6 +101,17 @@ describe('CAIP-294', () => {
     });
   });
 
+  it('throws if the `extensionId` field is invalid', () => {
+    [null, '', 42, Symbol('bar')].forEach((invalidExtensionId) => {
+      const walletInfo = getWalletData();
+      walletInfo.extensionId = invalidExtensionId as any;
+
+      expect(() => announceWallet(walletInfo)).toThrow(
+        walletDataValidationError(),
+      );
+    });
+  });
+
   it('wallet is announced before dapp requests', async () => {
     const walletData = getWalletData();
     const handleWallet = jest.fn();

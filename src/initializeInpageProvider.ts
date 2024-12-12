@@ -106,9 +106,9 @@ export function setGlobalProvider(
 }
 
 /**
- * Announces [caip294](https://github.com/ChainAgnostic/CAIPs/blob/bc4942857a8e04593ed92f7dc66653577a1c4435/CAIPs/caip-294.md) wallet data according to build type and browser.
- * Until released to stable, `extensionId` is only retrieved from provider state if build type is `flask`.
- * `extensionId` is included if browser is NOT `firefox` because it is only useable by browsers that support [externally_connectable](https://developer.chrome.com/docs/extensions/reference/manifest/externally-connectable).
+ * Announces [CAIP-294](https://github.com/ChainAgnostic/CAIPs/blob/bc4942857a8e04593ed92f7dc66653577a1c4435/CAIPs/caip-294.md) wallet data according to build type and browser.
+ * Until released to stable, `extensionId` is only set in the `metamask_getProviderState` result if the build type is `flask`.
+ * `extensionId` is included if browser is chromium based because it is only useable by browsers that support [externally_connectable](https://developer.chrome.com/docs/extensions/reference/manifest/externally-connectable).
  *
  * @param provider - The provider {@link MetaMaskInpageProvider} used for retrieving `extensionId`.
  * @param providerInfo - The provider info {@link BaseProviderInfo} that should be announced if set.

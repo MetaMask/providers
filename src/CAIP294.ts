@@ -79,8 +79,27 @@ function isValidRequestWalletEvent(
     event instanceof CustomEvent &&
     event.type === CAIP294EventNames.Prompt &&
     isObject(event.detail) &&
-    event.detail.method === 'wallet_prompt'
+    event.detail.method === 'wallet_prompt' &&
+    isValidWalletPromptParams(event.detail.params)
   );
+}
+
+/**
+ * Validates a {@link CAIP294RequestWalletEvent} params field.
+ *
+ * @param params - The parameters to validate.
+ * @returns Whether the parameters are valid.
+ */
+function isValidWalletPromptParams(params: any): params is Record<string, any> {
+  const isValidChains =
+    params.chains === undefined ||
+    (Array.isArray(params.chains) &&
+      params.chains.every((chain: any) => typeof chain === 'string'));
+
+  const isValidAuthName =
+    params.authName === undefined || typeof params.authName === 'string';
+
+  return isValidChains && isValidAuthName;
 }
 
 /**
@@ -118,7 +137,8 @@ function isValidWalletData(data: unknown): data is CAIP294WalletData {
     data.icon.startsWith('data:image') &&
     typeof data.rdns === 'string' &&
     FQDN_REGEX.test(data.rdns) &&
-    (data.extensionId === undefined || typeof data.extensionId === 'string')
+    (data.extensionId === undefined ||
+      (typeof data.extensionId === 'string' && data.extensionId.length > 0))
   );
 }
 
