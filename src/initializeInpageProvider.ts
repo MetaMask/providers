@@ -122,7 +122,7 @@ export async function announceCaip294WalletData(
     return;
   }
 
-  const providerState = await provider.request<{ extensionId: string }>({
+  const providerState = await provider.request<{ extensionId?: string }>({
     method: 'metamask_getProviderState',
   });
   const extensionId = providerState?.extensionId;
