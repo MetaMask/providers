@@ -1,6 +1,8 @@
 import { isObject } from '@metamask/utils';
 
 import type { BaseProvider } from './BaseProvider';
+import type { BaseProviderInfo } from './types';
+import { FQDN_REGEX, UUID_V4_REGEX } from './utils';
 
 /**
  * Describes the possible EIP-6963 event names
@@ -27,12 +29,7 @@ declare global {
  * @property icon - The icon for the wallet. MUST be data URI.
  * @property rdns - The reverse syntax domain name identifier for the wallet.
  */
-export type EIP6963ProviderInfo = {
-  uuid: string;
-  name: string;
-  icon: string;
-  rdns: string;
-};
+export type EIP6963ProviderInfo = BaseProviderInfo;
 
 /**
  * Represents a provider and the information relevant for the dapp.
@@ -67,14 +64,6 @@ export type EIP6963AnnounceProviderEvent = CustomEvent & {
   type: EIP6963EventNames.Announce;
   detail: EIP6963ProviderDetail;
 };
-
-// https://github.com/thenativeweb/uuidv4/blob/bdcf3a3138bef4fb7c51f389a170666f9012c478/lib/uuidv4.ts#L5
-const UUID_V4_REGEX =
-  /(?:^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}$)|(?:^0{8}-0{4}-0{4}-0{4}-0{12}$)/u;
-
-// https://stackoverflow.com/a/20204811
-const FQDN_REGEX =
-  /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\.)+[a-zA-Z]{2,63}$)/u;
 
 /**
  * Intended to be used by a dapp. Forwards every announced provider to the

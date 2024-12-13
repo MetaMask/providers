@@ -18,6 +18,14 @@ export type ConsoleLike = Pick<
 
 // Constants
 
+// https://github.com/thenativeweb/uuidv4/blob/bdcf3a3138bef4fb7c51f389a170666f9012c478/lib/uuidv4.ts#L5
+export const UUID_V4_REGEX =
+  /(?:^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}$)|(?:^0{8}-0{4}-0{4}-0{4}-0{12}$)/u;
+
+// https://stackoverflow.com/a/20204811
+export const FQDN_REGEX =
+  /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\.)+[a-zA-Z]{2,63}$)/u;
+
 export const EMITTED_NOTIFICATIONS = Object.freeze([
   'eth_subscription', // per eth-json-rpc-filters/subscriptionManager
 ]);

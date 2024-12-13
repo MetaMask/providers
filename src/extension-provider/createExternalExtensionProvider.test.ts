@@ -1,6 +1,9 @@
 import type { JsonRpcRequest } from '@metamask/utils';
 
-import { createExternalExtensionProvider } from './createExternalExtensionProvider';
+import {
+  createExternalExtensionProvider,
+  getBuildType,
+} from './createExternalExtensionProvider';
 import config from './external-extension-config.json';
 import { MockPort } from '../../test/mocks/MockPort';
 import type { BaseProvider } from '../BaseProvider';
@@ -96,6 +99,22 @@ async function getInitializedProvider({
 
   return { provider, port, onWrite };
 }
+describe('getBuildType', () => {
+  const testCases = [
+    { payload: 'io.metamask.beta', expected: 'beta' },
+    { payload: 'io.metamask', expected: 'stable' },
+    { payload: 'io.metamask.flask', expected: 'flask' },
+    { payload: 'io.metamask.unknown', expected: undefined },
+  ];
+
+  it.each(testCases)(
+    'should return $expected for payload $payload',
+    ({ payload, expected }) => {
+      const result = getBuildType(payload);
+      expect(result).toBe(expected);
+    },
+  );
+});
 
 describe('createExternalExtensionProvider', () => {
   it('can be called and not throw', () => {
