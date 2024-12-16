@@ -9,9 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [18.3.0]
 
-### Uncategorized
+### Added
 
-- Implement Wallet Discovery For Multichain API #2970 ([#395](https://github.com/MetaMask/providers/pull/395))
+- Implement Wallet Discovery For Multichain API ([#395](https://github.com/MetaMask/providers/pull/395))
+- Support [CAIP-294](https://github.com/ChainAgnostic/CAIPs/blob/bc4942857a8e04593ed92f7dc66653577a1c4435/CAIPs/caip-294.md) through standardized messaging transport for browser extension wallets
 
 ## [18.2.0]
 
