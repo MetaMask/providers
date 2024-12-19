@@ -9,10 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [18.3.1]
 
-### Uncategorized
+### Changed
 
-- Bump cross-spawn from 7.0.3 to 7.0.6 in the npm_and_yarn group ([#388](https://github.com/MetaMask/providers/pull/388))
 - Bump MetaMask dependencies ([#397](https://github.com/MetaMask/providers/pull/397))
+- Bump `@metamask/json-rpc-engine` from `^10.0.1` to `^10.0.2` ([#397](https://github.com/MetaMask/providers/pull/397))
+- Bump `@metamask/json-rpc-middleware-stream` from `^8.0.5` to `^8.0.6` ([#397](https://github.com/MetaMask/providers/pull/397))
+- Bump `@metamask/rpc-errors` from `^7.0.1` to `^7.0.2` ([#397](https://github.com/MetaMask/providers/pull/397))
+- Bump `@metamask/utils` from `^10.0.0` to `^11.0.1` ([#397](https://github.com/MetaMask/providers/pull/397))
 
 ## [18.3.0]
 
