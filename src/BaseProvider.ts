@@ -11,6 +11,7 @@ import type {
   Json,
 } from '@metamask/utils';
 import dequal from 'fast-deep-equal';
+import { v4 as uuidV4 } from 'uuid';
 
 import messages from './messages';
 import type { ConsoleLike, Maybe } from './utils';
@@ -208,9 +209,11 @@ export abstract class BaseProvider extends SafeEventEmitter {
     const payload =
       params === undefined || params === null
         ? {
+            id: uuidV4(),
             method,
           }
         : {
+            id: uuidV4(),
             method,
             params,
           };
