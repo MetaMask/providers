@@ -32,7 +32,7 @@ export function createExternalExtensionProvider(
     const streamName = MetaMaskInpageProviderStreamName;
     const mux = new ObjectMultiplex();
     pipeline(pluginStream, mux, pluginStream, (error: Error | null) => {
-      let warningMsg = `MetaMask: Lost connection to "${streamName}".`;
+      let warningMsg = `Lost connection to "${streamName}".`;
       if (error?.stack) {
         warningMsg += `\n${error.stack}`;
       }

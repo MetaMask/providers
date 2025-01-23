@@ -61,7 +61,7 @@ export function initializeProvider({
 }: InitializeProviderOptions): MetaMaskInpageProvider {
   const mux = new ObjectMultiplex();
   pipeline(connectionStream, mux, connectionStream, (error: Error | null) => {
-    let warningMsg = `MetaMask: Lost connection to "${jsonRpcStreamName}".`;
+    let warningMsg = `Lost connection to "${jsonRpcStreamName}".`;
     if (error?.stack) {
       warningMsg += `\n${error.stack}`;
     }

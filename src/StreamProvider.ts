@@ -37,7 +37,6 @@ export abstract class AbstractStreamProvider extends BaseProvider {
    *
    * @param connectionStream - A Node.js duplex stream.
    * @param options - An options bag.
-   * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
    * @param options.logger - The logging API to use. Default: `console`.
    * @param options.maxEventListeners - The maximum number of event
    * listeners. Default: 100.
@@ -49,7 +48,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
       logger = console,
       maxEventListeners = 100,
       rpcMiddleware = [],
-    }: StreamProviderOptions,
+    }: StreamProviderOptions = {},
   ) {
     super({ logger, maxEventListeners, rpcMiddleware });
 
