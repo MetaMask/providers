@@ -33,6 +33,10 @@ type InitializeProviderOptions = {
    * Whether the window.web3 shim should be set.
    */
   shouldShimWeb3?: boolean;
+  /**
+   * The name of the stream used to connect to the wallet.
+   */
+  jsonRpcStreamName?: string | undefined;
 } & MetaMaskInpageProviderOptions;
 
 /**

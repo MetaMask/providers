@@ -29,9 +29,7 @@ export type MetaMaskInpageProviderOptions = {
    * Whether the provider should send page metadata.
    */
   shouldSendMetadata?: boolean;
-
-  jsonRpcStreamName?: string | undefined;
-} & Partial<Omit<StreamProviderOptions, 'rpcMiddleware' | 'jsonRpcStreamName'>>;
+} & Partial<Omit<StreamProviderOptions, 'rpcMiddleware'>>;
 
 type SentWarningsState = {
   // methods
