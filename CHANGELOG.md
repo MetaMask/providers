@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [19.0.0]
+
 ### Changed
 
 - **BREAKING**: `StreamProvider` no longer accepts a `jsonRpcStreamName` parameter ([#400](https://github.com/MetaMask/providers/pull/400))
@@ -537,7 +539,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v18.3.1...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v19.0.0...HEAD
+[19.0.0]: https://github.com/MetaMask/providers/compare/v18.3.1...v19.0.0
 [18.3.1]: https://github.com/MetaMask/providers/compare/v18.3.0...v18.3.1
 [18.3.0]: https://github.com/MetaMask/providers/compare/v18.2.0...v18.3.0
 [18.2.0]: https://github.com/MetaMask/providers/compare/v18.1.2...v18.2.0
