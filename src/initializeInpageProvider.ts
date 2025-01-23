@@ -36,7 +36,7 @@ type InitializeProviderOptions = {
   /**
    * The name of the stream used to connect to the wallet.
    */
-  jsonRpcStreamName?: string | undefined;
+  jsonRpcStreamName?: string;
 } & MetaMaskInpageProviderOptions;
 
 /**
