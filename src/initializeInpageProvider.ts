@@ -1,11 +1,15 @@
-import type { Duplex } from 'readable-stream';
+import ObjectMultiplex from '@metamask/object-multiplex';
+import { type Duplex, pipeline } from 'readable-stream';
 
 import type { CAIP294WalletData } from './CAIP294';
 import { announceWallet } from './CAIP294';
 import { announceProvider as announceEip6963Provider } from './EIP6963';
 import { getBuildType } from './extension-provider/createExternalExtensionProvider';
 import type { MetaMaskInpageProviderOptions } from './MetaMaskInpageProvider';
-import { MetaMaskInpageProvider } from './MetaMaskInpageProvider';
+import {
+  MetaMaskInpageProvider,
+  MetaMaskInpageProviderStreamName,
+} from './MetaMaskInpageProvider';
 import { shimWeb3 } from './shimWeb3';
 import type { BaseProviderInfo } from './types';
 
@@ -47,7 +51,7 @@ type InitializeProviderOptions = {
  */
 export function initializeProvider({
   connectionStream,
-  jsonRpcStreamName,
+  jsonRpcStreamName = MetaMaskInpageProviderStreamName,
   logger = console,
   maxEventListeners = 100,
   providerInfo,
@@ -55,12 +59,22 @@ export function initializeProvider({
   shouldSetOnWindow = true,
   shouldShimWeb3 = false,
 }: InitializeProviderOptions): MetaMaskInpageProvider {
-  const provider = new MetaMaskInpageProvider(connectionStream, {
-    jsonRpcStreamName,
-    logger,
-    maxEventListeners,
-    shouldSendMetadata,
+  const mux = new ObjectMultiplex();
+  pipeline(connectionStream, mux, connectionStream, (error: Error | null) => {
+    let warningMsg = `MetaMask: Lost connection to "${jsonRpcStreamName}".`;
+    if (error?.stack) {
+      warningMsg += `\n${error.stack}`;
+    }
+    console.warn(warningMsg);
   });
+  const provider = new MetaMaskInpageProvider(
+    mux.createStream(jsonRpcStreamName),
+    {
+      logger,
+      maxEventListeners,
+      shouldSendMetadata,
+    },
+  );
 
   const proxiedProvider = new Proxy(provider, {
     // some common libraries, e.g. web3@1.x, mess with our API

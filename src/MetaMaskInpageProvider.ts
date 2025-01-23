@@ -97,14 +97,12 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   constructor(
     connectionStream: Duplex,
     {
-      jsonRpcStreamName = MetaMaskInpageProviderStreamName,
       logger = console,
       maxEventListeners = 100,
       shouldSendMetadata,
     }: MetaMaskInpageProviderOptions = {},
   ) {
     super(connectionStream, {
-      jsonRpcStreamName,
       logger,
       maxEventListeners,
       rpcMiddleware: getDefaultExternalMiddleware(logger),

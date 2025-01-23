@@ -1,6 +1,5 @@
 import type { JsonRpcMiddleware } from '@metamask/json-rpc-engine';
 import { createStreamMiddleware } from '@metamask/json-rpc-middleware-stream';
-import ObjectMultiplex from '@metamask/object-multiplex';
 import type SafeEventEmitter from '@metamask/safe-event-emitter';
 import type { Json, JsonRpcParams } from '@metamask/utils';
 import { duplex as isDuplex } from 'is-stream';
@@ -16,12 +15,7 @@ import {
   isValidNetworkVersion,
 } from './utils';
 
-export type StreamProviderOptions = {
-  /**
-   * The name of the stream used to connect to the wallet.
-   */
-  jsonRpcStreamName: string;
-} & BaseProviderOptions;
+export type StreamProviderOptions = BaseProviderOptions;
 
 export type JsonRpcConnection = {
   events: SafeEventEmitter;
@@ -52,7 +46,6 @@ export abstract class AbstractStreamProvider extends BaseProvider {
   constructor(
     connectionStream: Duplex,
     {
-      jsonRpcStreamName,
       logger = console,
       maxEventListeners = 100,
       rpcMiddleware = [],
@@ -67,15 +60,6 @@ export abstract class AbstractStreamProvider extends BaseProvider {
     // Bind functions to prevent consumers from making unbound calls
     this._handleStreamDisconnect = this._handleStreamDisconnect.bind(this);
 
-    // Set up connectionStream multiplexing
-    const mux = new ObjectMultiplex();
-    pipeline(
-      connectionStream,
-      mux as unknown as Duplex,
-      connectionStream,
-      this._handleStreamDisconnect.bind(this, 'MetaMask'),
-    );
-
     // Set up RPC connection
     // Typecast: The type of `Duplex` is incompatible with the type of
     // `JsonRpcConnection`.
@@ -84,9 +68,9 @@ export abstract class AbstractStreamProvider extends BaseProvider {
     }) as unknown as JsonRpcConnection;
 
     pipeline(
+      connectionStream,
       this._jsonRpcConnection.stream,
-      mux.createStream(jsonRpcStreamName) as unknown as Duplex,
-      this._jsonRpcConnection.stream,
+      connectionStream,
       this._handleStreamDisconnect.bind(this, 'MetaMask RpcProvider'),
     );
 
