@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **BREAKING**: `StreamProvider` no longer accepts a `jsonRpcStreamName` parameter ([#400](https://github.com/MetaMask/providers/pull/400))
+  - Previously, this parameter was used internally to create an ObjectMultiplex stream and substream for JSON-RPC communication
+  - Now, the consumer is responsible for creating and managing the stream multiplexing if needed
+  - The provider will use the provided stream connection directly without any multiplexing
+
+- **BREAKING**: MetaMaskInpageProvider no longer accepts a `jsonRpcStreamName` parameter ([#400](https://github.com/MetaMask/providers/pull/400))
+  - This change is inherited from StreamProvider, as MetaMaskInpageProvider extends StreamProvider
+  - Stream multiplexing should be handled before provider instantiation
+- `initializeInpageProvider` now handles stream multiplexing internally ([#400](https://github.com/MetaMask/providers/pull/400))
+  - Creates an ObjectMultiplex instance and substream using the provided `jsonRpcStreamName`
+  - This maintains backwards compatibility for consumers using `initializeInpageProvider`
+- `createExternalExtensionProvider` now handles stream multiplexing internally ([#400](https://github.com/MetaMask/providers/pull/400))
+  - Creates an ObjectMultiplex instance and substream for JSON-RPC communication
+  - This maintains backwards compatibility for consumers using `createExternalExtensionProvider`
+
 ## [18.3.1]
 
 ### Changed
