@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [19.0.0]
+
 ### Changed
 
 - **BREAKING**: `StreamProvider` no longer accepts a `jsonRpcStreamName` parameter ([#400](https://github.com/MetaMask/providers/pull/400))
