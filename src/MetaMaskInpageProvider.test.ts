@@ -1,4 +1,6 @@
+import ObjectMultiplex from '@metamask/object-multiplex';
 import type { JsonRpcRequest } from '@metamask/utils';
+import { pipeline } from 'readable-stream';
 
 import messages from './messages';
 import {
@@ -64,14 +66,14 @@ async function getInitializedProvider({
   const onWrite = jest.fn();
   const connectionStream = new MockConnectionStream((name, data) => {
     if (
-      name === 'metamask-provider' &&
+      name === MetaMaskInpageProviderStreamName &&
       data.method === 'metamask_getProviderState'
     ) {
       // Wrap in `setTimeout` to ensure a reply is received by the provider
       // after the provider has processed the request, to ensure that the
       // provider recognizes the id.
       setTimeout(() =>
-        connectionStream.reply('metamask-provider', {
+        connectionStream.reply(MetaMaskInpageProviderStreamName, {
           id: onWrite.mock.calls[0][1].id,
           jsonrpc: '2.0',
           result: {
@@ -93,8 +95,13 @@ async function getInitializedProvider({
     }
     onWrite(name, data);
   });
-
-  const provider = new MetaMaskInpageProvider(connectionStream);
+  const mux = new ObjectMultiplex();
+  pipeline(connectionStream, mux, connectionStream, (error: Error | null) => {
+    console.error(error);
+  });
+  const provider = new MetaMaskInpageProvider(
+    mux.createStream(MetaMaskInpageProviderStreamName),
+  );
   await new Promise<void>((resolve: () => void) => {
     provider.on('_initialized', resolve);
   });

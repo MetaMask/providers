@@ -1,6 +1,7 @@
+import ObjectMultiplex from '@metamask/object-multiplex';
 import { detect } from 'detect-browser';
 import { PortDuplexStream as PortStream } from 'extension-port-stream';
-import type { Duplex } from 'readable-stream';
+import { pipeline } from 'readable-stream';
 import type { Runtime } from 'webextension-polyfill';
 
 import config from './external-extension-config.json';
@@ -28,8 +29,16 @@ export function createExternalExtensionProvider(
     const metamaskPort = chrome.runtime.connect(extensionId) as Runtime.Port;
 
     const pluginStream = new PortStream(metamaskPort);
-    provider = new StreamProvider(pluginStream as unknown as Duplex, {
-      jsonRpcStreamName: MetaMaskInpageProviderStreamName,
+    const streamName = MetaMaskInpageProviderStreamName;
+    const mux = new ObjectMultiplex();
+    pipeline(pluginStream, mux, pluginStream, (error: Error | null) => {
+      let warningMsg = `Lost connection to "${streamName}".`;
+      if (error?.stack) {
+        warningMsg += `\n${error.stack}`;
+      }
+      console.warn(warningMsg);
+    });
+    provider = new StreamProvider(mux.createStream(streamName), {
       logger: console,
       rpcMiddleware: getDefaultExternalMiddleware(console),
     });

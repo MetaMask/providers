@@ -1,5 +1,7 @@
 import type { JsonRpcMiddleware } from '@metamask/json-rpc-engine';
+import ObjectMultiplex from '@metamask/object-multiplex';
 import type { Json, JsonRpcParams } from '@metamask/utils';
+import { pipeline } from 'readable-stream';
 
 import messages from './messages';
 import { StreamProvider } from './StreamProvider';
@@ -20,7 +22,6 @@ function getStreamProvider(
 ) {
   const mockStream = new MockConnectionStream();
   const streamProvider = new StreamProvider(mockStream, {
-    jsonRpcStreamName: mockStreamName,
     rpcMiddleware,
   });
 
@@ -38,9 +39,7 @@ describe('StreamProvider', () => {
       const networkVersion = '1';
       const isUnlocked = true;
 
-      const streamProvider = new StreamProvider(new MockConnectionStream(), {
-        jsonRpcStreamName: mockStreamName,
-      });
+      const streamProvider = new StreamProvider(new MockConnectionStream());
 
       const requestMock = jest
         .spyOn(streamProvider, 'request')
@@ -370,10 +369,13 @@ describe('StreamProvider', () => {
     describe('events', () => {
       it('calls chainChanged when the chainId changes', async () => {
         const mockStream = new MockConnectionStream();
-        const streamProvider = new StreamProvider(mockStream, {
-          jsonRpcStreamName: mockStreamName,
+        const mux = new ObjectMultiplex();
+        pipeline(mockStream, mux, mockStream, (error: Error | null) => {
+          console.error(error);
         });
-
+        const streamProvider = new StreamProvider(
+          mux.createStream(mockStreamName),
+        );
         const requestMock = jest
           .spyOn(streamProvider, 'request')
           .mockImplementationOnce(async () => {
@@ -404,9 +406,13 @@ describe('StreamProvider', () => {
 
       it('handles chain changes with intermittent disconnection', async () => {
         const mockStream = new MockConnectionStream();
-        const streamProvider = new StreamProvider(mockStream, {
-          jsonRpcStreamName: mockStreamName,
+        const mux = new ObjectMultiplex();
+        pipeline(mockStream, mux, mockStream, (error: Error | null) => {
+          console.error(error);
         });
+        const streamProvider = new StreamProvider(
+          mux.createStream(mockStreamName),
+        );
 
         const requestMock = jest
           .spyOn(streamProvider, 'request')
