@@ -66,6 +66,32 @@ describe('StreamProvider', () => {
         method: 'metamask_getProviderState',
       });
     });
+
+    it('throws if initialized twice', async () => {
+      const accounts = ['0xabc'];
+      const chainId = '0x1';
+      const networkVersion = '1';
+      const isUnlocked = true;
+      const isConnected = true;
+
+      const streamProvider = new StreamProvider(new MockConnectionStream());
+
+      jest.spyOn(streamProvider, 'request').mockImplementation(async () => {
+        return {
+          accounts,
+          chainId,
+          isUnlocked,
+          networkVersion,
+          isConnected,
+        };
+      });
+
+      await streamProvider.initialize();
+
+      await expect(async () => streamProvider.initialize()).rejects.toThrow(
+        new Error('Provider already initialized.'),
+      );
+    });
   });
 
   describe('RPC', () => {

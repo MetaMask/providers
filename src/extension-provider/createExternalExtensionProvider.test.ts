@@ -74,7 +74,7 @@ async function getInitializedProvider({
             chainId,
             isUnlocked,
             networkVersion,
-            isConnected
+            isConnected,
           },
         }),
       );
