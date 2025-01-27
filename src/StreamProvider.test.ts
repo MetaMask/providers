@@ -404,7 +404,7 @@ describe('StreamProvider', () => {
         });
       });
 
-      it('handles chain changes with intermittent disconnection', async () => {
+      it('handles chain changes when the wallet is unable to resolve networkVersion', async () => {
         const mockStream = new MockConnectionStream();
         const mux = new ObjectMultiplex();
         pipeline(mockStream, mux, mockStream, (error: Error | null) => {
@@ -434,50 +434,28 @@ describe('StreamProvider', () => {
 
         const emitSpy = jest.spyOn(streamProvider, 'emit');
 
-        await new Promise<void>((resolve) => {
-          streamProvider.once('disconnect', (error) => {
-            expect(error.code).toBe(1013);
-            resolve();
+        await new Promise<void>((resolve, reject) => {
+          streamProvider.once('disconnect', () => {
+            reject();
           });
+
+          streamProvider.once('chainChanged', (chainId) => {
+            expect(chainId).toStrictEqual('0x1')
+            resolve()
+          })
 
           mockStream.notify(mockStreamName, {
             jsonrpc: '2.0',
             method: 'metamask_chainChanged',
-            // A "loading" networkVersion indicates the network is changing.
-            // Although the chainId is different, chainChanged should not be
-            // emitted in this case.
-            params: { chainId: '0x1', networkVersion: 'loading' },
+          // A null networkVersion indicates that the network version could not
+          // be determined for the network. The chainChanged event should still be
+          // emitted in this case.
+          params: { chainId: '0x1', networkVersion: null },
           });
         });
 
-        // Only once, for "disconnect".
         expect(emitSpy).toHaveBeenCalledTimes(1);
-        emitSpy.mockClear(); // Clear the mock to avoid keeping a count.
-
-        expect(streamProvider.isConnected()).toBe(false);
-        // These should be unchanged.
-        expect(streamProvider.chainId).toBe('0x0');
-
-        await new Promise<void>((resolve) => {
-          streamProvider.once('chainChanged', (newChainId) => {
-            expect(newChainId).toBe('0x1');
-            resolve();
-          });
-
-          mockStream.notify(mockStreamName, {
-            jsonrpc: '2.0',
-            method: 'metamask_chainChanged',
-            // The networkVersion will be ignored here, we're just setting it
-            // to something other than 'loading'.
-            params: { chainId: '0x1', networkVersion: '1' },
-          });
-        });
-
-        expect(emitSpy).toHaveBeenCalledTimes(2);
-        expect(emitSpy).toHaveBeenNthCalledWith(1, 'connect', {
-          chainId: '0x1',
-        });
-        expect(emitSpy).toHaveBeenCalledWith('chainChanged', '0x1');
+        expect(emitSpy).toHaveBeenCalledWith('chainChanged', '0x1')
 
         expect(streamProvider.isConnected()).toBe(true);
         expect(streamProvider.chainId).toBe('0x1');
