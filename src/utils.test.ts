@@ -23,14 +23,14 @@ describe('utils', () => {
         '1',
         '10',
         '999',
-        'loading', // this is a hack that we use
+        null
       ].forEach((value) => {
         expect(isValidNetworkVersion(value)).toBe(true);
       });
     });
 
     it('returns `false` for invalid values', () => {
-      ['', null, undefined, true, 2, 0x1, {}].forEach((value) => {
+      ['', undefined, true, 2, 0x1, {}].forEach((value) => {
         expect(isValidNetworkVersion(value)).toBe(false);
       });
     });

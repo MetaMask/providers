@@ -151,12 +151,8 @@ export abstract class AbstractStreamProvider extends BaseProvider {
 
   /**
    * Upon receipt of a new chainId and networkVersion, emits corresponding
-   * events and sets relevant public state. This class does not have a
-   * `networkVersion` property, but we rely on receiving a `networkVersion`
-   * with the value of `loading` to detect when the network is changing and
-   * a recoverable `disconnect` even has occurred. Child classes that use the
-   * `networkVersion` for other purposes must implement additional handling
-   * therefore.
+   * events and sets relevant public state. Child classes that use the
+   * `networkVersion` for other purposes must implement additional handling.
    *
    * @fires BaseProvider#chainChanged
    * @param networkInfo - An object with network info.
@@ -178,11 +174,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
       return;
     }
 
-    if (networkVersion === 'loading') {
-      this._handleDisconnect(true);
-    } else {
-      super._handleChainChanged({ chainId });
-    }
+    super._handleChainChanged({ chainId });
   }
 }
 

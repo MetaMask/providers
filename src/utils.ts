@@ -104,14 +104,14 @@ export const isValidChainId = (chainId: unknown): chainId is string =>
 
 /**
  * Checks whether the given network version is valid, meaning if it is non-empty
- * string.
+ * string or null.
  *
  * @param networkVersion - The network version to validate.
  * @returns Whether the given network version is valid.
  */
 export const isValidNetworkVersion = (
   networkVersion: unknown,
-): networkVersion is string =>
-  Boolean(networkVersion) && typeof networkVersion === 'string';
+): networkVersion is string | null =>
+  (Boolean(networkVersion) && typeof networkVersion === 'string') || networkVersion === null
 
 export const NOOP = () => undefined;
