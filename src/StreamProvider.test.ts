@@ -387,6 +387,7 @@ describe('StreamProvider', () => {
               chainId: '0x0',
               isUnlocked: true,
               networkVersion: '0',
+              isConnected: true,
             };
           });
 
@@ -402,7 +403,7 @@ describe('StreamProvider', () => {
           mockStream.notify(mockStreamName, {
             jsonrpc: '2.0',
             method: 'metamask_chainChanged',
-            params: { chainId: '0x1', networkVersion: '0x1' },
+            params: { chainId: '0x1', networkVersion: '0' },
           });
         });
       });
