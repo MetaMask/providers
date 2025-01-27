@@ -26,6 +26,9 @@ export const UUID_V4_REGEX =
 export const FQDN_REGEX =
   /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\.)+[a-zA-Z]{2,63}$)/u;
 
+// https://stackoverflow.com/a/9523559
+const POSITIVE_INTEGER_REGEX = /^(\d*[1-9]\d*|0)$/u;
+
 export const EMITTED_NOTIFICATIONS = Object.freeze([
   'eth_subscription', // per eth-json-rpc-filters/subscriptionManager
 ]);
@@ -104,7 +107,7 @@ export const isValidChainId = (chainId: unknown): chainId is string =>
 
 /**
  * Checks whether the given network version is valid, meaning if it is non-empty
- * string or null.
+ * string when available or null otherwise.
  *
  * @param networkVersion - The network version to validate.
  * @returns Whether the given network version is valid.
@@ -112,7 +115,8 @@ export const isValidChainId = (chainId: unknown): chainId is string =>
 export const isValidNetworkVersion = (
   networkVersion: unknown,
 ): networkVersion is string | null =>
-  (Boolean(networkVersion) && typeof networkVersion === 'string') ||
+  (typeof networkVersion === 'string' &&
+    POSITIVE_INTEGER_REGEX.test(networkVersion)) ||
   networkVersion === null;
 
 export const NOOP = () => undefined;

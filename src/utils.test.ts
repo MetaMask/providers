@@ -19,7 +19,7 @@ describe('utils', () => {
 
   describe('isValidNetworkVersion', () => {
     it('returns `true` for valid values', () => {
-      ['1', '10', '999', null].forEach((value) => {
+      ['0', '1', '10', '999', null].forEach((value) => {
         expect(isValidNetworkVersion(value)).toBe(true);
       });
     });
