@@ -158,13 +158,16 @@ export abstract class AbstractStreamProvider extends BaseProvider {
    * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
    * @param networkInfo.networkVersion - The latest network ID.
+   * @param networkInfo.isConnected - Whether the network is available.
    */
   protected _handleChainChanged({
     chainId,
     networkVersion,
+    isConnected,
   }: {
     chainId?: string | undefined;
     networkVersion?: string | undefined;
+    isConnected?: boolean | undefined;
   } = {}) {
     if (!isValidChainId(chainId) || !isValidNetworkVersion(networkVersion)) {
       this._log.error(messages.errors.invalidNetworkParams(), {
@@ -174,7 +177,11 @@ export abstract class AbstractStreamProvider extends BaseProvider {
       return;
     }
 
-    super._handleChainChanged({ chainId });
+    super._handleChainChanged({ chainId, isConnected });
+
+    if (!isConnected) {
+      this._handleDisconnect(true);
+    }
   }
 }
 

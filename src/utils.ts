@@ -112,6 +112,7 @@ export const isValidChainId = (chainId: unknown): chainId is string =>
 export const isValidNetworkVersion = (
   networkVersion: unknown,
 ): networkVersion is string | null =>
-  (Boolean(networkVersion) && typeof networkVersion === 'string') || networkVersion === null
+  (Boolean(networkVersion) && typeof networkVersion === 'string') ||
+  networkVersion === null;
 
 export const NOOP = () => undefined;

@@ -458,14 +458,20 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
    * @param networkInfo.networkVersion - The latest network ID.
+   * @param networkInfo.isConnected - Whether the network is available.
    */
   protected _handleChainChanged({
     chainId,
     networkVersion,
-  }: { chainId?: string; networkVersion?: string } = {}) {
-    super._handleChainChanged({ chainId, networkVersion });
+    isConnected,
+  }: {
+    chainId?: string;
+    networkVersion?: string;
+    isConnected?: boolean;
+  } = {}) {
+    super._handleChainChanged({ chainId, networkVersion, isConnected });
 
-    if (this._state.isConnected && networkVersion !== this.#networkVersion) {
+    if (networkVersion !== this.#networkVersion) {
       this.#networkVersion = networkVersion as string;
       if (this._state.initialized) {
         this.emit('networkChanged', this.#networkVersion);

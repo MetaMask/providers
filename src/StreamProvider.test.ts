@@ -1,5 +1,6 @@
 import type { JsonRpcMiddleware } from '@metamask/json-rpc-engine';
 import ObjectMultiplex from '@metamask/object-multiplex';
+import { JsonRpcError } from '@metamask/rpc-errors';
 import type { Json, JsonRpcParams } from '@metamask/utils';
 import { pipeline } from 'readable-stream';
 
@@ -38,6 +39,7 @@ describe('StreamProvider', () => {
       const chainId = '0x1';
       const networkVersion = '1';
       const isUnlocked = true;
+      const isConnected = true;
 
       const streamProvider = new StreamProvider(new MockConnectionStream());
 
@@ -49,6 +51,7 @@ describe('StreamProvider', () => {
             chainId,
             isUnlocked,
             networkVersion,
+            isConnected,
           };
         });
 
@@ -404,7 +407,7 @@ describe('StreamProvider', () => {
         });
       });
 
-      it('handles chain changes when the wallet is unable to resolve networkVersion', async () => {
+      it('handles chain changes with intermittent disconnection', async () => {
         const mockStream = new MockConnectionStream();
         const mux = new ObjectMultiplex();
         pipeline(mockStream, mux, mockStream, (error: Error | null) => {
@@ -422,6 +425,7 @@ describe('StreamProvider', () => {
               chainId: '0x0',
               isUnlocked: true,
               networkVersion: '0',
+              isConnected: true,
             };
           });
 
@@ -434,31 +438,70 @@ describe('StreamProvider', () => {
 
         const emitSpy = jest.spyOn(streamProvider, 'emit');
 
-        await new Promise<void>((resolve, reject) => {
-          streamProvider.once('disconnect', () => {
-            reject();
+        await new Promise<void>((resolve) => {
+          streamProvider.once('disconnect', (error) => {
+            expect(error.code).toBe(1013);
+            resolve();
           });
-
-          streamProvider.once('chainChanged', (chainId) => {
-            expect(chainId).toStrictEqual('0x1')
-            resolve()
-          })
 
           mockStream.notify(mockStreamName, {
             jsonrpc: '2.0',
             method: 'metamask_chainChanged',
-          // A null networkVersion indicates that the network version could not
-          // be determined for the network. The chainChanged event should still be
-          // emitted in this case.
-          params: { chainId: '0x1', networkVersion: null },
+            params: { chainId: '0x1', networkVersion: '0', isConnected: false },
+          });
+        });
+
+        expect(emitSpy).toHaveBeenCalledTimes(2);
+        expect(emitSpy).toHaveBeenCalledWith('chainChanged', '0x1');
+        expect(emitSpy).toHaveBeenCalledWith(
+          'disconnect',
+          new JsonRpcError(1013, messages.errors.disconnected()),
+        );
+        emitSpy.mockClear(); // Clear the mock to avoid keeping a count.
+
+        expect(streamProvider.isConnected()).toBe(false);
+        expect(streamProvider.chainId).toBe('0x1');
+
+        await new Promise<void>((resolve) => {
+          streamProvider.once('chainChanged', (newChainId) => {
+            expect(newChainId).toBe('0x2');
+            resolve();
+          });
+
+          mockStream.notify(mockStreamName, {
+            jsonrpc: '2.0',
+            method: 'metamask_chainChanged',
+            params: { chainId: '0x2', networkVersion: '0', isConnected: false },
           });
         });
 
         expect(emitSpy).toHaveBeenCalledTimes(1);
-        expect(emitSpy).toHaveBeenCalledWith('chainChanged', '0x1')
+        expect(emitSpy).toHaveBeenCalledWith('chainChanged', '0x2');
+        emitSpy.mockClear(); // Clear the mock to avoid keeping a count.
+
+        expect(streamProvider.isConnected()).toBe(false);
+        expect(streamProvider.chainId).toBe('0x2');
+
+        await new Promise<void>((resolve) => {
+          streamProvider.once('connect', (message) => {
+            expect(message).toStrictEqual({ chainId: '0x2' });
+            resolve();
+          });
+
+          mockStream.notify(mockStreamName, {
+            jsonrpc: '2.0',
+            method: 'metamask_chainChanged',
+            params: { chainId: '0x2', networkVersion: '0', isConnected: true },
+          });
+        });
+
+        expect(emitSpy).toHaveBeenCalledTimes(1);
+        expect(emitSpy).toHaveBeenCalledWith('connect', {
+          chainId: '0x2',
+        });
 
         expect(streamProvider.isConnected()).toBe(true);
-        expect(streamProvider.chainId).toBe('0x1');
+        expect(streamProvider.chainId).toBe('0x2');
       });
     });
   });
