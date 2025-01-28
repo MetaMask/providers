@@ -238,6 +238,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * @param initialState.chainId - The chain ID.
    * @param initialState.isUnlocked - Whether the user has unlocked MetaMask.
    * @param initialState.networkVersion - The network version.
+   * @param initialState.isConnected - Whether the network is available.
    * @fires BaseProvider#_initialized - If `initialState` is defined.
    * @fires BaseProvider#connect - If `initialState` is defined.
    */
@@ -246,17 +247,19 @@ export abstract class BaseProvider extends SafeEventEmitter {
     chainId: string;
     isUnlocked: boolean;
     networkVersion?: string;
+    isConnected?: boolean;
   }) {
     if (this._state.initialized) {
       throw new Error('Provider already initialized.');
     }
 
     if (initialState) {
-      const { accounts, chainId, isUnlocked, networkVersion } = initialState;
+      const { accounts, chainId, isUnlocked, networkVersion, isConnected } =
+        initialState;
 
       // EIP-1193 connect
-      this._handleConnect(chainId);
-      this._handleChainChanged({ chainId, networkVersion });
+      this._handleConnect({ chainId, isConnected });
+      this._handleChainChanged({ chainId, networkVersion, isConnected });
       this._handleUnlockStateChanged({ accounts, isUnlocked });
       this._handleAccountsChanged(accounts);
     }
@@ -311,11 +314,19 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * When the provider becomes connected, updates internal state and emits
    * required events. Idempotent.
    *
-   * @param chainId - The ID of the newly connected chain.
+   * @param networkInfo - The options object.
+   * @param networkInfo.chainId - The ID of the newly connected chain.
+   * @param networkInfo.isConnected - Whether the network is available.
    * @fires MetaMaskInpageProvider#connect
    */
-  protected _handleConnect(chainId: string) {
-    if (!this._state.isConnected) {
+  protected _handleConnect({
+    chainId,
+    isConnected,
+  }: {
+    chainId: string;
+    isConnected?: boolean | undefined;
+  }) {
+    if (!this._state.isConnected && isConnected) {
       this._state.isConnected = true;
       this.emit('connect', { chainId });
       this._log.debug(messages.info.connected(chainId));
@@ -375,18 +386,24 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * @fires BaseProvider#chainChanged
    * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
+   * @param networkInfo.isConnected - Whether the network is available.
    */
   protected _handleChainChanged({
     chainId,
+    isConnected,
   }:
-    | { chainId?: string | undefined; networkVersion?: string | undefined }
+    | {
+        chainId?: string;
+        networkVersion?: string | undefined;
+        isConnected?: boolean | undefined;
+      }
     | undefined = {}) {
     if (!isValidChainId(chainId)) {
       this._log.error(messages.errors.invalidNetworkParams(), { chainId });
       return;
     }
 
-    this._handleConnect(chainId);
+    this._handleConnect({ chainId, isConnected });
 
     if (chainId !== this.#chainId) {
       this.#chainId = chainId;

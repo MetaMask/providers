@@ -45,6 +45,7 @@ async function getInitializedProvider({
     chainId = '0x0',
     isUnlocked = true,
     networkVersion = '0',
+    isConnected = true,
   } = {},
   onMethodCalled = [],
 }: {
@@ -73,6 +74,7 @@ async function getInitializedProvider({
             chainId,
             isUnlocked,
             networkVersion,
+            isConnected,
           },
         }),
       );
