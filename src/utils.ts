@@ -107,7 +107,7 @@ export const isValidChainId = (chainId: unknown): chainId is string =>
 
 /**
  * Checks whether the given network version is valid, meaning if it is non-empty
- * string when available or the value 'loading' otherwise.
+ * integer string or the value 'loading'.
  *
  * @param networkVersion - The network version to validate.
  * @returns Whether the given network version is valid.
