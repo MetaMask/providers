@@ -450,9 +450,12 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   }
 
   /**
-   * Upon receipt of a new chainId and networkVersion, emits corresponding
-   * events and sets relevant public state. Does nothing if neither the chainId
-   * nor the networkVersion are different from existing values.
+   * Upon receipt of a new chainId, networkVersion, and isConnected value
+   * emits corresponding events and sets relevant public state. We interpret
+   * a `networkVersion` with the value of `loading` to be null. The `isConnected`
+   * value determines if a `connect` or recoverable `disconnect` has occurred.
+   * Child classes that use the `networkVersion` for other purposes must implement
+   * additional handling therefore.
    *
    * @fires MetamaskInpageProvider#networkChanged
    * @param networkInfo - An object with network info.
@@ -474,7 +477,9 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     // The wallet will send a value of `loading` for `networkVersion` when it intends
     // to communicate that this value cannot be resolved and should be intepreted as null.
     // The wallet cannot directly send a null value for `networkVersion` because this
-    // would be a breaking change for existing dapps that use their own embedded MetaMask provider.
+    // would be a breaking change for existing dapps that use their own embedded MetaMask provider
+    // that expect this value to always be a integer string or the value 'loading'.
+
     const targetNetworkVersion =
       networkVersion === 'loading' ? null : networkVersion;
 
