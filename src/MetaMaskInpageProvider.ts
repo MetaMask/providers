@@ -471,8 +471,15 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   } = {}) {
     super._handleChainChanged({ chainId, networkVersion, isConnected });
 
-    if (networkVersion !== this.#networkVersion) {
-      this.#networkVersion = networkVersion as string;
+    // The wallet will send a value of `loading` for `networkVersion` when it intends
+    // to communicate that this value cannot be resolved and should be intepreted as null.
+    // The wallet cannot directly send a null value for `networkVersion` because this
+    // would be a breaking change for existing dapps that use their own embedded MetaMask provider.
+    const targetNetworkVersion =
+      networkVersion === 'loading' ? null : networkVersion;
+
+    if (targetNetworkVersion !== this.#networkVersion) {
+      this.#networkVersion = targetNetworkVersion as string;
       if (this._state.initialized) {
         this.emit('networkChanged', this.#networkVersion);
       }

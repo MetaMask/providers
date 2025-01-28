@@ -859,7 +859,7 @@ describe('MetaMaskInpageProvider: RPC', () => {
       expect(provider.networkVersion).toBe('2');
     });
 
-    it('handles chain changes with null networkVersion', async () => {
+    it('handles chain changes when networkVersion is "loading" by interpreting it as null', async () => {
       const { provider, connectionStream } = await getInitializedProvider();
 
       // We check this mostly for the readability of this test.
@@ -878,7 +878,11 @@ describe('MetaMaskInpageProvider: RPC', () => {
         connectionStream.notify(MetaMaskInpageProviderStreamName, {
           jsonrpc: '2.0',
           method: 'metamask_chainChanged',
-          params: { chainId: '0x0', networkVersion: null, isConnected: true },
+          params: {
+            chainId: '0x0',
+            networkVersion: 'loading',
+            isConnected: true,
+          },
         });
       });
 

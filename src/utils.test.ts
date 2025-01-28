@@ -19,13 +19,18 @@ describe('utils', () => {
 
   describe('isValidNetworkVersion', () => {
     it('returns `true` for valid values', () => {
-      ['0', '1', '10', '999', null].forEach((value) => {
+      [
+        '1',
+        '10',
+        '999',
+        'loading', // this is a hack that we use
+      ].forEach((value) => {
         expect(isValidNetworkVersion(value)).toBe(true);
       });
     });
 
     it('returns `false` for invalid values', () => {
-      ['', undefined, true, 2, 0x1, {}].forEach((value) => {
+      ['', null, undefined, true, 2, 0x1, {}].forEach((value) => {
         expect(isValidNetworkVersion(value)).toBe(false);
       });
     });
