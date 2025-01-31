@@ -129,7 +129,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
     this._handleConnect = this._handleConnect.bind(this);
     this._handleChainChanged = this._handleChainChanged.bind(this);
     this._handleDisconnect = this._handleDisconnect.bind(this);
-    this._handleUnlockStateChanged = this._handleUnlockStateChanged.bind(this);
     this._rpcRequest = this._rpcRequest.bind(this);
     this.request = this.request.bind(this);
 
@@ -257,7 +256,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
       // EIP-1193 connect
       this._handleConnect(chainId);
       this._handleChainChanged({ chainId, networkVersion });
-      this._handleUnlockStateChanged({ accounts, isUnlocked });
       this._handleAccountsChanged(accounts);
     }
 
@@ -453,35 +451,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
         const _nextAccounts = [..._accounts];
         this.emit('accountsChanged', _nextAccounts);
       }
-    }
-  }
-
-  /**
-   * Upon receipt of a new isUnlocked state, sets relevant public state.
-   * Calls the accounts changed handler with the received accounts, or an empty
-   * array.
-   *
-   * Does nothing if the received value is equal to the existing value.
-   * There are no lock/unlock events.
-   *
-   * @param opts - Options bag.
-   * @param opts.accounts - The exposed accounts, if any.
-   * @param opts.isUnlocked - The latest isUnlocked value.
-   */
-  protected _handleUnlockStateChanged({
-    accounts,
-    isUnlocked,
-  }: { accounts?: string[]; isUnlocked?: boolean } = {}) {
-    if (typeof isUnlocked !== 'boolean') {
-      this._log.error(
-        'MetaMask: Received invalid isUnlocked parameter. Please report this bug.',
-      );
-      return;
-    }
-
-    if (isUnlocked !== this._state.isUnlocked) {
-      this._state.isUnlocked = isUnlocked;
-      this._handleAccountsChanged(accounts ?? []);
     }
   }
 }
