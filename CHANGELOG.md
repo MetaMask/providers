@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [20.0.0]
 
-### Uncategorized
+### Changed
 
-- feat: allow `networkVersion` to be set to `null`. fire connection events based on new `isConnected` property value ([#404](https://github.com/MetaMask/providers/pull/404))
+- **BREAKING**: `isConnected` that is now expected in the result of `metamask_getProviderState` and `metamask_chainChanged` events ([#404](https://github.com/MetaMask/providers/pull/404))
+- **BREAKING**: Interprets the provider's `networkVersion` value of `loading` to be null and for the `networkChanged` event to emit a null value ([#404](https://github.com/MetaMask/providers/pull/404))
+- **BREAKING**: Replaces the disconnect event/behavior when receiving the `loading` value for `networkVersion` with a check against `isConnected` instead ([#404](https://github.com/MetaMask/providers/pull/404))
 
 ## [19.0.0]
 

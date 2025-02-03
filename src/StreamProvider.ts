@@ -165,9 +165,9 @@ export abstract class AbstractStreamProvider extends BaseProvider {
     networkVersion,
     isConnected,
   }: {
-    chainId?: string | undefined;
+    chainId?: string;
     networkVersion?: string | undefined;
-    isConnected?: boolean | undefined;
+    isConnected?: boolean;
   } = {}) {
     if (!isValidChainId(chainId) || !isValidNetworkVersion(networkVersion)) {
       this._log.error(messages.errors.invalidNetworkParams(), {

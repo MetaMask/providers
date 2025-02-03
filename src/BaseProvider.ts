@@ -395,7 +395,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     | {
         chainId?: string;
         networkVersion?: string | undefined;
-        isConnected?: boolean | undefined;
+        isConnected?: boolean;
       }
     | undefined = {}) {
     if (!isValidChainId(chainId)) {
