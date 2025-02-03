@@ -1218,4 +1218,25 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
       expect(provider.selectedAddress).toBe('0xdeadbeef');
     });
   });
+
+  describe('_getExperimentalApi', () => {
+    let provider: any | MetaMaskInpageProvider;
+
+    beforeEach(async () => {
+      provider = (
+        await getInitializedProvider({
+          initialState: {
+            accounts: ['0xdeadbeef'],
+          },
+        })
+      ).provider;
+    });
+
+    describe('isUnlocked', () => {
+      it('should return negated value of `state.isPermanentlyDisconnected`', async () => {
+        const isUnlocked = await provider._getExperimentalApi().isUnlocked();
+        expect(isUnlocked).toBe(!provider._state.isPermanentlyDisconnected);
+      });
+    });
+  });
 });
