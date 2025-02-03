@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **BREAKING**: An `isConnected` boolean property is now expected in the result of `metamask_getProviderState` and `metamask_chainChanged` events ([#404](https://github.com/MetaMask/providers/pull/404))
 - **BREAKING**: A `networkVersion` value of `loading` received by the `chainChanged` event handler is now interpreted to be null. In this case, the `networkChanged` event emits a null value as well. ([#404](https://github.com/MetaMask/providers/pull/404))
 - **BREAKING**: The disconnect event is now tied to the new `isConnected` property instead of the `networkVersion` property. ([#404](https://github.com/MetaMask/providers/pull/404))
+- The `isUnlocked` boolean property of the `metamask_getProviderState` and `metamask_accountsChanged` event no longer causes the `accountsChanged` event to be emitted ([#405](https://github.com/MetaMask/providers/pull/405))
+- `MetaMaskInpageProvider.isUnlocked()` will always return true until the inpage to contentscript stream ends and the provider enters a permanently disconnected state ([#405](https://github.com/MetaMask/providers/pull/405))
 
 ## [19.0.0]
 
