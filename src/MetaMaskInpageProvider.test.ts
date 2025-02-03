@@ -50,7 +50,6 @@ async function getInitializedProvider({
   initialState: {
     accounts = [],
     chainId = '0x0',
-    isUnlocked = true,
     networkVersion = '0',
     isConnected = true,
   } = {},
@@ -81,7 +80,6 @@ async function getInitializedProvider({
           result: {
             accounts,
             chainId,
-            isUnlocked,
             networkVersion,
             isConnected,
           },
@@ -1114,7 +1112,6 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
           return {
             accounts: ['0xabc'],
             chainId: '0x0',
-            isUnlocked: true,
             networkVersion: '0',
             isConnected: true,
           };

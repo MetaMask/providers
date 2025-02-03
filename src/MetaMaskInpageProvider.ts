@@ -409,14 +409,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
          *
          * @returns Promise resolving to true if MetaMask is currently unlocked.
          */
-        isUnlocked: async () => {
-          if (!this._state.initialized) {
-            await new Promise<void>((resolve) => {
-              this.on('_initialized', () => resolve());
-            });
-          }
-          return this._state.isUnlocked;
-        },
+        isUnlocked: async () => !this._state.isPermanentlyDisconnected,
 
         /**
          * Make a batch RPC request.
