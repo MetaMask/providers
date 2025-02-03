@@ -46,12 +46,7 @@ type InitializedProviderDetails = {
  * can be used to inspect message sent by the provider.
  */
 async function getInitializedProvider({
-  initialState: {
-    accounts = [],
-    chainId = '0x0',
-    isUnlocked = true,
-    networkVersion = '0',
-  } = {},
+  initialState: { accounts = [], chainId = '0x0', networkVersion = '0' } = {},
   onMethodCalled = [],
 }: {
   initialState?: Partial<
@@ -79,7 +74,6 @@ async function getInitializedProvider({
           result: {
             accounts,
             chainId,
-            isUnlocked,
             networkVersion,
           },
         }),
@@ -1034,7 +1028,6 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
           return {
             accounts: ['0xabc'],
             chainId: '0x0',
-            isUnlocked: true,
             networkVersion: '0',
           };
         });

@@ -52,7 +52,6 @@ export type RequestArguments = {
 export type BaseProviderState = {
   accounts: null | string[];
   isConnected: boolean;
-  isUnlocked: boolean;
   initialized: boolean;
   isPermanentlyDisconnected: boolean;
 };
@@ -77,7 +76,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
   protected static _defaultState: BaseProviderState = {
     accounts: null,
     isConnected: false,
-    isUnlocked: false,
     initialized: false,
     isPermanentlyDisconnected: false,
   };
@@ -235,7 +233,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * @param initialState - The provider's initial state.
    * @param initialState.accounts - The user's accounts.
    * @param initialState.chainId - The chain ID.
-   * @param initialState.isUnlocked - Whether the user has unlocked MetaMask.
    * @param initialState.networkVersion - The network version.
    * @fires BaseProvider#_initialized - If `initialState` is defined.
    * @fires BaseProvider#connect - If `initialState` is defined.
@@ -243,7 +240,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
   protected _initializeState(initialState?: {
     accounts: string[];
     chainId: string;
-    isUnlocked: boolean;
     networkVersion?: string;
   }) {
     if (this._state.initialized) {
@@ -354,7 +350,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
         this.#chainId = null;
         this._state.accounts = null;
         this.#selectedAddress = null;
-        this._state.isUnlocked = false;
         this._state.isPermanentlyDisconnected = true;
       }
 

@@ -40,12 +40,7 @@ type InitializedExtensionProviderDetails = {
  * "onWrite" stub that can be used to inspect message sent by the provider.
  */
 async function getInitializedProvider({
-  initialState: {
-    accounts = [],
-    chainId = '0x0',
-    isUnlocked = true,
-    networkVersion = '0',
-  } = {},
+  initialState: { accounts = [], chainId = '0x0', networkVersion = '0' } = {},
   onMethodCalled = [],
 }: {
   initialState?: Partial<Parameters<BaseProvider['_initializeState']>[0]>;
@@ -71,7 +66,6 @@ async function getInitializedProvider({
           result: {
             accounts,
             chainId,
-            isUnlocked,
             networkVersion,
           },
         }),

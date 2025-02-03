@@ -37,7 +37,6 @@ describe('StreamProvider', () => {
       const accounts = ['0xabc'];
       const chainId = '0x1';
       const networkVersion = '1';
-      const isUnlocked = true;
 
       const streamProvider = new StreamProvider(new MockConnectionStream());
 
@@ -47,7 +46,6 @@ describe('StreamProvider', () => {
           return {
             accounts,
             chainId,
-            isUnlocked,
             networkVersion,
           };
         });
@@ -382,7 +380,6 @@ describe('StreamProvider', () => {
             return {
               accounts: [],
               chainId: '0x0',
-              isUnlocked: true,
               networkVersion: '0',
             };
           });
@@ -420,7 +417,6 @@ describe('StreamProvider', () => {
             return {
               accounts: [],
               chainId: '0x0',
-              isUnlocked: true,
               networkVersion: '0',
             };
           });
