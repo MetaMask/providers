@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **BREAKING**: An `isConnected` boolean property is now expected in the result of `metamask_getProviderState` and `metamask_chainChanged` events ([#404](https://github.com/MetaMask/providers/pull/404))
 - **BREAKING**: A `networkVersion` value of `loading` received by the `chainChanged` event handler is now interpreted to be null. In this case, the `networkChanged` event emits a null value as well. ([#404](https://github.com/MetaMask/providers/pull/404))
-- **BREAKING**: Replaces the disconnect event/behavior when receiving the `loading` value for `networkVersion` with a check against `isConnected` instead ([#404](https://github.com/MetaMask/providers/pull/404))
+- **BREAKING**: The disconnect event is now tied to the new `isConnected` property instead of the `networkVersion` property. ([#404](https://github.com/MetaMask/providers/pull/404))
 
 ## [19.0.0]
 
