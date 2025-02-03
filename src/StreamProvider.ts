@@ -81,8 +81,6 @@ export abstract class AbstractStreamProvider extends BaseProvider {
       const { method, params } = payload;
       if (method === 'metamask_accountsChanged') {
         this._handleAccountsChanged(params);
-      } else if (method === 'metamask_unlockStateChanged') {
-        this._handleUnlockStateChanged(params);
       } else if (method === 'metamask_chainChanged') {
         this._handleChainChanged(params);
       } else if (EMITTED_NOTIFICATIONS.includes(method)) {

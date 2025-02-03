@@ -52,7 +52,6 @@ export type RequestArguments = {
 export type BaseProviderState = {
   accounts: null | string[];
   isConnected: boolean;
-  isUnlocked: boolean;
   initialized: boolean;
   isPermanentlyDisconnected: boolean;
 };
@@ -77,7 +76,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
   protected static _defaultState: BaseProviderState = {
     accounts: null,
     isConnected: false,
-    isUnlocked: false,
     initialized: false,
     isPermanentlyDisconnected: false,
   };
@@ -129,7 +127,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
     this._handleConnect = this._handleConnect.bind(this);
     this._handleChainChanged = this._handleChainChanged.bind(this);
     this._handleDisconnect = this._handleDisconnect.bind(this);
-    this._handleUnlockStateChanged = this._handleUnlockStateChanged.bind(this);
     this._rpcRequest = this._rpcRequest.bind(this);
     this.request = this.request.bind(this);
 
@@ -236,7 +233,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * @param initialState - The provider's initial state.
    * @param initialState.accounts - The user's accounts.
    * @param initialState.chainId - The chain ID.
-   * @param initialState.isUnlocked - Whether the user has unlocked MetaMask.
    * @param initialState.networkVersion - The network version.
    * @param initialState.isConnected - Whether the network is available.
    * @fires BaseProvider#_initialized - If `initialState` is defined.
@@ -245,7 +241,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
   protected _initializeState(initialState?: {
     accounts: string[];
     chainId: string;
-    isUnlocked: boolean;
     networkVersion?: string;
     isConnected?: boolean;
   }) {
@@ -254,13 +249,11 @@ export abstract class BaseProvider extends SafeEventEmitter {
     }
 
     if (initialState) {
-      const { accounts, chainId, isUnlocked, networkVersion, isConnected } =
-        initialState;
+      const { accounts, chainId, networkVersion, isConnected } = initialState;
 
       // EIP-1193 connect
       this._handleConnect({ chainId, isConnected });
       this._handleChainChanged({ chainId, networkVersion, isConnected });
-      this._handleUnlockStateChanged({ accounts, isUnlocked });
       this._handleAccountsChanged(accounts);
     }
 
@@ -367,7 +360,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
         this.#chainId = null;
         this._state.accounts = null;
         this.#selectedAddress = null;
-        this._state.isUnlocked = false;
         this._state.isPermanentlyDisconnected = true;
       }
 
@@ -470,35 +462,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
         const _nextAccounts = [..._accounts];
         this.emit('accountsChanged', _nextAccounts);
       }
-    }
-  }
-
-  /**
-   * Upon receipt of a new isUnlocked state, sets relevant public state.
-   * Calls the accounts changed handler with the received accounts, or an empty
-   * array.
-   *
-   * Does nothing if the received value is equal to the existing value.
-   * There are no lock/unlock events.
-   *
-   * @param opts - Options bag.
-   * @param opts.accounts - The exposed accounts, if any.
-   * @param opts.isUnlocked - The latest isUnlocked value.
-   */
-  protected _handleUnlockStateChanged({
-    accounts,
-    isUnlocked,
-  }: { accounts?: string[]; isUnlocked?: boolean } = {}) {
-    if (typeof isUnlocked !== 'boolean') {
-      this._log.error(
-        'MetaMask: Received invalid isUnlocked parameter. Please report this bug.',
-      );
-      return;
-    }
-
-    if (isUnlocked !== this._state.isUnlocked) {
-      this._state.isUnlocked = isUnlocked;
-      this._handleAccountsChanged(accounts ?? []);
     }
   }
 }
