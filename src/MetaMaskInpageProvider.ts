@@ -405,12 +405,14 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     return new Proxy(
       {
         /**
-         * Previously, this method determined if MetaMask is unlocked by the user.
-         * Now, it always returns true.
+         * Determines if MetaMask is unlocked by the user.
          *
-         * @returns Promise resolving to true.
+         * @returns Promise resolving to true if MetaMask is currently unlocked.
          */
         isUnlocked: async () => {
+          if (!this._state.isPermanentlyDisconnected) {
+            return false;
+          }
           return true;
         },
 
