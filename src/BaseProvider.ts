@@ -251,7 +251,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     }
 
     if (initialState) {
-      const { accounts, chainId, isUnlocked, networkVersion } = initialState;
+      const { accounts, chainId, networkVersion } = initialState;
 
       // EIP-1193 connect
       this._handleConnect(chainId);
