@@ -1,15 +1,11 @@
-import ObjectMultiplex from '@metamask/object-multiplex';
-import { type Duplex, pipeline } from 'readable-stream';
+import { type Duplex } from 'readable-stream';
 
 import type { CAIP294WalletData } from './CAIP294';
 import { announceWallet } from './CAIP294';
 import { announceProvider as announceEip6963Provider } from './EIP6963';
 import { getBuildType } from './extension-provider/createExternalExtensionProvider';
 import type { MetaMaskInpageProviderOptions } from './MetaMaskInpageProvider';
-import {
-  MetaMaskInpageProvider,
-  MetaMaskInpageProviderStreamName,
-} from './MetaMaskInpageProvider';
+import { MetaMaskInpageProvider } from './MetaMaskInpageProvider';
 import { shimWeb3 } from './shimWeb3';
 import type { BaseProviderInfo } from './types';
 
@@ -33,10 +29,6 @@ type InitializeProviderOptions = {
    * Whether the window.web3 shim should be set.
    */
   shouldShimWeb3?: boolean;
-  /**
-   * The name of the stream used to connect to the wallet.
-   */
-  jsonRpcStreamName?: string;
 } & MetaMaskInpageProviderOptions;
 
 /**
@@ -44,7 +36,6 @@ type InitializeProviderOptions = {
  *
  * @param options - An options bag.
  * @param options.connectionStream - A Node.js stream.
- * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
  * @param options.maxEventListeners - The maximum number of event listeners.
  * @param options.providerInfo - The EIP-6963 provider info / CAIP-294 wallet data that should be announced if set.
  * @param options.shouldSendMetadata - Whether the provider should send page metadata.
@@ -55,7 +46,6 @@ type InitializeProviderOptions = {
  */
 export function initializeProvider({
   connectionStream,
-  jsonRpcStreamName = MetaMaskInpageProviderStreamName,
   logger = console,
   maxEventListeners = 100,
   providerInfo,
@@ -63,22 +53,11 @@ export function initializeProvider({
   shouldSetOnWindow = true,
   shouldShimWeb3 = false,
 }: InitializeProviderOptions): MetaMaskInpageProvider {
-  const mux = new ObjectMultiplex();
-  pipeline(connectionStream, mux, connectionStream, (error: Error | null) => {
-    let warningMsg = `Lost connection to "${jsonRpcStreamName}".`;
-    if (error?.stack) {
-      warningMsg += `\n${error.stack}`;
-    }
-    console.warn(warningMsg);
+  const provider = new MetaMaskInpageProvider(connectionStream, {
+    logger,
+    maxEventListeners,
+    shouldSendMetadata,
   });
-  const provider = new MetaMaskInpageProvider(
-    mux.createStream(jsonRpcStreamName),
-    {
-      logger,
-      maxEventListeners,
-      shouldSendMetadata,
-    },
-  );
 
   const proxiedProvider = new Proxy(provider, {
     // some common libraries, e.g. web3@1.x, mess with our API
