@@ -9,10 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [21.0.0]
 
-### Uncategorized
+### Changed
 
-- feat: remove substream instantiation from `initializeProvider` ([#410](https://github.com/MetaMask/providers/pull/410))
-- chore: add workflow_dispatch to security-code-scanner ([#409](https://github.com/MetaMask/providers/pull/409))
+- **BREAKING**: `initializeProvider()` no longer accepts the `jsonRpcStreamName` option param. ([#410](https://github.com/MetaMask/providers/pull/410))
+- This helper no longers instantiates a `jsonRpcStreamName` named substream from the `connectionStream` Duplex stream option param.
+- Callers of `initializeProvider()` should now instantiate their own `metamask-provider` named substream and pass it in as the value for `connectionStream`.
 
 ## [20.0.0]
 
