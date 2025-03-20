@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [21.0.0]
+
+### Changed
+
+- **BREAKING**: `initializeProvider()` no longer accepts the `jsonRpcStreamName` option param. ([#410](https://github.com/MetaMask/providers/pull/410))
+  - This helper no longers instantiates a `jsonRpcStreamName` named substream from the `connectionStream` Duplex stream option param.
+  - Callers of `initializeProvider()` should now instantiate their own `metamask-provider` named substream and pass it in as the value for `connectionStream`.
+
 ## [20.0.0]
 
 ### Changed
@@ -549,7 +557,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v20.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v21.0.0...HEAD
+[21.0.0]: https://github.com/MetaMask/providers/compare/v20.0.0...v21.0.0
 [20.0.0]: https://github.com/MetaMask/providers/compare/v19.0.0...v20.0.0
 [19.0.0]: https://github.com/MetaMask/providers/compare/v18.3.1...v19.0.0
 [18.3.1]: https://github.com/MetaMask/providers/compare/v18.3.0...v18.3.1
