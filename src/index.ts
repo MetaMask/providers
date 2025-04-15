@@ -3,6 +3,7 @@ import type { RequestArguments } from './BaseProvider';
 import type {
   CAIP294AnnounceWalletEvent,
   CAIP294WalletData,
+  CAIP294Target,
   CAIP294RequestWalletEvent,
 } from './CAIP294';
 import {
@@ -41,6 +42,7 @@ export type {
   EIP6963RequestProviderEvent,
   CAIP294AnnounceWalletEvent,
   CAIP294WalletData as CAIP294WalletInfo,
+  CAIP294Target,
   CAIP294RequestWalletEvent,
 };
 
