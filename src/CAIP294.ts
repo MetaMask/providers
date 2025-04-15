@@ -20,16 +20,24 @@ declare global {
 }
 
 /**
+ * Represents the protocol/transport supported by the wallet.
+ * @type CAIP294Target
+ * @property type - The type of the target. SHOULD reference a CAIP number in the `caip-x` format.
+ * @property value - The value specifying how to connect to the target as specified by the specification in the `type` property.
+ */
+export type CAIP294Target = { type: string; value?: unknown };
+
+/**
  * Represents the assets needed to display and identify a wallet.
  * @type CAIP294WalletData
  * @property uuid - A locally unique identifier for the wallet. MUST be a v4 UUID.
  * @property name - The name of the wallet.
  * @property icon - The icon for the wallet. MUST be data URI.
  * @property rdns - The reverse syntax domain name identifier for the wallet.
- * @property extensionId - The canonical extension ID of the wallet provider for the active browser.
+ * @property targets - The target objects specifying the protocol/transport supported by the wallet.
  */
 export type CAIP294WalletData = BaseProviderInfo & {
-  extensionId?: string | undefined;
+  targets?: CAIP294Target[];
 };
 
 /**
@@ -121,6 +129,16 @@ function isValidAnnounceWalletEvent(
 }
 
 /**
+ * Validates an {@link CAIP294Target} object.
+ *
+ * @param data - The {@link CAIP294Target} to validate.
+ * @returns Whether the {@link CAIP294Target} is valid.
+ */
+function isValidWalletTarget(data: unknown): data is CAIP294Target {
+  return isObject(data) && typeof data.type === 'string' && Boolean(data.type);
+}
+
+/**
  * Validates an {@link CAIP294WalletData} object.
  *
  * @param data - The {@link CAIP294WalletData} to validate.
@@ -137,8 +155,8 @@ function isValidWalletData(data: unknown): data is CAIP294WalletData {
     data.icon.startsWith('data:image') &&
     typeof data.rdns === 'string' &&
     FQDN_REGEX.test(data.rdns) &&
-    (data.extensionId === undefined ||
-      (typeof data.extensionId === 'string' && data.extensionId.length > 0))
+    (data.targets === undefined ||
+      (Array.isArray(data.targets) && data.targets.every(isValidWalletTarget)))
   );
 }
 

@@ -10,7 +10,12 @@ const getWalletData = (): CAIP294WalletData => ({
   name: 'Example Wallet',
   icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>',
   rdns: 'com.example.wallet',
-  extensionId: 'abcdefghijklmnopqrstuvwxyz',
+  targets: [
+    {
+      type: 'caip-123',
+      value: 'abcdefghijklmnopqrstuvwxyz',
+    },
+  ],
 });
 
 const walletDataValidationError = () =>
@@ -88,26 +93,56 @@ describe('CAIP-294', () => {
       });
     });
 
-    it('allows `extensionId` to be undefined or a string', () => {
+    it('allows `targets` to be undefined', () => {
       const walletInfo = getWalletData();
       expect(() => announceWallet(walletInfo)).not.toThrow();
 
-      delete walletInfo.extensionId;
-
-      expect(() => announceWallet(walletInfo)).not.toThrow();
-
-      walletInfo.extensionId = 'valid-string';
+      delete walletInfo.targets;
       expect(() => announceWallet(walletInfo)).not.toThrow();
     });
-  });
 
-  it('throws if the `extensionId` field is invalid', () => {
-    [null, '', 42, Symbol('bar')].forEach((invalidExtensionId) => {
+    it('allows `targets` to be empty array', () => {
       const walletInfo = getWalletData();
-      walletInfo.extensionId = invalidExtensionId as any;
+      expect(() => announceWallet(walletInfo)).not.toThrow();
 
-      expect(() => announceWallet(walletInfo)).toThrow(
-        walletDataValidationError(),
+      walletInfo.targets = [];
+      expect(() => announceWallet(walletInfo)).not.toThrow();
+    });
+
+    it('throws if the `targets` field is invalid', () => {
+      [null, '', 42, Symbol('bar'), {}].forEach((invalidTargets) => {
+        const walletInfo = getWalletData();
+        walletInfo.targets = invalidTargets as any;
+
+        expect(() => announceWallet(walletInfo)).toThrow(
+          walletDataValidationError(),
+        );
+      });
+    });
+
+    it('throws if the `targets` field contains invalid targets', () => {
+      [undefined, null, '', 42, Symbol('bar'), [], {}].forEach(
+        (invalidTarget) => {
+          const walletInfo = getWalletData();
+          walletInfo.targets = [invalidTarget as any];
+
+          expect(() => announceWallet(walletInfo)).toThrow(
+            walletDataValidationError(),
+          );
+        },
+      );
+    });
+
+    it('throws if the `targets` field contains invalid target types', () => {
+      [undefined, null, '', 42, Symbol('bar'), [], {}].forEach(
+        (invalidTargetType) => {
+          const walletInfo = getWalletData();
+          walletInfo.targets = [{ type: invalidTargetType as any }];
+
+          expect(() => announceWallet(walletInfo)).toThrow(
+            walletDataValidationError(),
+          );
+        },
       );
     });
   });
