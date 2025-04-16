@@ -21,11 +21,6 @@ jobs:
     needs:
       - prepare
     steps:
-      - name: Checkout and setup environment
-        uses: MetaMask/action-checkout-and-setup@v1
-        with:
-          is-high-risk-environment: false
-          skip-allow-scripts: true
       - run: yarn build
       - name: Require clean working directory
         shell: bash
@@ -41,11 +36,6 @@ jobs:
     needs:
       - prepare
     steps:
-      - name: Checkout and setup environment
-        uses: MetaMask/action-checkout-and-setup@v1
-        with:
-          is-high-risk-environment: false
-          skip-allow-scripts: true
       - run: yarn lint
       - name: Validate RC changelog
         if: ${{ startsWith(github.head_ref, 'release/') }}
@@ -64,8 +54,6 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    needs:
-      - prepare
     strategy:
       matrix:
         node-version: [16.x, 18.x, 20.x]
@@ -75,6 +63,7 @@ jobs:
         with:
           is-high-risk-environment: false
           skip-allow-scripts: true
+          cache-node-modules: true
           node-version: ${{ matrix.node-version }}
       - run: yarn test
       - name: Require clean working directory
@@ -88,8 +77,6 @@ jobs:
   compatibility-test:
     name: Compatibility test
     runs-on: ubuntu-latest
-    needs:
-      - prepare
     strategy:
       matrix:
         node-version: [16.x, 18.x, 20.x]
@@ -99,6 +86,7 @@ jobs:
         with:
           is-high-risk-environment: false
           skip-allow-scripts: true
+          cache-node-modules: true
           node-version: ${{ matrix.node-version }}
       - run: rm yarn.lock && YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn
       - run: yarn test
