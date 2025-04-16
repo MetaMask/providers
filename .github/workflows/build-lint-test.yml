@@ -94,12 +94,12 @@ jobs:
       matrix:
         node-version: [16.x, 18.x, 20.x]
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - name: Checkout and setup environment
+        uses: MetaMask/action-checkout-and-setup@v1
         with:
+          is-high-risk-environment: false
+          skip-allow-scripts: true
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
       - run: rm yarn.lock && YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn
       - run: yarn test
       - name: Require clean working directory
