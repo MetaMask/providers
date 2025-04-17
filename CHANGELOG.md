@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [22.0.0]
+
+### Uncategorized
+
+- feat: Add CAIP-294 `targets` to `wallet_announce` event data. Announce CAIP-348 target in `initializeProvider` ([#413](https://github.com/MetaMask/providers/pull/413))
+- ci: use MetaMask/action-checkout-and-setup@v1 ([#414](https://github.com/MetaMask/providers/pull/414))
+- chore: update security-code-scanner@main to action-security-code-scanner@v1 ([#412](https://github.com/MetaMask/providers/pull/412))
+
 ## [21.0.0]
 
 ### Changed
@@ -557,7 +565,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v21.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v22.0.0...HEAD
+[22.0.0]: https://github.com/MetaMask/providers/compare/v21.0.0...v22.0.0
 [21.0.0]: https://github.com/MetaMask/providers/compare/v20.0.0...v21.0.0
 [20.0.0]: https://github.com/MetaMask/providers/compare/v19.0.0...v20.0.0
 [19.0.0]: https://github.com/MetaMask/providers/compare/v18.3.1...v19.0.0
