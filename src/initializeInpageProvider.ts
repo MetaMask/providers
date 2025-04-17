@@ -122,11 +122,20 @@ export async function announceCaip294WalletData(
   const providerState = await provider.request<{ extensionId?: string }>({
     method: 'metamask_getProviderState',
   });
+
+  const targets = [];
+
   const extensionId = providerState?.extensionId;
+  if (extensionId) {
+    targets.push({
+      type: 'caip-348',
+      value: extensionId,
+    });
+  }
 
   const walletData = {
     ...providerInfo,
-    extensionId,
+    targets,
   };
 
   announceWallet(walletData);
