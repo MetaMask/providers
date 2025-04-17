@@ -9,11 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [22.0.0]
 
-### Uncategorized
+### Changed
 
-- feat: Add CAIP-294 `targets` to `wallet_announce` event data. Announce CAIP-348 target in `initializeProvider` ([#413](https://github.com/MetaMask/providers/pull/413))
-- ci: use MetaMask/action-checkout-and-setup@v1 ([#414](https://github.com/MetaMask/providers/pull/414))
-- chore: update security-code-scanner@main to action-security-code-scanner@v1 ([#412](https://github.com/MetaMask/providers/pull/412))
+- **BREAKING**: `initializeProvider` announces the extensionId, when available, via a `caip-348` target on in the new `targets` property of the CAIP-294 wallet announcement event instead of the previous `extensionId` property ([#413](https://github.com/MetaMask/providers/pull/413))
 
 ## [21.0.0]
 
