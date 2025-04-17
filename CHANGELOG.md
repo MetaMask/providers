@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [22.0.0]
+
+### Changed
+
+- **BREAKING**: `initializeProvider` announces the extensionId, when available, via a `caip-348` target on in the new `targets` property of the CAIP-294 wallet announcement event instead of the previous `extensionId` property ([#413](https://github.com/MetaMask/providers/pull/413))
+
 ## [21.0.0]
 
 ### Changed
@@ -557,7 +563,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v21.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v22.0.0...HEAD
+[22.0.0]: https://github.com/MetaMask/providers/compare/v21.0.0...v22.0.0
 [21.0.0]: https://github.com/MetaMask/providers/compare/v20.0.0...v21.0.0
 [20.0.0]: https://github.com/MetaMask/providers/compare/v19.0.0...v20.0.0
 [19.0.0]: https://github.com/MetaMask/providers/compare/v18.3.1...v19.0.0
