@@ -129,7 +129,7 @@ function isValidAnnounceWalletEvent(
 }
 
 /**
- * Validates an {@link CAIP294Target} object.
+ * Validates a {@link CAIP294Target} object.
  *
  * @param data - The {@link CAIP294Target} to validate.
  * @returns Whether the {@link CAIP294Target} is valid.
