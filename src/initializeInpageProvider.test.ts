@@ -20,6 +20,27 @@ describe('setGlobalProvider', () => {
       new Event('ethereum#initialized'),
     );
   });
+
+  it('should not throw an error if the global ethereum provider is already set', () => {
+    const errorSpy = jest.spyOn(console, 'error');
+
+    const mockProvider = {} as unknown as MetaMaskInpageProvider;
+    Object.defineProperty(window, 'ethereum', {
+      get() {
+        return {};
+      },
+      set() {
+        throw new Error('window.ethereum already set');
+      },
+      configurable: false,
+    });
+    expect(() => setGlobalProvider(mockProvider)).not.toThrow();
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      'MetaMask encountered an error setting the global Ethereum provider - this is likely due to another Ethereum wallet extension also setting the global Ethereum provider:',
+      expect.any(Error),
+    );
+  });
 });
 
 describe('announceCaip294WalletData', () => {

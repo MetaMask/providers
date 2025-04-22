@@ -47,8 +47,8 @@ const baseConfig = {
     global: {
       branches: 70.68,
       functions: 72.32,
-      lines: 71.27,
-      statements: 71.39,
+      lines: 71.39,
+      statements: 71.51,
     },
   },
 
