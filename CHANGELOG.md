@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [22.0.1]
 
-### Uncategorized
+### Fixed
 
-- fix: catch error when ethereum provider is set before our attempt to set ([#416](https://github.com/MetaMask/providers/pull/416))
+- Catch error when ethereum provider is set before we attempt to set it ([#416](https://github.com/MetaMask/providers/pull/416))
 
 ## [22.0.0]
 
