@@ -98,8 +98,15 @@ export function initializeProvider({
 export function setGlobalProvider(
   providerInstance: MetaMaskInpageProvider,
 ): void {
-  (window as Record<string, any>).ethereum = providerInstance;
-  window.dispatchEvent(new Event('ethereum#initialized'));
+  try {
+    (window as Record<string, any>).ethereum = providerInstance;
+    window.dispatchEvent(new Event('ethereum#initialized'));
+  } catch (error) {
+    console.error(
+      'MetaMask encountered an error setting the global Ethereum provider - this is likely due to another Ethereum wallet extension also setting the global Ethereum provider:',
+      error,
+    );
+  }
 }
 
 /**
