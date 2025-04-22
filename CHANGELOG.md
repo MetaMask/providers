@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [22.0.1]
+
+### Uncategorized
+
+- fix: catch error when ethereum provider is set before our attempt to set ([#416](https://github.com/MetaMask/providers/pull/416))
+
 ## [22.0.0]
 
 ### Changed
@@ -563,7 +569,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v22.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v22.0.1...HEAD
+[22.0.1]: https://github.com/MetaMask/providers/compare/v22.0.0...v22.0.1
 [22.0.0]: https://github.com/MetaMask/providers/compare/v21.0.0...v22.0.0
 [21.0.0]: https://github.com/MetaMask/providers/compare/v20.0.0...v21.0.0
 [20.0.0]: https://github.com/MetaMask/providers/compare/v19.0.0...v20.0.0
