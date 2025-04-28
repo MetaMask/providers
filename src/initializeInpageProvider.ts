@@ -125,7 +125,6 @@ export function setGlobalProvider(
  *
  * @param provider - The provider {@link MetaMaskInpageProvider} used for retrieving `extensionId`.
  * @param providerInfo - The provider info {@link BaseProviderInfo} that should be announced if set.
- * @param shouldAnnounce - Whether the wallet data should be announced.
  */
 export async function announceCaip294WalletData(
   provider: MetaMaskInpageProvider,
