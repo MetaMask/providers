@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [22.1.0]
+
+### Uncategorized
+
+- Refactor caip-294 announcement logic ([#419](https://github.com/MetaMask/providers/pull/419))
+
 ## [22.0.1]
 
 ### Fixed
@@ -569,7 +575,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v22.0.1...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v22.1.0...HEAD
+[22.1.0]: https://github.com/MetaMask/providers/compare/v22.0.1...v22.1.0
 [22.0.1]: https://github.com/MetaMask/providers/compare/v22.0.0...v22.0.1
 [22.0.0]: https://github.com/MetaMask/providers/compare/v21.0.0...v22.0.0
 [21.0.0]: https://github.com/MetaMask/providers/compare/v20.0.0...v21.0.0
