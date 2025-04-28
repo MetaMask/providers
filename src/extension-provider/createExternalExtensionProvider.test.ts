@@ -104,6 +104,9 @@ describe('getBuildType', () => {
     { payload: 'io.metamask.beta', expected: 'beta' },
     { payload: 'io.metamask', expected: 'stable' },
     { payload: 'io.metamask.flask', expected: 'flask' },
+    { payload: 'io.metamask.mobile', expected: 'stable' },
+    { payload: 'io.metamask.mobile.beta', expected: 'beta' },
+    { payload: 'io.metamask.mobile.flask', expected: 'flask' },
     { payload: 'io.metamask.unknown', expected: undefined },
   ];
 

@@ -67,6 +67,19 @@ describe('announceCaip294WalletData', () => {
       expect(getBuildType).toHaveBeenCalledWith(mockProviderInfo.rdns);
       expect(announceWallet).not.toHaveBeenCalled();
     });
+
+    it('should not announce wallet if mobile build type is not flask', async () => {
+      const mobileMockProviderInfo = {
+        ...mockProviderInfo,
+        rdns: 'io.metamask.mobile',
+      };
+      (getBuildType as jest.Mock).mockReturnValue('stable');
+
+      await announceCaip294WalletData(mockProvider, mobileMockProviderInfo);
+
+      expect(getBuildType).toHaveBeenCalledWith(mobileMockProviderInfo.rdns);
+      expect(announceWallet).not.toHaveBeenCalled();
+    });
   });
 
   describe('build type is flask', () => {
@@ -99,6 +112,29 @@ describe('announceCaip294WalletData', () => {
       expect(announceWallet).toHaveBeenCalledWith({
         ...mockProviderInfo,
         targets: [],
+      });
+    });
+
+    it('should announce wallet with caip-348 target for mobile flask', async () => {
+      const extensionId = 'test-extension-id';
+      const mobileMockProviderInfo = {
+        ...mockProviderInfo,
+        rdns: 'io.metamask.mobile.flask',
+      };
+      (getBuildType as jest.Mock).mockReturnValue('flask');
+      (mockProvider.request as jest.Mock).mockReturnValue({ extensionId });
+
+      await announceCaip294WalletData(mockProvider, mobileMockProviderInfo);
+
+      expect(getBuildType).toHaveBeenCalledWith(mobileMockProviderInfo.rdns);
+      expect(announceWallet).toHaveBeenCalledWith({
+        ...mobileMockProviderInfo,
+        targets: [
+          {
+            type: 'caip-348',
+            value: extensionId,
+          },
+        ],
       });
     });
   });

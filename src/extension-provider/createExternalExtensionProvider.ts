@@ -94,6 +94,9 @@ export function getBuildType(rdns: string): string | undefined {
     'io.metamask': 'stable',
     'io.metamask.beta': 'beta',
     'io.metamask.flask': 'flask',
+    'io.metamask.mobile': 'stable',
+    'io.metamask.mobile.beta': 'beta',
+    'io.metamask.mobile.flask': 'flask',
   };
   return rndsToIdDefinition[rdns];
 }
