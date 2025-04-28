@@ -9,9 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [22.1.0]
 
-### Uncategorized
+### Changed
 
-- Refactor caip-294 announcement logic ([#419](https://github.com/MetaMask/providers/pull/419))
+- Refactor CAIP294 announcement logic ([#419](https://github.com/MetaMask/providers/pull/419))
+  - Adds a new `shouldAnnounceCaip294` flag to `initializeProvider` options (defaulted to true), so instead of the `providerInfo.rdns` value determining whether or not to announce the caip-294 target, the caller of `initializeProvider` can directly control this.
 
 ## [22.0.1]
 
