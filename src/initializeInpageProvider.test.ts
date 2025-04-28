@@ -1,5 +1,4 @@
 import { announceWallet, type CAIP294WalletData } from './CAIP294';
-import { getBuildType } from './extension-provider/createExternalExtensionProvider';
 import {
   announceCaip294WalletData,
   setGlobalProvider,
@@ -58,48 +57,31 @@ describe('announceCaip294WalletData', () => {
     jest.clearAllMocks();
   });
 
-  describe('build type is not flask', () => {
-    it('should not announce wallet if build type is not flask', async () => {
-      (getBuildType as jest.Mock).mockReturnValue('stable');
+  it('should announce wallet with caip-348 target for chromium browsers', async () => {
+    const extensionId = 'test-extension-id';
+    (mockProvider.request as jest.Mock).mockReturnValue({ extensionId });
 
-      await announceCaip294WalletData(mockProvider, mockProviderInfo);
+    await announceCaip294WalletData(mockProvider, mockProviderInfo);
 
-      expect(getBuildType).toHaveBeenCalledWith(mockProviderInfo.rdns);
-      expect(announceWallet).not.toHaveBeenCalled();
+    expect(announceWallet).toHaveBeenCalledWith({
+      ...mockProviderInfo,
+      targets: [
+        {
+          type: 'caip-348',
+          value: extensionId,
+        },
+      ],
     });
   });
 
-  describe('build type is flask', () => {
-    it('should announce wallet with caip-348 target for chromium browsers', async () => {
-      const extensionId = 'test-extension-id';
-      (getBuildType as jest.Mock).mockReturnValue('flask');
-      (mockProvider.request as jest.Mock).mockReturnValue({ extensionId });
+  it('should announce wallet without caip-348 target for firefox browser', async () => {
+    (mockProvider.request as jest.Mock).mockReturnValue({});
 
-      await announceCaip294WalletData(mockProvider, mockProviderInfo);
+    await announceCaip294WalletData(mockProvider, mockProviderInfo);
 
-      expect(getBuildType).toHaveBeenCalledWith(mockProviderInfo.rdns);
-      expect(announceWallet).toHaveBeenCalledWith({
-        ...mockProviderInfo,
-        targets: [
-          {
-            type: 'caip-348',
-            value: extensionId,
-          },
-        ],
-      });
-    });
-
-    it('should announce wallet without caip-348 target for firefox browser', async () => {
-      (getBuildType as jest.Mock).mockReturnValue('flask');
-      (mockProvider.request as jest.Mock).mockReturnValue({});
-
-      await announceCaip294WalletData(mockProvider, mockProviderInfo);
-
-      expect(getBuildType).toHaveBeenCalledWith(mockProviderInfo.rdns);
-      expect(announceWallet).toHaveBeenCalledWith({
-        ...mockProviderInfo,
-        targets: [],
-      });
+    expect(announceWallet).toHaveBeenCalledWith({
+      ...mockProviderInfo,
+      targets: [],
     });
   });
 });

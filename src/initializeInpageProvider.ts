@@ -3,7 +3,6 @@ import { type Duplex } from 'readable-stream';
 import type { CAIP294WalletData } from './CAIP294';
 import { announceWallet } from './CAIP294';
 import { announceProvider as announceEip6963Provider } from './EIP6963';
-import { getBuildType } from './extension-provider/createExternalExtensionProvider';
 import type { MetaMaskInpageProviderOptions } from './MetaMaskInpageProvider';
 import { MetaMaskInpageProvider } from './MetaMaskInpageProvider';
 import { shimWeb3 } from './shimWeb3';
@@ -29,6 +28,11 @@ type InitializeProviderOptions = {
    * Whether the window.web3 shim should be set.
    */
   shouldShimWeb3?: boolean;
+
+  /**
+   * Whether the provider announce a CAIP-294 event.
+   */
+  shouldAnnounceCaip294?: boolean;
 } & MetaMaskInpageProviderOptions;
 
 /**
@@ -42,6 +46,7 @@ type InitializeProviderOptions = {
  * @param options.shouldSetOnWindow - Whether the provider should be set as window.ethereum.
  * @param options.shouldShimWeb3 - Whether a window.web3 shim should be injected.
  * @param options.logger - The logging API to use. Default: `console`.
+ * @param options.shouldAnnounceCaip294 - Whether the provider should announce itself.
  * @returns The initialized provider (whether set or not).
  */
 export function initializeProvider({
@@ -52,6 +57,7 @@ export function initializeProvider({
   shouldSendMetadata = true,
   shouldSetOnWindow = true,
   shouldShimWeb3 = false,
+  shouldAnnounceCaip294 = true,
 }: InitializeProviderOptions): MetaMaskInpageProvider {
   const provider = new MetaMaskInpageProvider(connectionStream, {
     logger,
@@ -74,8 +80,11 @@ export function initializeProvider({
       info: providerInfo,
       provider: proxiedProvider,
     });
-    // eslint-disable-next-line no-void
-    void announceCaip294WalletData(provider, providerInfo);
+
+    if (shouldAnnounceCaip294) {
+      // eslint-disable-next-line no-void
+      void announceCaip294WalletData(provider, providerInfo);
+    }
   }
 
   if (shouldSetOnWindow) {
@@ -116,16 +125,12 @@ export function setGlobalProvider(
  *
  * @param provider - The provider {@link MetaMaskInpageProvider} used for retrieving `extensionId`.
  * @param providerInfo - The provider info {@link BaseProviderInfo} that should be announced if set.
+ * @param shouldAnnounce - Whether the wallet data should be announced.
  */
 export async function announceCaip294WalletData(
   provider: MetaMaskInpageProvider,
   providerInfo: CAIP294WalletData,
 ): Promise<void> {
-  const buildType = getBuildType(providerInfo.rdns);
-  if (buildType !== 'flask') {
-    return;
-  }
-
   const providerState = await provider.request<{ extensionId?: string }>({
     method: 'metamask_getProviderState',
   });
