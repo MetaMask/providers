@@ -113,6 +113,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
     try {
       initialState = (await this.request({
         method: 'metamask_getProviderState',
+        params: { isInitializingStreamProvider: true },
       })) as Parameters<BaseProvider['_initializeState']>[0];
     } catch (error) {
       this._log.error(

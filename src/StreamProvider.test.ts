@@ -62,6 +62,7 @@ describe('StreamProvider', () => {
       expect(requestMock).toHaveBeenCalledTimes(1);
       expect(requestMock).toHaveBeenCalledWith({
         method: 'metamask_getProviderState',
+        params: { isInitializingStreamProvider: true },
       });
     });
 
