@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [22.1.1]
+
+### Changed
+
+- Update `StreamProvider.initialize` to call `metamask_getProviderState` with `isInitializingStreamProvider: true` ([#422](https://github.com/MetaMask/providers/pull/422))
+  - In implementing `metamask_getProviderState`, the extension makes a request for the network version; this parameter allows us to opt-out of that extra request on UI initialization.
+
 ## [22.1.0]
 
 ### Changed
@@ -575,7 +582,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added deprecation warnings for them ([#30](https://github.com/MetaMask/providers/pull/30))
 - Un-deprecated `sendAsync` ([#29](https://github.com/MetaMask/providers/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/providers/compare/v22.1.0...HEAD
+[Unreleased]: https://github.com/MetaMask/providers/compare/v22.1.1...HEAD
+[22.1.1]: https://github.com/MetaMask/providers/compare/v22.1.0...v22.1.1
 [22.1.0]: https://github.com/MetaMask/providers/compare/v22.0.1...v22.1.0
 [22.0.1]: https://github.com/MetaMask/providers/compare/v22.0.0...v22.0.1
 [22.0.0]: https://github.com/MetaMask/providers/compare/v21.0.0...v22.0.0
