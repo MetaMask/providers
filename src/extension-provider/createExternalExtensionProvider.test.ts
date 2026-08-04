@@ -157,6 +157,23 @@ describe('createExternalExtensionProvider', () => {
     expect(global.chrome.runtime.connect).toHaveBeenCalledWith('foobar');
   });
 
+  it('ignores messages for the legacy publicConfig stream', async () => {
+    const consoleWarnSpy = jest.spyOn(globalThis.console, 'warn');
+    const { port } = await getInitializedProvider();
+
+    port.notify('publicConfig', {
+      jsonrpc: '2.0',
+      method: 'metamask_chainChanged',
+      params: { chainId: '0x1', networkVersion: '1' },
+    });
+    // Wait for the message to propagate through the stream pipeline.
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    expect(consoleWarnSpy).not.toHaveBeenCalledWith(
+      'ObjectMultiplex - orphaned data for stream "publicConfig"',
+    );
+  });
+
   describe('RPC warnings', () => {
     const warnings = [
       {

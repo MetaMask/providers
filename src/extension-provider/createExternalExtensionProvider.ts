@@ -11,6 +11,12 @@ import { getDefaultExternalMiddleware } from '../utils';
 
 const browser = detect();
 
+/**
+ * The name of the legacy public config substream. The MetaMask extension
+ * still writes to this stream, but the provider no longer uses it.
+ */
+const LegacyPublicConfigStreamName = 'publicConfig';
+
 export type ExtensionType = 'stable' | 'flask' | 'beta' | string;
 
 /**
@@ -32,6 +38,10 @@ export function createExternalExtensionProvider(
     const pluginStream = new PortStream(metamaskPort);
     const streamName = MetaMaskInpageProviderStreamName;
     const mux = new ObjectMultiplex();
+    // The wallet still writes to the legacy `publicConfig` stream. Ignore it
+    // to avoid "ObjectMultiplex - orphaned data" warnings, mirroring how the
+    // MetaMask extension contentscript ignores legacy streams.
+    mux.ignoreStream(LegacyPublicConfigStreamName);
     pipeline(pluginStream, mux, pluginStream, (error: Error | null) => {
       let warningMsg = `Lost connection to "${streamName}".`;
       if (error?.stack) {
