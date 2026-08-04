@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Ignore legacy `publicConfig` stream in `createExternalExtensionProvider` to prevent `ObjectMultiplex - orphaned data for stream "publicConfig"` warnings ([#429](https://github.com/MetaMask/providers/pull/429))
+
 ## [22.1.1]
 
 ### Changed
