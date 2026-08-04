@@ -29,26 +29,6 @@
         "default": "./dist/index.cjs"
       }
     },
-    "./dist/StreamProvider": {
-      "import": {
-        "types": "./dist/StreamProvider.d.mts",
-        "default": "./dist/StreamProvider.mjs"
-      },
-      "require": {
-        "types": "./dist/StreamProvider.d.cts",
-        "default": "./dist/StreamProvider.cjs"
-      }
-    },
-    "./dist/initializeInpageProvider": {
-      "import": {
-        "types": "./dist/initializeInpageProvider.d.mts",
-        "default": "./dist/initializeInpageProvider.mjs"
-      },
-      "require": {
-        "types": "./dist/initializeInpageProvider.d.cts",
-        "default": "./dist/initializeInpageProvider.cjs"
-      }
-    },
     "./initializeInpageProvider": {
       "import": {
         "types": "./dist/initializeInpageProvider.d.mts",
