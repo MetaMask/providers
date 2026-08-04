@@ -135,7 +135,14 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
 
     // send website metadata
     if (shouldSendMetadata) {
-      if (document.readyState === 'complete') {
+      // The `document` global is not available in non-DOM environments, such
+      // as extension background pages and service workers. In such
+      // environments, there is nothing to wait for, so we treat the site
+      // metadata as immediately available.
+      if (
+        typeof document === 'undefined' ||
+        document.readyState === 'complete'
+      ) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         sendSiteMetadata(this._rpcEngine, this._log);
       } else {

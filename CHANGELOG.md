@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Prevent `document is not defined` error when constructing the provider in non-DOM environments, such as extension background pages and service workers ([#428](https://github.com/MetaMask/providers/pull/428))
+
 ## [22.1.1]
 
 ### Changed
