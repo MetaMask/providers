@@ -41,8 +41,8 @@ export async function sendSiteMetadata(
  */
 async function getSiteMetadata() {
   return {
-    name: getSiteName(window),
-    icon: await getSiteIcon(window),
+    name: getSiteName(globalThis),
+    icon: await getSiteIcon(globalThis),
   };
 }
 
@@ -52,8 +52,13 @@ async function getSiteMetadata() {
  * @param windowObject - The window object to extract the site name from.
  * @returns The site name.
  */
-function getSiteName(windowObject: typeof window): string {
+function getSiteName(windowObject: typeof globalThis): string {
   const { document } = windowObject;
+  // The `document` global is not available in non-DOM environments, such as
+  // extension background pages and service workers.
+  if (typeof document === 'undefined') {
+    return windowObject.location.hostname;
+  }
 
   const siteName: HTMLMetaElement | null = document.querySelector(
     'head > meta[property="og:site_name"]',
@@ -73,7 +78,7 @@ function getSiteName(windowObject: typeof window): string {
     return document.title;
   }
 
-  return window.location.hostname;
+  return windowObject.location.hostname;
 }
 
 /**
@@ -83,9 +88,14 @@ function getSiteName(windowObject: typeof window): string {
  * @returns An icon URL, if one exists.
  */
 async function getSiteIcon(
-  windowObject: typeof window,
+  windowObject: typeof globalThis,
 ): Promise<string | null> {
   const { document } = windowObject;
+  // The `document` global is not available in non-DOM environments, such as
+  // extension background pages and service workers.
+  if (typeof document === 'undefined') {
+    return null;
+  }
 
   const icons: NodeListOf<HTMLLinkElement> = document.querySelectorAll(
     'head > link[rel~="icon"]',

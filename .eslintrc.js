@@ -45,6 +45,8 @@ module.exports = {
         'EIP6963.test.ts',
         'CAIP294.test.ts',
         'initializeInpageProvider.test.ts',
+        'MetaMaskInpageProvider.test.ts',
+        'siteMetadata.test.ts',
         'jest.setup.browser.js',
       ],
       rules: {

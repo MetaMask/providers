@@ -8,6 +8,7 @@ import {
   MetaMaskInpageProviderStreamName,
   MetaMaskInpageProvider,
 } from './MetaMaskInpageProvider';
+import * as siteMetadata from './siteMetadata';
 import { MockConnectionStream } from '../test/mocks/MockConnectionStream';
 
 /**
@@ -1126,6 +1127,62 @@ describe('MetaMaskInpageProvider: Miscellanea', () => {
       expect(inpageProvider.networkVersion).toBe('0');
       expect(inpageProvider.selectedAddress).toBe('0xabc');
       expect(inpageProvider.isConnected()).toBe(true);
+    });
+
+    describe('site metadata', () => {
+      it('sends site metadata immediately if the document has already loaded', () => {
+        const sendSiteMetadataSpy = jest
+          .spyOn(siteMetadata, 'sendSiteMetadata')
+          .mockResolvedValue(undefined);
+
+        expect(
+          () =>
+            new MetaMaskInpageProvider(new MockConnectionStream(), {
+              shouldSendMetadata: true,
+            }),
+        ).not.toThrow();
+
+        expect(sendSiteMetadataSpy).toHaveBeenCalledTimes(1);
+      });
+
+      it('sends site metadata on DOMContentLoaded if the document is still loading', () => {
+        const sendSiteMetadataSpy = jest
+          .spyOn(siteMetadata, 'sendSiteMetadata')
+          .mockResolvedValue(undefined);
+        jest
+          .spyOn(globalThis.document, 'readyState', 'get')
+          .mockReturnValue('loading');
+
+        expect(
+          () =>
+            new MetaMaskInpageProvider(new MockConnectionStream(), {
+              shouldSendMetadata: true,
+            }),
+        ).not.toThrow();
+        expect(sendSiteMetadataSpy).not.toHaveBeenCalled();
+
+        globalThis.window.dispatchEvent(new Event('DOMContentLoaded'));
+        expect(sendSiteMetadataSpy).toHaveBeenCalledTimes(1);
+      });
+
+      it('sends site metadata immediately if there is no document, e.g. in an extension background script', () => {
+        const sendSiteMetadataSpy = jest
+          .spyOn(siteMetadata, 'sendSiteMetadata')
+          .mockResolvedValue(undefined);
+        const documentSpy = jest
+          .spyOn(globalThis, 'document', 'get')
+          .mockReturnValue(undefined as unknown as Document);
+
+        expect(
+          () =>
+            new MetaMaskInpageProvider(new MockConnectionStream(), {
+              shouldSendMetadata: true,
+            }),
+        ).not.toThrow();
+        expect(sendSiteMetadataSpy).toHaveBeenCalledTimes(1);
+
+        documentSpy.mockRestore();
+      });
     });
   });
 

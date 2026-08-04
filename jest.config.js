@@ -227,6 +227,7 @@ const browserConfig = {
     '**/*ExtensionProvider.test.ts',
     '**/EIP6963.test.ts',
     '**/CAIP294.test.ts',
+    '**/siteMetadata.test.ts',
   ],
   setupFilesAfterEnv: ['./jest.setup.browser.js'],
 };
