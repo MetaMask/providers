@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- **BREAKING**: Remove obsolete `./dist/StreamProvider` and `./dist/initializeInpageProvider` export entries ([#430](https://github.com/MetaMask/providers/pull/430))
+  - Use the `./stream-provider` and `./initializeInpageProvider` exports instead.
+
 ## [22.1.1]
 
 ### Changed
